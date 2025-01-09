@@ -1,0 +1,13 @@
+<mxfile host="65bd71144e">
+    <diagram id="ClCNdlMcGg0tzCFNCb5y" name="Page-1">
+        <mxGraphModel dx="765" dy="779" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="&lt;font style=&quot;font-size: 27px;&quot;&gt;1. How to Implement Typing Status.&lt;br&gt;2. how to Implement is User Online/Offlne.&lt;br&gt;3. How to Implement new message arrived.&lt;br&gt;4.Message seen Unseen.&lt;br&gt;5. How to send attachments (video, documents, Images)&lt;br&gt;&amp;nbsp;&lt;/font&gt;" style="text;strokeColor=none;align=left;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="50" width="820" height="670" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

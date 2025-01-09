@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <!-- This file is related to Facebook signIn -->
+   <string name="app_name">Chat App</string>
+   <string name="facebook_app_id">1518795865449666</string>
+   <string name="fb_login_protocol_scheme">fb1518795865449666</string>
+   <string name="facebook_client_token">66943766e0ad5f81151c32e93b2bebc5</string>
+</resources>

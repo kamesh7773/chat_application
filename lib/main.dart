@@ -17,9 +17,9 @@ import 'routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-void main() async {
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -55,8 +55,8 @@ void main() async {
   });
 }
 
-class MyApp extends StatelessWidget {
-  final GlobalKey navigatorKey;
+class MyApp extends StatefulWidget {
+  final GlobalKey<NavigatorState> navigatorKey;
   final bool isUserAuthenticated;
   const MyApp({
     super.key,
@@ -64,6 +64,11 @@ class MyApp extends StatelessWidget {
     required this.navigatorKey,
   });
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -82,7 +87,6 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        key: navigatorKey,
         debugShowCheckedModeBanner: false,
         title: 'Chat Application',
         theme: ThemeData(
@@ -94,7 +98,22 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         onGenerateRoute: Routes.generateRoute,
-        initialRoute: isUserAuthenticated ? RoutesNames.bottomNavigationBar : RoutesNames.signInPage,
+        initialRoute: widget.isUserAuthenticated ? RoutesNames.bottomNavigationBar : RoutesNames.signInPage,
+        navigatorKey: widget.navigatorKey,
+        builder: (BuildContext context, Widget? child) {
+          return Stack(
+            children: [
+              child!,
+
+              /// support minimizing
+              ZegoUIKitPrebuiltCallMiniOverlayPage(
+                contextQuery: () {
+                  return widget.navigatorKey.currentState!.context;
+                },
+              ),
+            ],
+          );
+        },
       ),
     );
   }

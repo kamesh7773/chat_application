@@ -1,10 +1,14 @@
 // Package imports:
+import 'package:colored_print/colored_print.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 
 class ZegoMethods {
   /// on user login
   static void onUserLogin({required String userID, required String userName}) {
+    ColoredPrint.warning(userID);
+    ColoredPrint.warning(userName);
+
     /// 4/5. initialized ZegoUIKitPrebuiltCallInvitationService when account is logged in or re-logged in
     ZegoUIKitPrebuiltCallInvitationService().init(
       appID: 160183049,

@@ -13,6 +13,8 @@
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <!-- Permission added for Zego flutter package -->
 
     <application
@@ -39,7 +41,7 @@
             </intent-filter>
         </activity>
         <!-- Code related to Facebook sign-in -->
-        
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -17,15 +17,10 @@ import 'routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-  /// 1.1.2: set navigator key to ZegoUIKitPrebuiltCallInvitationService
-  ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
 
   // Initialize Facebook sign-in/sign-up for Flutter web apps only.
   if (kIsWeb) {
@@ -40,18 +35,21 @@ void main() async {
   // Check if the user is already logged in.
   bool isUserAuthenticated = await FirebaseAuthMethods.isUserLogin();
 
-  // call the useSystemCallingUI
+  /// 1/5: define a navigator key
+  final navigatorKey = GlobalKey<NavigatorState>();
+
+  /// 2/5: set navigator key to ZegoUIKitPrebuiltCallInvitationService
+  ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
+
   ZegoUIKit().initLog().then((value) {
     ZegoUIKitPrebuiltCallInvitationService().useSystemCallingUI(
       [ZegoUIKitSignalingPlugin()],
     );
 
-    runApp(
-      MyApp(
-        navigatorKey: navigatorKey,
-        isUserAuthenticated: isUserAuthenticated,
-      ),
-    );
+    runApp(MyApp(
+      navigatorKey: navigatorKey,
+      isUserAuthenticated: isUserAuthenticated,
+    ));
   });
 }
 
@@ -99,6 +97,7 @@ class _MyAppState extends State<MyApp> {
         ),
         onGenerateRoute: Routes.generateRoute,
         initialRoute: widget.isUserAuthenticated ? RoutesNames.bottomNavigationBar : RoutesNames.signInPage,
+        /// 3/5: register the navigator key to MaterialApp
         navigatorKey: widget.navigatorKey,
         builder: (BuildContext context, Widget? child) {
           return Stack(

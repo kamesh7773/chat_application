@@ -235,13 +235,14 @@ class _ChatScreenState extends State<ChatScreen> {
                       ColoredPrint.warning(widget.userID);
                       ColoredPrint.warning(widget.name);
                       ZegoSendCallInvitationButton(
+                        verticalLayout: true,
                         isVideoCall: false,
                         //You need to use the resourceID that you created in the subsequent steps.
                         //Please continue reading this document.
-                        resourceID: "zegocall",
+                        resourceID: "zego_data",
                         invitees: [
                           ZegoUIKitUser(
-                            id: widget.userID,
+                            id: 574036.toString(),
                             name: widget.name,
                           )
                         ],

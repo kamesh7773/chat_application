@@ -179,12 +179,9 @@ class FirebaseAuthMethods {
 
           final userData = currentUserInfo.data();
 
-          // Method for initlizing Zego package services.
-          ZegoMethods.onUserLogin(userID: userData!["userID"], userName: userData["name"]);
-
           // Store user data in SharedPreferences
           final SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString("name", userData["name"]);
+          await prefs.setString("name", userData!["name"]);
           await prefs.setString("email", userData["email"]);
           await prefs.setString("imageUrl", userData["imageUrl"]);
           await prefs.setString("provider", userData["provider"]);
@@ -192,6 +189,9 @@ class FirebaseAuthMethods {
 
           // Set login status
           await prefs.setBool('isLogin', true);
+
+          // Method for initlizing Zego package services.
+          ZegoMethods.onUserLogin();
 
           // Redirect to HomePage after successful signup
           if (context.mounted) {
@@ -332,14 +332,11 @@ class FirebaseAuthMethods {
 
       final userData = currentUserInfo.data();
 
-      // Method for initlizing Zego package services.
-      ZegoMethods.onUserLogin(userID: userData!["userID"], userName: userData["name"]);
-
       // Create an instance of Shared Preferences
       final SharedPreferences prefs = await SharedPreferences.getInstance();
 
       // Write current user info data to SharedPreferences
-      await prefs.setString("name", userData["name"]);
+      await prefs.setString("name", userData!["name"]);
       await prefs.setString("email", userData["email"]);
       await prefs.setString("imageUrl", userData["imageUrl"]);
       await prefs.setBool("isOnline", userData["isOnline"]);
@@ -349,6 +346,9 @@ class FirebaseAuthMethods {
 
       // Set isLogin to "true"
       await prefs.setBool('isLogin', true);
+
+      // Method for initlizing Zego package services.
+      ZegoMethods.onUserLogin();
 
       // After successful login, redirect the user to the HomePage
       if (context.mounted) {
@@ -670,14 +670,11 @@ class FirebaseAuthMethods {
 
                 final userData = currentUserInfo.data();
 
-                // Method for initlizing Zego package services.
-                ZegoMethods.onUserLogin(userID: userData!["userID"], userName: userData["name"]);
-
                 // Create an instance of Shared Preferences
                 final SharedPreferences prefs = await SharedPreferences.getInstance();
 
                 //* Sixth, write current User info data to SharedPreferences
-                await prefs.setString("name", userData["name"]);
+                await prefs.setString("name", userData!["name"]);
                 await prefs.setString("email", userData["email"]);
                 await prefs.setString("imageUrl", userData["imageUrl"]);
                 await prefs.setString("provider", userData["provider"]);
@@ -685,6 +682,9 @@ class FirebaseAuthMethods {
 
                 //* Seventh, set isLogin to "true"
                 await prefs.setBool('isLogin', true);
+
+                // Method for initlizing Zego package services.
+                ZegoMethods.onUserLogin();
 
                 //* Eighth, after successfully signing in/signing up redirect the user to the HomePage
                 if (context.mounted) {
@@ -848,14 +848,11 @@ class FirebaseAuthMethods {
 
               final userData = currentUserInfo.data();
 
-              // Method for initlizing Zego package services.
-              ZegoMethods.onUserLogin(userID: userData!["userID"], userName: userData["name"]);
-
               // Create an instance of Shared Preferences
               final SharedPreferences prefs = await SharedPreferences.getInstance();
 
               //* Fifth, write current User info data to SharedPreferences
-              await prefs.setString("name", userData["name"]);
+              await prefs.setString("name", userData!["name"]);
               await prefs.setString("email", userData["email"]);
               await prefs.setString("imageUrl", userData["imageUrl"]);
               await prefs.setString("provider", userData["provider"]);
@@ -866,6 +863,9 @@ class FirebaseAuthMethods {
 
               //* Seventh, after successfully signing in/signing up we set the isSignUpforFirstTime shared preference value to true.
               await prefs.setBool('signUpWithFacebook', false);
+
+              // Method for initlizing Zego package services.
+              ZegoMethods.onUserLogin();
 
               //* Eighth, after successfully signing in redirect the user to the HomePage
               if (context.mounted) {

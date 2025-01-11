@@ -239,7 +239,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         isVideoCall: false,
                         //You need to use the resourceID that you created in the subsequent steps.
                         //Please continue reading this document.
-                        resourceID: "zego_data",
+                        resourceID: "zego_call",
                         invitees: [
                           ZegoUIKitUser(
                             id: 574036.toString(),

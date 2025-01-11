@@ -1,4 +1,5 @@
 import 'package:chat_application/pages/video%20&%20audio%20pages/audio_and_video_page.dart';
+import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 
 import '../pages/auth%20pages/forgot_page.dart';
 import '../pages/auth%20pages/otp_page.dart';
@@ -58,7 +59,9 @@ class Routes {
       //! Home Page.
       case RoutesNames.homePage:
         return MaterialPageRoute(
-          builder: (context) => const HomePage(),
+          builder: (context) => const ZegoUIKitPrebuiltCallMiniPopScope(
+            child: HomePage(),
+          ),
         );
 
       //! Search Page.
@@ -78,11 +81,13 @@ class Routes {
         final args = settings.arguments as Map<String, dynamic>;
 
         return MaterialPageRoute(
-          builder: (context) => ChatScreen(
-            userID: args["userID"],
-            name: args["name"],
-            email: args["email"],
-            imageUrl: args["imageUrl"],
+          builder: (context) => ZegoUIKitPrebuiltCallMiniPopScope(
+            child: ChatScreen(
+              userID: args["userID"],
+              name: args["name"],
+              email: args["email"],
+              imageUrl: args["imageUrl"],
+            ),
           ),
         );
 
@@ -116,7 +121,7 @@ class Routes {
         final args = settings.arguments as Map<String, dynamic>;
 
         return MaterialPageRoute(
-          builder: (context) =>  AudioAndVideoPage(
+          builder: (context) => AudioAndVideoPage(
             userName: args["userName"],
             callID: args["callID"],
           ),

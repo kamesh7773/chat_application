@@ -1,21 +1,19 @@
 // Package imports:
 
-import 'package:chat_application/widgets/custom_avatar.dart';
-import 'package:colored_print/colored_print.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 
 class ZegoMethods {
   /// on user login
-  static void onUserLogin() async {
+  static void onUserLogin({String? otherUserImageUrl, required bool isOtherUserUrlPassed}) async {
     // Fecting Current User Details from the Shared Preferences.
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? userID = prefs.getString('userID');
     final String? name = prefs.getString('name');
-
-    ColoredPrint.warning(userID);
-    ColoredPrint.warning(name);
+    final String? imageURL = prefs.getString('imageUrl');
 
     /// 4/5. initialized ZegoUIKitPrebuiltCallInvitationService when account is logged in or re-logged in
     ZegoUIKitPrebuiltCallInvitationService().init(
@@ -24,6 +22,34 @@ class ZegoMethods {
       userID: userID!,
       userName: name!,
       plugins: [ZegoUIKitSignalingPlugin()],
+      notificationConfig: ZegoCallInvitationNotificationConfig(
+        androidNotificationConfig: ZegoCallAndroidNotificationConfig(
+          showFullScreen: true,
+          fullScreenBackgroundAssetURL: isOtherUserUrlPassed ? otherUserImageUrl : imageURL,
+          callChannel: ZegoCallAndroidNotificationChannelConfig(
+            channelID: "ZegoUIKit",
+            channelName: "Call Notifications",
+            sound: "call",
+            icon: "call",
+          ),
+          missedCallChannel: ZegoCallAndroidNotificationChannelConfig(
+            channelID: "MissedCall",
+            channelName: "Missed Call",
+            sound: "missed_call",
+            icon: "missed_call",
+            vibrate: false,
+          ),
+        ),
+        iOSNotificationConfig: ZegoCallIOSNotificationConfig(
+          systemCallingIconName: 'CallKitIcon',
+        ),
+      ),
+      config: ZegoCallInvitationConfig(
+        endCallWhenInitiatorLeave: true,
+        missedCall: ZegoCallInvitationMissedCallConfig(
+          enabled: true,
+        ),
+      ),
       requireConfig: (ZegoCallInvitationData data) {
         final config = (data.invitees.length > 1)
             ? ZegoCallInvitationType.videoCall == data.type
@@ -34,7 +60,24 @@ class ZegoMethods {
                 : ZegoUIKitPrebuiltCallConfig.oneOnOneVoiceCall();
 
         /// custom avatar
-        config.avatarBuilder = customAvatarBuilder;
+        config.avatarBuilder = (BuildContext context, Size size, ZegoUIKitUser? user, Map extraInfo) {
+          return CachedNetworkImage(
+            imageUrl: isOtherUserUrlPassed ? otherUserImageUrl! : imageURL!,
+            imageBuilder: (context, imageProvider) => Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                image: DecorationImage(
+                  image: imageProvider,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
+            errorWidget: (context, url, error) {
+              return ZegoAvatar(user: user, avatarSize: size);
+            },
+          );
+        };
 
         /// support minimizing, show minimizing button
         config.topMenuBar.isVisible = true;

@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_application/routes/rotues_names.dart';
-import 'package:colored_print/colored_print.dart';
-import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
+import 'package:chat_application/services/zego_methods.dart';
+import 'package:chat_application/widgets/send_call_button.dart';
+
 import '../../models/message_model.dart';
 import '../../providers/online_offline_status_provider.dart';
 import '../../providers/typing_status_provider.dart';
@@ -69,6 +70,8 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+    ZegoMethods.onUserLogin(isOtherUserUrlPassed: true, otherUserImageUrl: widget.imageUrl);
+
     _messageController = TextEditingController();
     firebaseFireStoreMethods.isInsideChatRoom(status: true);
 
@@ -223,39 +226,20 @@ class _ChatScreenState extends State<ChatScreen> {
                     ],
                   ),
                   const Spacer(flex: 1),
-                  IconButton(
-                    onPressed: () {
-                      // Navigator.of(context).pushNamed(
-                      //   RoutesNames.audioAndVideoPage,
-                      //   arguments: {
-                      //     "userName": widget.name,
-                      //     "callID": widget.userID,
-                      //   },
-                      // );
-                      ColoredPrint.warning(widget.userID);
-                      ColoredPrint.warning(widget.name);
-                      ZegoSendCallInvitationButton(
-                        verticalLayout: true,
-                        isVideoCall: false,
-                        //You need to use the resourceID that you created in the subsequent steps.
-                        //Please continue reading this document.
-                        resourceID: "zego_call",
-                        invitees: [
-                          ZegoUIKitUser(
-                            id: 574036.toString(),
-                            name: widget.name,
-                          )
-                        ],
-                      );
-                    },
+                  sendCallButton(
+                    isVideoCall: false,
+                    userId: widget.userID,
+                    userName: widget.name,
                     icon: const Icon(
                       Icons.call,
                       color: Colors.white,
                       size: 26,
                     ),
                   ),
-                  IconButton(
-                    onPressed: () {},
+                  sendCallButton(
+                    isVideoCall: true,
+                    userId: widget.userID,
+                    userName: widget.name,
                     icon: const Icon(
                       Icons.videocam_sharp,
                       color: Colors.white,

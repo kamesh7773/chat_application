@@ -34,15 +34,15 @@ class _HomePageState extends State<HomePage> {
           //! AppBar
           Container(
             width: double.infinity,
-            color: Color.fromARGB(255, 0, 191, 108),
+            color: const Color.fromARGB(255, 0, 191, 108),
             child: Column(
               children: [
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         "Chats",
                         style: TextStyle(
@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
                           arguments: "Chats",
                         );
                       },
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.search,
                         color: Colors.white,
                         size: 26,
@@ -75,10 +75,10 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       ActionChip(
                         onPressed: () {},
-                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
                         shadowColor: Colors.black,
                         elevation: 3,
-                        label: Text(
+                        label: const Text(
                           "Recent message",
                           style: TextStyle(
                             fontSize: 13,
@@ -87,21 +87,21 @@ class _HomePageState extends State<HomePage> {
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25),
-                          side: BorderSide(
+                          side: const BorderSide(
                             color: Colors.white,
                             width: 0.7,
                           ),
                         ),
                       ),
-                      SizedBox(width: 6),
+                      const SizedBox(width: 6),
                       Flexible(
                         child: ActionChip(
                           onPressed: () {
                             //! Navigate user to Active Users Page.
                             Navigator.of(context).pushNamed(RoutesNames.activeUserPage);
                           },
-                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 0),
-                          label: Text(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+                          label: const Text(
                             "Active",
                             style: TextStyle(
                               fontSize: 13,
@@ -109,10 +109,10 @@ class _HomePageState extends State<HomePage> {
                               color: Colors.white,
                             ),
                           ),
-                          backgroundColor: Color.fromARGB(255, 0, 191, 108),
+                          backgroundColor: const Color.fromARGB(255, 0, 191, 108),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25),
-                            side: BorderSide(
+                            side: const BorderSide(
                               color: Colors.white,
                               width: 0.7,
                             ),
@@ -122,7 +122,7 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                 ),
-                SizedBox(height: 18),
+                const SizedBox(height: 18),
               ],
             ),
           ),
@@ -133,7 +133,7 @@ class _HomePageState extends State<HomePage> {
               builder: (context, snapshot) {
                 // If snapshot is still loading then show CircularProgressIndicator.
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }
@@ -198,14 +198,14 @@ class _HomePageState extends State<HomePage> {
                                       width: 13,
                                       height: 13,
                                       decoration: BoxDecoration(
-                                        color: Color.fromARGB(255, 0, 191, 108),
+                                        color: const Color.fromARGB(255, 0, 191, 108),
                                         shape: BoxShape.circle,
                                         border: Border.all(color: Colors.white, width: 2),
                                       ),
                                     ),
                                   )
                                 // else we show SizedBox().
-                                : SizedBox(),
+                                : const SizedBox(),
                           ],
                         ),
                         title: Text(
@@ -223,7 +223,7 @@ class _HomePageState extends State<HomePage> {
                                     value,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.normal,
                                       fontSize: 15,
                                       color: Colors.black,
@@ -240,7 +240,7 @@ class _HomePageState extends State<HomePage> {
                                     value,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 15,
                                       color: Colors.black,
@@ -254,9 +254,9 @@ class _HomePageState extends State<HomePage> {
                                 padding: const EdgeInsets.only(left: 10),
                                 child: Text(
                                   DateTimeCalculatorForUsers.getLastActiveTime(lastSeen: user.lastSeen.toDate(), isOnline: user.isOnline),
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 12,
-                                    color: const Color.fromARGB(255, 0, 0, 0),
+                                    color: Color.fromARGB(255, 0, 0, 0),
                                   ),
                                 ),
                               )
@@ -269,11 +269,11 @@ class _HomePageState extends State<HomePage> {
                                       children: [
                                         Text(
                                           DateTimeCalculatorForUnseenmsg.getLastActiveTime(lastSeen: user.unSeenMessages!.last.timeStamp.toDate()),
-                                          style: TextStyle(fontSize: 12),
+                                          style: const TextStyle(fontSize: 12),
                                         ),
                                         Container(
-                                          padding: EdgeInsets.all(5),
-                                          decoration: BoxDecoration(
+                                          padding: const EdgeInsets.all(5),
+                                          decoration: const BoxDecoration(
                                             shape: BoxShape.circle,
                                             color: Color.fromARGB(255, 0, 191, 108),
                                           ),
@@ -281,7 +281,7 @@ class _HomePageState extends State<HomePage> {
                                             padding: const EdgeInsets.only(bottom: 0),
                                             child: Text(
                                               user.unSeenMessages!.length.toString(),
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                 fontSize: 13,
                                                 color: Colors.black,
                                               ),
@@ -295,9 +295,9 @@ class _HomePageState extends State<HomePage> {
                                     padding: const EdgeInsets.only(left: 10),
                                     child: Text(
                                       DateTimeCalculatorForUsers.getLastActiveTime(lastSeen: user.lastSeen.toDate(), isOnline: user.isOnline),
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 14,
-                                        color: const Color.fromARGB(255, 116, 114, 114),
+                                        color: Color.fromARGB(255, 116, 114, 114),
                                       ),
                                     ),
                                   ),
@@ -308,7 +308,7 @@ class _HomePageState extends State<HomePage> {
 
                 // else condiation
                 else {
-                  return Center(
+                  return const Center(
                     child: Text("Else Condition"),
                   );
                 }
@@ -318,9 +318,9 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Color.fromARGB(255, 0, 191, 108),
+        backgroundColor: const Color.fromARGB(255, 0, 191, 108),
         onPressed: () {},
-        child: Icon(
+        child: const Icon(
           Icons.person_add_alt_1,
           color: Colors.white,
         ),

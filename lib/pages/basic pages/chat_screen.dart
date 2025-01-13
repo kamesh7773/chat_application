@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chat_application/providers/zego_avatar_provider.dart';
 import 'package:chat_application/routes/rotues_names.dart';
 import 'package:chat_application/services/zego_methods.dart';
 import 'package:chat_application/widgets/send_call_button.dart';
@@ -70,7 +71,9 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    ZegoMethods.onUserLogin(isOtherUserUrlPassed: true, otherUserImageUrl: widget.imageUrl);
+
+    context.read<ZegoAvatarProvider>().updateAvatarImageUrl(imageURL: widget.imageUrl);
+    // ZegoMethods.onUserLogin();
 
     _messageController = TextEditingController();
     firebaseFireStoreMethods.isInsideChatRoom(status: true);
@@ -128,6 +131,7 @@ class _ChatScreenState extends State<ChatScreen> {
     subscription.cancel();
     _typingTimer?.cancel();
     firebaseFireStoreMethods.isInsideChatRoom(status: false);
+    // ZegoMethods.onUserLogout();
     super.dispose();
   }
 

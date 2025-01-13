@@ -1,19 +1,20 @@
 // Package imports:
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chat_application/providers/zego_avatar_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 
 class ZegoMethods {
   /// on user login
-  static void onUserLogin({String? otherUserImageUrl, required bool isOtherUserUrlPassed}) async {
+  static void onUserLogin() async {
     // Fecting Current User Details from the Shared Preferences.
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? userID = prefs.getString('userID');
     final String? name = prefs.getString('name');
-    final String? imageURL = prefs.getString('imageUrl');
 
     /// 4/5. initialized ZegoUIKitPrebuiltCallInvitationService when account is logged in or re-logged in
     ZegoUIKitPrebuiltCallInvitationService().init(
@@ -24,8 +25,6 @@ class ZegoMethods {
       plugins: [ZegoUIKitSignalingPlugin()],
       notificationConfig: ZegoCallInvitationNotificationConfig(
         androidNotificationConfig: ZegoCallAndroidNotificationConfig(
-          showFullScreen: true,
-          fullScreenBackgroundAssetURL: isOtherUserUrlPassed ? otherUserImageUrl : imageURL,
           callChannel: ZegoCallAndroidNotificationChannelConfig(
             channelID: "ZegoUIKit",
             channelName: "Call Notifications",
@@ -39,9 +38,6 @@ class ZegoMethods {
             icon: "missed_call",
             vibrate: false,
           ),
-        ),
-        iOSNotificationConfig: ZegoCallIOSNotificationConfig(
-          systemCallingIconName: 'CallKitIcon',
         ),
       ),
       config: ZegoCallInvitationConfig(
@@ -60,23 +56,25 @@ class ZegoMethods {
                 : ZegoUIKitPrebuiltCallConfig.oneOnOneVoiceCall();
 
         /// custom avatar
-        config.avatarBuilder = (BuildContext context, Size size, ZegoUIKitUser? user, Map extraInfo) {
-          return CachedNetworkImage(
-            imageUrl: isOtherUserUrlPassed ? otherUserImageUrl! : imageURL!,
-            imageBuilder: (context, imageProvider) => Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  image: imageProvider,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
-            errorWidget: (context, url, error) {
-              return ZegoAvatar(user: user, avatarSize: size);
-            },
-          );
+        config.avatarBuilder = (context, size, user, extraInfo) {
+          return Selector<ZegoAvatarProvider, String?>(
+              selector: (context, data) => data.imageUrl,
+              builder: (context, imageUrl, child) {
+                return CachedNetworkImage(
+                  imageUrl: imageUrl ?? 'https://robohash.org/${user?.id}.png',
+                  imageBuilder: (context, imageProvider) => Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      image: DecorationImage(
+                        image: imageProvider,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                );
+              });
         };
 
         /// support minimizing, show minimizing button

@@ -1,4 +1,5 @@
 import 'package:chat_application/providers/last_message_provider.dart';
+import 'package:chat_application/providers/zego_avatar_provider.dart';
 import 'package:chat_application/services/zego_methods.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
@@ -69,6 +70,14 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   @override
+  void initState() {
+    super.initState();
+    if (widget.isUserAuthenticated) {
+      ZegoMethods.onUserLogin();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
@@ -84,8 +93,14 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(
           create: (context) => LastMessageProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => ZegoAvatarProvider(),
+        ),
       ],
       child: MaterialApp(
+        /// 3/5: register the navigator key to MaterialApp
+        navigatorKey: widget.navigatorKey,
+
         debugShowCheckedModeBanner: false,
         title: 'Chat Application',
         theme: ThemeData(
@@ -98,23 +113,6 @@ class _MyAppState extends State<MyApp> {
         ),
         onGenerateRoute: Routes.generateRoute,
         initialRoute: widget.isUserAuthenticated ? RoutesNames.bottomNavigationBar : RoutesNames.signInPage,
-
-        /// 3/5: register the navigator key to MaterialApp
-        navigatorKey: widget.navigatorKey,
-        builder: (BuildContext context, Widget? child) {
-          return Stack(
-            children: [
-              child!,
-
-              /// support minimizing
-              ZegoUIKitPrebuiltCallMiniOverlayPage(
-                contextQuery: () {
-                  return widget.navigatorKey.currentState!.context;
-                },
-              ),
-            ],
-          );
-        },
       ),
     );
   }

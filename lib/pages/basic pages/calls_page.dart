@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_application/models/user_model.dart';
 import 'package:chat_application/services/firebase_firestore_methods.dart';
+import 'package:chat_application/utils/date_time_calculator_for_users.dart';
 import 'package:colored_print/colored_print.dart';
 import 'package:flutter/material.dart';
 
@@ -49,7 +50,7 @@ class _CallsPageState extends State<CallsPage> {
           //! User Chat List
           Expanded(
             child: StreamBuilder<List<UserModel>>(
-              stream: _firebaseFireStoreMethods.fetchingUsers(),
+              stream: _firebaseFireStoreMethods.fetchingCurrentUserDetails(),
               builder: (context, snapshot) {
                 // If snapshot is still loading then show CircularProgressIndicator.
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -81,48 +82,30 @@ class _CallsPageState extends State<CallsPage> {
                       } else {
                         return ListTile(
                           contentPadding: const EdgeInsets.only(top: 2, bottom: 10, left: 12, right: 10),
-                          leading: Stack(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(50),
-                                child: CachedNetworkImage(
-                                  fit: BoxFit.fitHeight,
-                                  width: 55,
-                                  height: 55,
-                                  imageUrl: user.imageUrl,
-                                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                                ),
-                              ),
-                              //! If User online then
-                              Positioned(
-                                bottom: 0,
-                                right: 0,
-                                child: Container(
-                                  width: 13,
-                                  height: 13,
-                                  decoration: BoxDecoration(
-                                    color: const Color.fromARGB(255, 0, 191, 108),
-                                    shape: BoxShape.circle,
-                                    border: Border.all(color: Colors.white, width: 2),
-                                  ),
-                                ),
-                              ),
-                            ],
+                          leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: CachedNetworkImage(
+                              fit: BoxFit.fitHeight,
+                              width: 55,
+                              height: 55,
+                              imageUrl: user.callLogs![index].imageUrl,
+                              errorWidget: (context, url, error) => const Icon(Icons.error),
+                            ),
                           ),
                           title: const Text("Kamesh Singh"),
-                          subtitle: const Row(
+                          subtitle: Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.arrow_outward_sharp,
                                 color: Color.fromARGB(255, 0, 191, 108),
                                 size: 22,
                               ),
-                              SizedBox(width: 8),
+                              const SizedBox(width: 8),
                               Text(
-                                "3m ago",
+                                DateTimeCalculatorForUsers.getLastActiveTime(lastSeen: user.callLogs![index].timeStamp.toDate(), isOnline: false),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 14,
                                   color: Color.fromARGB(255, 116, 114, 114),
                                 ),

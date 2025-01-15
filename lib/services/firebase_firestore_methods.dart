@@ -53,7 +53,7 @@ class FirebaseFireStoreMethods {
   }
 
   //! Method for fetching current User Details for Profile Page.
-  Stream<List<UserModel>> fetchingCurrentUserDetails()  {
+  Stream<List<UserModel>> fetchingCurrentUserDetails() {
     // get the current user ID
     final String currentUserID = _auth.currentUser!.uid;
 
@@ -63,7 +63,7 @@ class FirebaseFireStoreMethods {
     try {
       // Fetch all users where isOnline is not false
       return users.snapshots().map((snapshot) {
-        return snapshot.docs.map((doc) => UserModel.fromJson(doc.data() as Map<String, dynamic>)).toList();
+        return snapshot.docs.map((doc) => UserModel.fromJson(doc.data() as Map<String, dynamic>)).where((user) => user.userID == currentUserID).toList();
       });
     } catch (error) {
       throw error.toString();

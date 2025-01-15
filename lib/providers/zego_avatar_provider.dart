@@ -5,6 +5,5 @@ class ZegoAvatarProvider extends ChangeNotifier {
 
   void updateAvatarImageUrl({required String imageURL}) {
     imageUrl = imageURL;
-    notifyListeners();
   }
 }

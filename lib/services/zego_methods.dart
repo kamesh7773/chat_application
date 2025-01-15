@@ -1,7 +1,9 @@
 // Package imports:
-
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chat_application/main.dart';
+import 'package:chat_application/models/user_model.dart';
 import 'package:chat_application/providers/zego_avatar_provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,6 +48,26 @@ class ZegoMethods {
           enabled: true,
         ),
       ),
+      invitationEvents: ZegoUIKitPrebuiltCallInvitationEvents(
+        onIncomingCallReceived: (callID, caller, callType, callees, customData) async {
+          // get the current user ID
+          final String currentUserID = caller.id;
+
+          // get the user collection
+          final CollectionReference users = FirebaseFirestore.instance.collection("users");
+
+          try {
+            // get the current user document
+            final DocumentSnapshot userDocument = await users.doc(currentUserID).get();
+            // convert the document data into UserModel
+            final UserModel user = UserModel.fromJson(userDocument.data() as Map<String, dynamic>);
+
+            navigatorKey.currentContext!.read<ZegoAvatarProvider>().updateAvatarImageUrl(imageURL: user.imageUrl);
+          } catch (error) {
+            throw error.toString();
+          }
+        },
+      ),
       requireConfig: (ZegoCallInvitationData data) {
         final config = (data.invitees.length > 1)
             ? ZegoCallInvitationType.videoCall == data.type
@@ -61,7 +83,7 @@ class ZegoMethods {
               selector: (context, data) => data.imageUrl,
               builder: (context, imageUrl, child) {
                 return CachedNetworkImage(
-                  imageUrl: imageUrl ?? 'https://robohash.org/${user?.id}.png',
+                  imageUrl: imageUrl ?? data.customData,
                   imageBuilder: (context, imageProvider) => Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
@@ -78,6 +100,7 @@ class ZegoMethods {
         };
 
         /// support minimizing, show minimizing button
+        config.bottomMenuBar.hideByClick = false;
         config.topMenuBar.isVisible = true;
         config.topMenuBar.buttons.insert(0, ZegoCallMenuBarButtonName.minimizingButton);
         config.topMenuBar.buttons.insert(1, ZegoCallMenuBarButtonName.soundEffectButton);

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_application/providers/zego_avatar_provider.dart';
 import 'package:chat_application/routes/rotues_names.dart';
-import 'package:chat_application/services/zego_methods.dart';
 import 'package:chat_application/widgets/send_call_button.dart';
 
 import '../../models/message_model.dart';
@@ -234,6 +233,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     isVideoCall: false,
                     userId: widget.userID,
                     userName: widget.name,
+                    imageUrl: widget.imageUrl,
                     icon: const Icon(
                       Icons.call,
                       color: Colors.white,
@@ -244,6 +244,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     isVideoCall: true,
                     userId: widget.userID,
                     userName: widget.name,
+                    imageUrl: widget.imageUrl,
                     icon: const Icon(
                       Icons.videocam_sharp,
                       color: Colors.white,

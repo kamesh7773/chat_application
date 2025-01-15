@@ -1,5 +1,3 @@
-import 'package:chat_application/pages/video%20&%20audio%20pages/audio_and_video_page.dart';
-
 import '../pages/auth%20pages/forgot_page.dart';
 import '../pages/auth%20pages/otp_page.dart';
 import '../pages/auth%20pages/sign_in_page.dart';
@@ -108,18 +106,6 @@ class Routes {
       case RoutesNames.profilePage:
         return MaterialPageRoute(
           builder: (context) => const ProfilePage(),
-        );
-
-      //! Call Screen Page.
-      case RoutesNames.audioAndVideoPage:
-        // Retriving Data.
-        final args = settings.arguments as Map<String, dynamic>;
-
-        return MaterialPageRoute(
-          builder: (context) => AudioAndVideoPage(
-            userName: args["userName"],
-            callID: args["callID"],
-          ),
         );
 
       default:

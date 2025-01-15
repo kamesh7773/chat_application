@@ -22,15 +22,15 @@ class _PeoplePageState extends State<PeoplePage> {
           //! AppBar
           Container(
             width: double.infinity,
-            color: Color.fromARGB(255, 0, 191, 108),
+            color: const Color.fromARGB(255, 0, 191, 108),
             child: Column(
               children: [
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
                         "People",
                         style: TextStyle(
@@ -49,7 +49,7 @@ class _PeoplePageState extends State<PeoplePage> {
                           arguments: "People",
                         );
                       },
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.search,
                         color: Colors.white,
                         size: 26,
@@ -57,7 +57,7 @@ class _PeoplePageState extends State<PeoplePage> {
                     ),
                   ],
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
               ],
             ),
           ),
@@ -68,7 +68,7 @@ class _PeoplePageState extends State<PeoplePage> {
               builder: (context, snapshot) {
                 // If snapshot is still loading then show CircularProgressIndicator.
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }
@@ -112,14 +112,14 @@ class _PeoplePageState extends State<PeoplePage> {
                                         width: 13,
                                         height: 13,
                                         decoration: BoxDecoration(
-                                          color: Color.fromARGB(255, 0, 191, 108),
+                                          color: const Color.fromARGB(255, 0, 191, 108),
                                           shape: BoxShape.circle,
                                           border: Border.all(color: Colors.white, width: 2),
                                         ),
                                       ),
                                     )
                                   // else we show SizedBox().
-                                  : SizedBox(),
+                                  : const SizedBox(),
                             ],
                           ),
                           title: Text(user.name),
@@ -127,9 +127,9 @@ class _PeoplePageState extends State<PeoplePage> {
                             user.email,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 14,
-                              color: const Color.fromARGB(255, 116, 114, 114),
+                              color: Color.fromARGB(255, 116, 114, 114),
                             ),
                           ),
                         ),
@@ -140,7 +140,7 @@ class _PeoplePageState extends State<PeoplePage> {
 
                 // else condiation
                 else {
-                  return Center(
+                  return const Center(
                     child: Text("Else Condition"),
                   );
                 }

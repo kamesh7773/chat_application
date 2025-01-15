@@ -1,0 +1,30 @@
+[
+  {
+    "name": "name",
+    "email": "email",
+    "imageUrl": "imageUrl",
+    "isOnline": "isOnline",
+    "lastSeen": "lastSeen",
+    "lastMessageInfo": {
+      "isSeen": false,
+      "lastMessage": [
+        {
+          "msg": "",
+          "timeStamp": "",
+          "senderID": ""
+        }
+      ]
+    },
+    "provider": "provider",
+    "userID": "userID",
+    "callLogs": [
+      {
+        "userName": "",
+        "imageUrl": "",
+        "timeStamp": "",
+        "callType": "",
+        "inComing": true
+      }
+    ]
+  }
+]

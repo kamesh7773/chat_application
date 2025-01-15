@@ -17,6 +17,7 @@ class UserModel {
   List<UnSeenMessage>? unSeenMessages;
   String provider;
   String userID;
+  List<CallLog>? callLogs;
 
   UserModel({
     required this.name,
@@ -29,6 +30,7 @@ class UserModel {
     this.unSeenMessages,
     required this.provider,
     required this.userID,
+    required this.callLogs,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
@@ -42,6 +44,7 @@ class UserModel {
         unSeenMessages: json["unSeenMessages"] == null ? null : List<UnSeenMessage>.from(json["unSeenMessages"].map((x) => UnSeenMessage.fromJson(x))),
         provider: json["provider"] ?? '',
         userID: json["userID"] ?? '',
+        callLogs: json["callLogs"] == null ? null : List<CallLog>.from(json["callLogs"].map((x) => CallLog.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -55,6 +58,39 @@ class UserModel {
         "unSeenMessages": unSeenMessages == null ? null : List<dynamic>.from(unSeenMessages!.map((x) => x.toJson())),
         "provider": provider,
         "userID": userID,
+        "callLogs": callLogs == null ? null : List<dynamic>.from(callLogs!.map((x) => x.toJson())),
+      };
+}
+
+class CallLog {
+  String userName;
+  String imageUrl;
+  Timestamp timeStamp;
+  bool isVideoCall;
+  bool isInComing;
+
+  CallLog({
+    required this.userName,
+    required this.imageUrl,
+    required this.timeStamp,
+    required this.isVideoCall,
+    required this.isInComing,
+  });
+
+  factory CallLog.fromJson(Map<String, dynamic> json) => CallLog(
+        userName: json["userName"],
+        imageUrl: json["imageUrl"],
+        timeStamp: json["timeStamp"],
+        isVideoCall: json["isVideoCall"],
+        isInComing: json["isInComing"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "userName": userName,
+        "imageUrl": imageUrl,
+        "timeStamp": timeStamp,
+        "isVideoCall": isVideoCall,
+        "isInComing": isInComing,
       };
 }
 

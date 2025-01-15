@@ -23,15 +23,15 @@ class _ProfilePageState extends State<ProfilePage> {
             //! AppBar
             Container(
               width: double.infinity,
-              color: Color.fromARGB(255, 0, 191, 108),
-              child: Column(
+              color: const Color.fromARGB(255, 0, 191, 108),
+              child: const Column(
                 children: [
                   SizedBox(height: 50),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
                           "Profile",
                           style: TextStyle(
@@ -48,12 +48,12 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             //! User Chat List
-            FutureBuilder<UserModel>(
-              future: _firebaseFireStoreMethods.fetchingCurrentUserDetails(),
+            StreamBuilder<UserModel>(
+              stream: _firebaseFireStoreMethods.fetchingCurrentUserDetails(),
               builder: (context, snapshot) {
                 // If snapshot is still loading then show CircularProgressIndicator.
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return LinearProgressIndicator();
+                  return const LinearProgressIndicator();
                 }
 
                 // If snapshot has error then show error message.
@@ -68,7 +68,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   final UserModel user = snapshot.data!;
                   return Column(
                     children: [
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                       //! Profile Image
                       Stack(
                         children: [
@@ -76,7 +76,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: Color.fromARGB(255, 0, 191, 108),
+                                color: const Color.fromARGB(255, 0, 191, 108),
                                 width: 2,
                               ),
                             ),
@@ -105,7 +105,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 shape: BoxShape.circle,
                                 border: Border.all(color: Colors.green, width: 2),
                               ),
-                              child: Icon(
+                              child: const Icon(
                                 Icons.camera_alt_outlined,
                                 color: Colors.green,
                                 size: 21,
@@ -114,45 +114,45 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       //! Name Widget
                       Text(
                         user.name,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 19,
                         ),
                       ),
-                      SizedBox(height: 12),
+                      const SizedBox(height: 12),
                       //! Edit Profile Button
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.zero,
-                          backgroundColor: Color.fromARGB(255, 0, 191, 108),
+                          backgroundColor: const Color.fromARGB(255, 0, 191, 108),
                           foregroundColor: Colors.white,
-                          minimumSize: Size(135, 36),
+                          minimumSize: const Size(135, 36),
                         ),
                         onPressed: () {},
-                        child: Text(
+                        child: const Text(
                           "Edit Profile",
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
-                      SizedBox(height: 30),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      const SizedBox(height: 30),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0),
                         child: Divider(
                           thickness: 0.5,
                         ),
                       ),
-                      SizedBox(height: 30),
+                      const SizedBox(height: 30),
                       //! User ID Line
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            const Text(
                               "User ID",
                               style: TextStyle(
                                 fontSize: 18,
@@ -160,8 +160,8 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                             Text(
-                              user.userID,
-                              style: TextStyle(
+                              user.userID.substring(0, 8),
+                              style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w500,
                               ),
@@ -169,14 +169,14 @@ class _ProfilePageState extends State<ProfilePage> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                       //! E-mail ID Line
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            const Text(
                               "E-mail ID",
                               style: TextStyle(
                                 fontSize: 18,
@@ -184,17 +184,17 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             Text(
                               user.email,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 18,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                       //! Location Line
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 10.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -213,14 +213,14 @@ class _ProfilePageState extends State<ProfilePage> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                       //! Provider Line
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
+                            const Text(
                               "Provider",
                               style: TextStyle(
                                 fontSize: 18,
@@ -228,35 +228,35 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             Text(
                               user.provider,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 18,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(height: 30),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      const SizedBox(height: 30),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0),
                         child: Divider(
                           thickness: 0.5,
                         ),
                       ),
-                      SizedBox(height: 90),
+                      const SizedBox(height: 90),
                       //! Logout Button.
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Row(
                           children: [
-                            Text(
+                            const Text(
                               "Joined",
                               style: TextStyle(
-                                color: const Color.fromARGB(255, 107, 105, 105),
+                                color: Color.fromARGB(255, 107, 105, 105),
                                 fontSize: 14,
                               ),
                             ),
-                            SizedBox(width: 6),
-                            Text(
+                            const SizedBox(width: 6),
+                            const Text(
                               "04 March 2024",
                               style: TextStyle(
                                 color: Colors.black,
@@ -264,18 +264,18 @@ class _ProfilePageState extends State<ProfilePage> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Spacer(flex: 1),
+                            const Spacer(flex: 1),
                             ElevatedButton(
                               onPressed: () {
                                 FirebaseAuthMethods.singOut(context: context);
                               },
                               style: ElevatedButton.styleFrom(
                                 padding: EdgeInsets.zero,
-                                foregroundColor: Color.fromARGB(255, 0, 191, 108),
-                                backgroundColor: Color.fromARGB(255, 225, 247, 237),
-                                minimumSize: Size(80, 36),
+                                foregroundColor: const Color.fromARGB(255, 0, 191, 108),
+                                backgroundColor: const Color.fromARGB(255, 225, 247, 237),
+                                minimumSize: const Size(80, 36),
                               ),
-                              child: Text(
+                              child: const Text(
                                 "Logout",
                                 style: TextStyle(
                                   fontSize: 16,
@@ -291,7 +291,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 }
                 // else condiation
                 else {
-                  return Center(
+                  return const Center(
                     child: Text("Else Condition"),
                   );
                 }

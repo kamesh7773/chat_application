@@ -52,11 +52,29 @@ class ChatAppTheme {
     //! ColorScheme Theme
     colorSchemeSeed: const Color.fromARGB(255, 2, 239, 159),
 
+    //! textTheme Theme
+    textTheme: GoogleFonts.latoTextTheme(const TextTheme(
+      bodyLarge: TextStyle(color: Colors.white), // Set text color for dark theme
+      bodyMedium: TextStyle(color: Colors.white),
+      bodySmall: TextStyle(color: Colors.white),
+    )),
+    textSelectionTheme: const TextSelectionThemeData(
+      cursorColor: Color.fromARGB(255, 2, 239, 159),
+    ),
+
     //! Textfromfeild Theme
     inputDecorationTheme: const InputDecorationTheme(
-      //
       filled: true,
-      fillColor: Color.fromARGB(255, 59, 59, 85),
+      fillColor: Color.fromARGB(255, 46, 47, 69),
+    ),
+
+    //! Action Chip Theme
+    chipTheme: ChipThemeData(
+      backgroundColor: Colors.white,
+      color: WidgetStateProperty.all<Color?>(Colors.white),
+      labelStyle: const TextStyle(
+        color: Colors.black,
+      ),
     ),
   );
 }

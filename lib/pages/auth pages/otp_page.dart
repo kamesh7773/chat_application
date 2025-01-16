@@ -107,7 +107,8 @@ class _OtpPageState extends State<OtpPage> {
             children: [
               //! App Logo
               Image.asset(
-                "assets/images/App Logo.png",
+                MediaQuery.of(context).platformBrightness == Brightness.light ? "assets/logo/Logo_light_theme.png" : "assets/logo/Logo_dark_theme.png",
+                height: 120,
               ),
               const SizedBox(height: 30),
               const Text(
@@ -117,14 +118,14 @@ class _OtpPageState extends State<OtpPage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.all(8.0),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
                 child: Text(
                   "Please enter the code sent to your email address.",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 116, 115, 115),
+                    color: MediaQuery.of(context).platformBrightness == Brightness.light ? const Color.fromARGB(255, 104, 101, 101) : const Color.fromARGB(255, 216, 204, 204),
                   ),
                 ),
               ),
@@ -155,7 +156,7 @@ class _OtpPageState extends State<OtpPage> {
                     borderRadius: BorderRadius.all(Radius.circular(8)),
                     color: Color.fromARGB(184, 217, 250, 250),
                   ),
-                  textStyle: TextStyle(fontSize: 24),
+                  textStyle: TextStyle(fontSize: 24, color: Colors.black),
                 ),
               ),
               const SizedBox(height: 40),
@@ -176,7 +177,7 @@ class _OtpPageState extends State<OtpPage> {
                         resentOTP();
                       }
                     },
-                    child: Text(
+                    child: const Text(
                       " Resend code",
                       style: TextStyle(
                         color: Color.fromARGB(255, 2, 239, 159),

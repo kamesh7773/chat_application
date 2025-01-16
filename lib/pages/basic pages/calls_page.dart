@@ -112,9 +112,9 @@ class _CallsPageState extends State<CallsPage> {
                                 DateTimeCalculatorForUnseenmsg.getLastActiveTime(lastSeen: user.timeStamp.toDate()),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
-                                  color: Color.fromARGB(255, 116, 114, 114),
+                                  color: MediaQuery.of(context).platformBrightness == Brightness.light ? const Color.fromARGB(255, 104, 101, 101) : const Color.fromARGB(255, 160, 153, 153),
                                 ),
                               ),
                             ],

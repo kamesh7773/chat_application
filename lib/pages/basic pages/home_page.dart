@@ -46,9 +46,7 @@ class _HomePageState extends State<HomePage> {
                       child: Text(
                         "Chats",
                         style: TextStyle(
-                          color: Colors.white,
                           fontSize: 22,
-                          fontWeight: FontWeight.w100,
                         ),
                       ),
                     ),
@@ -106,7 +104,6 @@ class _HomePageState extends State<HomePage> {
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
-                              color: Colors.white,
                             ),
                           ),
                           backgroundColor: const Color.fromARGB(255, 0, 191, 108),
@@ -226,7 +223,6 @@ class _HomePageState extends State<HomePage> {
                                     style: const TextStyle(
                                       fontWeight: FontWeight.normal,
                                       fontSize: 15,
-                                      color: Colors.black,
                                     ),
                                   );
                                 },
@@ -243,7 +239,6 @@ class _HomePageState extends State<HomePage> {
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 15,
-                                      color: Colors.black,
                                     ),
                                   );
                                 },
@@ -254,9 +249,9 @@ class _HomePageState extends State<HomePage> {
                                 padding: const EdgeInsets.only(left: 10),
                                 child: Text(
                                   DateTimeCalculatorForUsers.getLastActiveTime(lastSeen: user.lastSeen.toDate(), isOnline: user.isOnline),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 12,
-                                    color: Color.fromARGB(255, 0, 0, 0),
+                                    color: MediaQuery.of(context).platformBrightness == Brightness.light ? const Color.fromARGB(255, 0, 0, 0) : const Color.fromARGB(255, 216, 204, 204),
                                   ),
                                 ),
                               )

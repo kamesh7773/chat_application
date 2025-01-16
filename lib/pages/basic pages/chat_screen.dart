@@ -4,7 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_application/providers/zego_avatar_provider.dart';
 import 'package:chat_application/routes/rotues_names.dart';
 import 'package:chat_application/widgets/send_call_button.dart';
-import 'package:colored_print/colored_print.dart';
 
 import '../../models/message_model.dart';
 import '../../providers/online_offline_status_provider.dart';
@@ -73,7 +72,6 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
 
     context.read<ZegoAvatarProvider>().updateAvatarImageUrl(imageURL: widget.imageUrl);
-    // ZegoMethods.onUserLogin();
 
     _messageController = TextEditingController();
     firebaseFireStoreMethods.isInsideChatRoom(status: true);
@@ -220,8 +218,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       Consumer<OnlineOfflineStatusProvider>(builder: (context, value, child) {
                         return Text(
                           DateTimeCalculatorForUsers.getLastActiveTime(isOnline: value.isOnline, lastSeen: value.userLastSeen.toDate()),
-                          style: const TextStyle(
-                            color: Color.fromARGB(255, 226, 221, 221),
+                          style: TextStyle(
+                            color: MediaQuery.of(context).platformBrightness == Brightness.light ? const Color.fromARGB(255, 226, 221, 221) : Colors.white,
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
@@ -336,92 +334,93 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
 
             //! Textfeild section.
-            Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: InkWell(
-                    onTap: () {},
-                    child: const Icon(
-                      Icons.mic,
-                      color: Color.fromARGB(255, 0, 191, 108),
-                      size: 28,
+            Padding(
+              padding: const EdgeInsets.only(top: 4.0),
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: InkWell(
+                      onTap: () {},
+                      child: const Icon(
+                        Icons.mic,
+                        color: Color.fromARGB(255, 0, 191, 108),
+                        size: 28,
+                      ),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: TextFormField(
-                    onChanged: (value) {
-                      onTypingStarted();
-                    },
-                    controller: _messageController,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: const Color.fromARGB(255, 225, 247, 237),
-                      hintText: "Type message",
-                      prefix: const SizedBox(width: 10),
-                      suffixIcon: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          InkWell(
-                            onTap: () {},
-                            child: const Icon(
-                              Icons.attach_file,
-                              color: Color.fromARGB(255, 0, 191, 108),
-                              size: 26,
+                  Expanded(
+                    child: TextFormField(
+                      onChanged: (value) {
+                        onTypingStarted();
+                      },
+                      controller: _messageController,
+                      decoration: InputDecoration(
+                        hintText: "Type message",
+                        prefix: const SizedBox(width: 10),
+                        suffixIcon: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            InkWell(
+                              onTap: () {},
+                              child: const Icon(
+                                Icons.attach_file,
+                                color: Color.fromARGB(255, 0, 191, 108),
+                                size: 26,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 10),
-                          InkWell(
-                            onTap: () {},
-                            child: const Icon(
-                              Icons.camera_alt_outlined,
-                              color: Color.fromARGB(255, 0, 191, 108),
-                              size: 26,
+                            const SizedBox(width: 10),
+                            InkWell(
+                              onTap: () {},
+                              child: const Icon(
+                                Icons.camera_alt_outlined,
+                                color: Color.fromARGB(255, 0, 191, 108),
+                                size: 26,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 14),
-                        ],
-                      ),
-                      hintStyle: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      enabledBorder: borderStyle,
-                      focusedBorder: borderStyle,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                StatefulBuilder(
-                  builder: (context, mySetState) {
-                    // Add a listener to the TextEditingController to track changes in the text field
-                    _messageController.addListener(() {
-                      // Use `mySetState` to rebuild the widget inside the `StatefulBuilder`
-                      mySetState(() {});
-                    });
-
-                    // Check if the text is empty then we show SizedBox Widget.
-                    if (_messageController.text.isEmpty) {
-                      return const SizedBox(); // Hide the icon when text is empty
-                    }
-                    // else the text is not empty then we Send Text Icon Widget.
-                    else {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 10),
-                        child: InkWell(
-                          onTap: sendMessage,
-                          child: const Icon(
-                            Icons.send,
-                            color: Color.fromARGB(255, 0, 191, 108),
-                            size: 32,
-                          ),
+                            const SizedBox(width: 14),
+                          ],
                         ),
-                      );
-                    }
-                  },
-                ),
-              ],
+                        hintStyle: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        enabledBorder: borderStyle,
+                        focusedBorder: borderStyle,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  StatefulBuilder(
+                    builder: (context, mySetState) {
+                      // Add a listener to the TextEditingController to track changes in the text field
+                      _messageController.addListener(() {
+                        // Use `mySetState` to rebuild the widget inside the `StatefulBuilder`
+                        mySetState(() {});
+                      });
+
+                      // Check if the text is empty then we show SizedBox Widget.
+                      if (_messageController.text.isEmpty) {
+                        return const SizedBox(); // Hide the icon when text is empty
+                      }
+                      // else the text is not empty then we Send Text Icon Widget.
+                      else {
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: InkWell(
+                            onTap: sendMessage,
+                            child: const Icon(
+                              Icons.send,
+                              color: Color.fromARGB(255, 0, 191, 108),
+                              size: 32,
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 16),
           ],

@@ -45,14 +45,15 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              SizedBox(height: 60),
+              const SizedBox(height: 60),
               //! App Logo
               Image.asset(
-                "assets/images/App Logo.png",
+                MediaQuery.of(context).platformBrightness == Brightness.light ? "assets/logo/Logo_light_theme.png" : "assets/logo/Logo_dark_theme.png",
+                height: 120,
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 60),
               //! Text
-              Text(
+              const Text(
                 "Forgot Password",
                 style: TextStyle(
                   fontSize: 26,
@@ -66,6 +67,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 13,
+                    color: MediaQuery.of(context).platformBrightness == Brightness.light ? const Color.fromARGB(255, 104, 101, 101) : const Color.fromARGB(255, 216, 204, 204),
                   ),
                 ),
               ),

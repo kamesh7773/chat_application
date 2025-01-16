@@ -76,12 +76,13 @@ class _BottomNavigationBarPageState extends State<BottomNavigationBarPage> with 
       body: pages[_page],
       bottomNavigationBar: Theme(
         data: ThemeData(
-          splashColor: Colors.white,
-          highlightColor: Colors.white,
+          splashColor: MediaQuery.of(context).platformBrightness == Brightness.light ? Colors.white : const Color.fromARGB(255, 98, 96, 96),
+          highlightColor: Colors.transparent,
           applyElevationOverlayColor: true,
         ),
         child: BottomNavigationBar(
-          selectedItemColor: Color.fromARGB(255, 0, 191, 108),
+          backgroundColor: MediaQuery.of(context).platformBrightness == Brightness.light ? Colors.white : const Color.fromARGB(255, 29, 29, 53),
+          selectedItemColor: const Color.fromARGB(255, 0, 191, 108),
           unselectedItemColor: Colors.grey,
           selectedLabelStyle: const TextStyle(fontSize: 11),
           unselectedLabelStyle: const TextStyle(fontSize: 11),
@@ -92,7 +93,7 @@ class _BottomNavigationBarPageState extends State<BottomNavigationBarPage> with 
           currentIndex: _page,
           items: [
             // Chats
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(
                 Icons.chat_bubble,
                 size: 21,
@@ -100,7 +101,7 @@ class _BottomNavigationBarPageState extends State<BottomNavigationBarPage> with 
               label: "Chats",
             ),
             // People
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(
                 Icons.people,
                 size: 24,
@@ -108,7 +109,7 @@ class _BottomNavigationBarPageState extends State<BottomNavigationBarPage> with 
               label: "People",
             ),
             // Calls
-            BottomNavigationBarItem(
+            const BottomNavigationBarItem(
               icon: Icon(
                 Icons.call,
                 size: 24,

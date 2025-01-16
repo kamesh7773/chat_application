@@ -34,7 +34,6 @@ class _PeoplePageState extends State<PeoplePage> {
                       child: Text(
                         "People",
                         style: TextStyle(
-                          color: Colors.white,
                           fontSize: 22,
                           fontWeight: FontWeight.w100,
                         ),
@@ -127,9 +126,9 @@ class _PeoplePageState extends State<PeoplePage> {
                             user.email,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 14,
-                              color: Color.fromARGB(255, 116, 114, 114),
+                              color: MediaQuery.of(context).platformBrightness == Brightness.light ? const Color.fromARGB(255, 104, 101, 101) : const Color.fromARGB(255, 160, 153, 153),
                             ),
                           ),
                         ),

@@ -57,16 +57,21 @@ class _SignInPageState extends State<SignInPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               //! App Logo
-              Image.asset("assets/logo/Logo_light_theme.svg"),
-              const SizedBox(height: 30),
+              Image.asset(
+                MediaQuery.of(context).platformBrightness == Brightness.light ? "assets/logo/Logo_light_theme.png" : "assets/logo/Logo_dark_theme.png",
+                height: 120,
+              ),
+              const SizedBox(height: 50),
               //! Text
-              const Text(
+              Text(
                 "Sign In",
                 style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
+                  color: MediaQuery.of(context).platformBrightness == Brightness.light ? Colors.black : Colors.white,
                 ),
               ),
+              const SizedBox(height: 10),
               //! Textfeilds
               Padding(
                 padding: const EdgeInsets.symmetric(
@@ -119,16 +124,21 @@ class _SignInPageState extends State<SignInPage> {
                 onTap: () {
                   Navigator.of(context).pushNamed(RoutesNames.forgotPasswordPage);
                 },
-                child: const Text(
+                child: Text(
                   "Forgot password?",
                   style: TextStyle(
-                    color: Color.fromARGB(255, 104, 101, 101),
+                    color: MediaQuery.of(context).platformBrightness == Brightness.light ? const Color.fromARGB(255, 104, 101, 101) : const Color.fromARGB(255, 216, 204, 204),
                   ),
                 ),
               ),
               const SizedBox(height: 26),
 
-              const Text("Or continue with"),
+              Text(
+                "Or continue with",
+                style: TextStyle(
+                  color: MediaQuery.of(context).platformBrightness == Brightness.light ? const Color.fromARGB(255, 104, 101, 101) : const Color.fromARGB(255, 216, 204, 204),
+                ),
+              ),
 
               const SizedBox(height: 26),
 
@@ -140,54 +150,86 @@ class _SignInPageState extends State<SignInPage> {
                     onTap: () {
                       FirebaseAuthMethods.signInWithGoogle(context: context);
                     },
-                    child: Card(
-                      color: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(7),
-                      ),
-                      elevation: 8,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(7),
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                          child: Padding(
-                            padding: const EdgeInsets.all(7),
-                            child: Image.asset(
-                              "assets/images/Google_logo.png",
-                              height: 40,
-                              width: 40,
+                    child: MediaQuery.of(context).platformBrightness == Brightness.light
+                        ? Card(
+                            color: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(7),
+                            ),
+                            elevation: 8,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(7),
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(7),
+                                  child: Image.asset(
+                                    "assets/images/Google_logo.png",
+                                    height: 40,
+                                    width: 40,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        : Card(
+                            color: const Color.fromARGB(255, 235, 229, 229),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(7),
+                            ),
+                            elevation: 8,
+                            child: Padding(
+                              padding: const EdgeInsets.all(7),
+                              child: Image.asset(
+                                "assets/images/Google_logo.png",
+                                height: 40,
+                                width: 40,
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    ),
                   ),
                   const SizedBox(width: 20),
                   GestureDetector(
                     onTap: () {
-                      FirebaseAuthMethods.signInwithFacebook(context: context);
+                      FirebaseAuthMethods.signInWithGoogle(context: context);
                     },
-                    child: Card(
-                      color: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      elevation: 8,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8),
-                            child: Image.asset(
-                              "assets/images/Facebook_logo.png",
-                              height: 40,
-                              width: 40,
+                    child: MediaQuery.of(context).platformBrightness == Brightness.light
+                        ? Card(
+                            color: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(7),
+                            ),
+                            elevation: 8,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(7),
+                              child: BackdropFilter(
+                                filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(7),
+                                  child: Image.asset(
+                                    "assets/images/Facebook_logo.png",
+                                    height: 40,
+                                    width: 40,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          )
+                        : Card(
+                            color: const Color.fromARGB(255, 235, 229, 229),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(7),
+                            ),
+                            elevation: 8,
+                            child: Padding(
+                              padding: const EdgeInsets.all(7),
+                              child: Image.asset(
+                                "assets/images/Facebook_logo.png",
+                                height: 40,
+                                width: 40,
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                    ),
                   ),
                 ],
               ),
@@ -197,10 +239,10 @@ class _SignInPageState extends State<SignInPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     "Don't have an account?",
                     style: TextStyle(
-                      color: Color.fromARGB(255, 104, 101, 101),
+                      color: MediaQuery.of(context).platformBrightness == Brightness.light ? const Color.fromARGB(255, 104, 101, 101) : const Color.fromARGB(255, 216, 204, 204),
                     ),
                   ),
                   GestureDetector(

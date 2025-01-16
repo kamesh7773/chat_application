@@ -12,7 +12,7 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   // Border Style
   final OutlineInputBorder borderStyle = OutlineInputBorder(
-    borderSide: BorderSide(color: Colors.transparent),
+    borderSide: const BorderSide(color: Colors.transparent),
     borderRadius: BorderRadius.circular(50),
   );
 
@@ -25,10 +25,10 @@ class _SearchPageState extends State<SearchPage> {
           //! AppBar
           Container(
             width: double.infinity,
-            color: Color.fromARGB(255, 0, 191, 108),
+            color: const Color.fromARGB(255, 0, 191, 108),
             child: Column(
               children: [
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -40,7 +40,7 @@ class _SearchPageState extends State<SearchPage> {
                           //! Navigate user to Home Page.
                           Navigator.of(context).pop();
                         },
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.arrow_back_ios,
                           color: Colors.white,
                         ),
@@ -50,7 +50,7 @@ class _SearchPageState extends State<SearchPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: Text(
                         widget.heading,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 22,
                           fontWeight: FontWeight.w100,
@@ -63,14 +63,12 @@ class _SearchPageState extends State<SearchPage> {
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
                   child: TextField(
                     decoration: InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-                      filled: true,
-                      fillColor: Color.fromARGB(255, 225, 247, 237),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
                       hintText: "Search",
-                      prefixIcon: Icon(Icons.search),
-                      hintStyle: TextStyle(
+                      prefixIcon: const Icon(Icons.search),
+                      hintStyle: const TextStyle(
                         fontSize: 16,
-                        color: const Color.fromARGB(255, 114, 111, 111),
+                        color: Color.fromARGB(255, 114, 111, 111),
                         fontWeight: FontWeight.bold,
                       ),
                       enabledBorder: borderStyle,
@@ -78,19 +76,19 @@ class _SearchPageState extends State<SearchPage> {
                     ),
                   ),
                 ),
-                SizedBox(height: 18),
+                const SizedBox(height: 18),
               ],
             ),
           ),
           //! User Chat List
-          Padding(
-            padding: const EdgeInsets.only(left: 18, top: 20, bottom: 10),
+          const Padding(
+            padding: EdgeInsets.only(left: 18, top: 20, bottom: 10),
             child: Text(
               "Suggested",
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
-                color: const Color.fromARGB(255, 145, 141, 141),
+                color: Color.fromARGB(255, 145, 141, 141),
               ),
             ),
           ),
@@ -110,7 +108,7 @@ class _SearchPageState extends State<SearchPage> {
                       errorWidget: (context, url, error) => const Icon(Icons.error),
                     ),
                   ),
-                  title: Text("Kamesh Singh"),
+                  title: const Text("Kamesh Singh"),
                 );
               },
             ),

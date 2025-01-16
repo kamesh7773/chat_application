@@ -27,10 +27,14 @@ class Chatbubble extends StatelessWidget {
           children: [
             Flexible(
               child: Container(
-                margin: isCurrentUser ? EdgeInsets.only(right: 2, top: 2, bottom: 4, left: 100) : EdgeInsets.only(left: 10, top: 2, bottom: 4, right: 100),
-                padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                margin: isCurrentUser ? const EdgeInsets.only(right: 2, top: 2, bottom: 4, left: 100) : const EdgeInsets.only(left: 10, top: 2, bottom: 4, right: 100),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(
-                  color: isCurrentUser ? Color.fromARGB(255, 0, 191, 108) : Color.fromARGB(255, 225, 247, 237),
+                  color: isCurrentUser
+                      ? const Color.fromARGB(255, 0, 191, 108)
+                      : MediaQuery.of(context).platformBrightness == Brightness.light
+                          ? const Color.fromARGB(255, 225, 247, 237)
+                          : const Color.fromARGB(255, 45, 67, 83),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: isCurrentUser
@@ -41,17 +45,20 @@ class Chatbubble extends StatelessWidget {
                           Flexible(
                             child: SelectableText(
                               message,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: Colors.white,
                               ),
                             ),
                           ),
 
-                          SizedBox(width: 4), // Spacing between message and timestamp
+                          const SizedBox(width: 4), // Spacing between message and timestamp
                           Text(
                             DateFormat('hh:mm a').format(timestamp.toDate()),
-                            style: TextStyle(fontSize: 9, color: const Color.fromARGB(255, 249, 243, 243)),
+                            style: const TextStyle(
+                              fontSize: 9,
+                              color: Colors.white,
+                            ),
                           ),
                         ],
                       )
@@ -62,14 +69,17 @@ class Chatbubble extends StatelessWidget {
                           Flexible(
                             child: SelectableText(
                               message,
-                              style: TextStyle(fontSize: 14),
+                              style: const TextStyle(fontSize: 14),
                             ),
                           ),
 
-                          SizedBox(width: 4), // Spacing between message and timestamp
+                          const SizedBox(width: 4), // Spacing between message and timestamp
                           Text(
                             DateFormat('hh:mm a').format(timestamp.toDate()),
-                            style: TextStyle(fontSize: 9, color: const Color.fromARGB(255, 87, 87, 87)),
+                            style: TextStyle(
+                              fontSize: 9,
+                              color: MediaQuery.of(context).platformBrightness == Brightness.light ? const Color.fromARGB(255, 87, 87, 87) : const Color.fromARGB(255, 228, 219, 219),
+                            ),
                           ),
                         ],
                       ),
@@ -82,14 +92,14 @@ class Chatbubble extends StatelessWidget {
                         padding: const EdgeInsets.only(bottom: 15),
                         child: Icon(
                           Icons.check_circle,
-                          color: isMessageSeen ? Color.fromARGB(255, 0, 191, 108) : const Color.fromARGB(255, 123, 122, 122),
+                          color: isMessageSeen ? const Color.fromARGB(255, 0, 191, 108) : const Color.fromARGB(255, 123, 122, 122),
                           size: 16,
                         ),
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                     ],
                   )
-                : SizedBox(),
+                : const SizedBox(),
           ],
         ),
       ],

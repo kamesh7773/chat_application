@@ -35,7 +35,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: Text(
                           "Profile",
                           style: TextStyle(
-                            color: Colors.white,
                             fontSize: 22,
                             fontWeight: FontWeight.w100,
                           ),
@@ -139,10 +138,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       const SizedBox(height: 30),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: Divider(
-                          thickness: 0.5,
+                          thickness: 0.4,
+                          color: MediaQuery.of(context).platformBrightness == Brightness.light ? const Color.fromARGB(255, 104, 101, 101) : const Color.fromARGB(255, 160, 153, 153),
                         ),
                       ),
                       const SizedBox(height: 30),
@@ -236,10 +236,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       const SizedBox(height: 30),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: Divider(
-                          thickness: 0.5,
+                          thickness: 0.4,
+                          color: MediaQuery.of(context).platformBrightness == Brightness.light ? const Color.fromARGB(255, 104, 101, 101) : const Color.fromARGB(255, 160, 153, 153),
                         ),
                       ),
                       const SizedBox(height: 90),
@@ -248,10 +249,10 @@ class _ProfilePageState extends State<ProfilePage> {
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Row(
                           children: [
-                            const Text(
+                            Text(
                               "Joined",
                               style: TextStyle(
-                                color: Color.fromARGB(255, 107, 105, 105),
+                                color: MediaQuery.of(context).platformBrightness == Brightness.light ? const Color.fromARGB(255, 107, 105, 105) : Colors.white,
                                 fontSize: 14,
                               ),
                             ),

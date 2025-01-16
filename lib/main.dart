@@ -1,4 +1,5 @@
 import 'package:chat_application/providers/last_message_provider.dart';
+import 'package:chat_application/providers/theme_provider.dart';
 import 'package:chat_application/providers/zego_avatar_provider.dart';
 import 'package:chat_application/services/zego_methods.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
@@ -17,7 +18,6 @@ import 'package:provider/provider.dart';
 import 'routes/rotues_names.dart';
 import 'routes/routes.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 /// 1/5: define a navigator key
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -96,23 +96,23 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(
           create: (context) => ZegoAvatarProvider(),
         ),
-      ],
-      child: MaterialApp(
-        /// 3/5: register the navigator key to MaterialApp
-        navigatorKey: widget.navigatorKey,
-
-        debugShowCheckedModeBanner: false,
-        title: 'Chat Application',
-        theme: ThemeData(
-          //! defining Lato fonts Globally.
-          textTheme: GoogleFonts.latoTextTheme(),
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 0, 191, 108),
-          ),
-          useMaterial3: true,
+        ChangeNotifierProvider(
+          create: (context) => ThemeProvider("System"),
         ),
-        onGenerateRoute: Routes.generateRoute,
-        initialRoute: widget.isUserAuthenticated ? RoutesNames.bottomNavigationBar : RoutesNames.signInPage,
+      ],
+      child: Selector<ThemeProvider, ThemeData>(
+        selector: (context, data) => data.themeData,
+        builder: (context, value, child) {
+          return MaterialApp(
+            /// 3/5: register the navigator key to MaterialApp
+            navigatorKey: widget.navigatorKey,
+            debugShowCheckedModeBanner: false,
+            title: 'Chat Application',
+            theme: value,
+            onGenerateRoute: Routes.generateRoute,
+            initialRoute: widget.isUserAuthenticated ? RoutesNames.bottomNavigationBar : RoutesNames.signInPage,
+          );
+        },
       ),
     );
   }

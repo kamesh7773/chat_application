@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_application/models/user_model.dart';
 import 'package:chat_application/services/firebase_firestore_methods.dart';
 import 'package:chat_application/utils/date_time_calculator_for_unseenmsg.dart';
-import 'package:colored_print/colored_print.dart';
 import 'package:flutter/material.dart';
 
 class CallsPage extends StatefulWidget {
@@ -49,7 +48,7 @@ class _CallsPageState extends State<CallsPage> {
           ),
           //! User Chat List
           Expanded(
-            child: StreamBuilder<List<UserModel>>(
+            child: StreamBuilder<UserModel>(
               stream: _firebaseFireStoreMethods.fetchingCurrentUserDetails(),
               builder: (context, snapshot) {
                 // If snapshot is still loading then show CircularProgressIndicator.
@@ -68,16 +67,15 @@ class _CallsPageState extends State<CallsPage> {
 
                 if (snapshot.hasData) {
                   // Here we are converting the snapshot data into List<UserModel>.
-                  final List<UserModel> listofUser = snapshot.data!;
+                  final UserModel currentUserData = snapshot.data!;
 
                   return ListView.builder(
                     padding: const EdgeInsets.symmetric(vertical: 8),
-                    itemCount: listofUser.length,
+                    itemCount: currentUserData.callLogs!.length,
                     itemBuilder: (context, index) {
-                      final user = listofUser[index];
+                      final user = currentUserData.callLogs![index];
 
-                      if (user.callLogs == null) {
-                        ColoredPrint.warning("true");
+                      if (currentUserData.callLogs == null) {
                         return const SizedBox();
                       } else {
                         return ListTile(
@@ -88,30 +86,30 @@ class _CallsPageState extends State<CallsPage> {
                               fit: BoxFit.fitHeight,
                               width: 55,
                               height: 55,
-                              imageUrl: user.callLogs![index].imageUrl,
+                              imageUrl: user.imageUrl,
                               errorWidget: (context, url, error) => const Icon(Icons.error),
                             ),
                           ),
-                          title: const Text("Kamesh Singh"),
+                          title: Text(user.userName),
                           subtitle: Row(
                             children: [
-                              user.callLogs![index].isInComing
-                                  ? const Icon(
-                                      Icons.arrow_outward_sharp,
-                                      color: Color.fromARGB(255, 0, 191, 108),
-                                      size: 22,
-                                    )
-                                  : const RotatedBox(
+                              user.isInComing
+                                  ? const RotatedBox(
                                       quarterTurns: 50,
                                       child: Icon(
                                         Icons.arrow_outward_sharp,
                                         color: Colors.red,
                                         size: 22,
                                       ),
+                                    )
+                                  : const Icon(
+                                      Icons.arrow_outward_sharp,
+                                      color: Color.fromARGB(255, 0, 191, 108),
+                                      size: 22,
                                     ),
                               const SizedBox(width: 8),
                               Text(
-                                DateTimeCalculatorForUnseenmsg.getLastActiveTime(lastSeen: user.callLogs![index].timeStamp.toDate()),
+                                DateTimeCalculatorForUnseenmsg.getLastActiveTime(lastSeen: user.timeStamp.toDate()),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
@@ -123,7 +121,7 @@ class _CallsPageState extends State<CallsPage> {
                           ),
                           trailing: IconButton(
                             onPressed: () {},
-                            icon: user.callLogs![index].isVideoCall
+                            icon: user.isVideoCall
                                 ? const Icon(
                                     Icons.videocam_sharp,
                                     color: Color.fromARGB(255, 0, 191, 108),

@@ -5,7 +5,6 @@ import 'package:chat_application/models/user_model.dart';
 import 'package:chat_application/providers/zego_avatar_provider.dart';
 import 'package:chat_application/services/firebase_firestore_methods.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:colored_print/colored_print.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -80,6 +79,32 @@ class ZegoMethods {
               imageUrl: userModel.imageUrl,
               isVideoCall: callType == ZegoCallInvitationType.videoCall ? true : false,
               isInComing: true,
+            );
+          } catch (error) {
+            throw error.toString();
+          }
+        },
+        //! Method that fire when user diled any kind of call to other User (audio/video)
+        onOutgoingCallSent: (callID, caller, callType, callees, customData) async {
+          // get the current user ID
+          final String callerUserID = callees.first.id;
+
+          // get the user collection
+          final CollectionReference callerUserCollection = db.collection("users");
+
+          try {
+            // get the currentUser document
+            final DocumentSnapshot callerUserDocument = await callerUserCollection.doc(callerUserID).get();
+
+            // convert the document data into UserModel
+            final UserModel userModel = UserModel.fromJson(callerUserDocument.data() as Map<String, dynamic>);
+
+            // Updating Calllogs on the User Firebase Database.
+            firebaseFireStoreMethods.updateCallLogs(
+              userName: callees.first.name,
+              imageUrl: userModel.imageUrl,
+              isVideoCall: callType == ZegoCallInvitationType.videoCall ? true : false,
+              isInComing: false,
             );
           } catch (error) {
             throw error.toString();

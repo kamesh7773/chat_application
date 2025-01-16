@@ -48,7 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             //! User Chat List
-            StreamBuilder<List<UserModel>>(
+            StreamBuilder<UserModel>(
               stream: _firebaseFireStoreMethods.fetchingCurrentUserDetails(),
               builder: (context, snapshot) {
                 // If snapshot is still loading then show CircularProgressIndicator.
@@ -65,7 +65,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                 if (snapshot.hasData) {
                   // Here we are converting the snapshot data into List<UserModel>.
-                  final List<UserModel> user = snapshot.data!;
+                  final UserModel currentUser = snapshot.data!;
                   return Column(
                     children: [
                       const SizedBox(height: 40),
@@ -88,7 +88,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   fit: BoxFit.fitHeight,
                                   width: 100,
                                   height: 100,
-                                  imageUrl: user.first.imageUrl,
+                                  imageUrl: currentUser.imageUrl,
                                   errorWidget: (context, url, error) => const Icon(Icons.error),
                                 ),
                               ),
@@ -117,7 +117,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       const SizedBox(height: 4),
                       //! Name Widget
                       Text(
-                        user.first.name,
+                        currentUser.name,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 19,
@@ -160,7 +160,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                             Text(
-                              user.first.userID.substring(0, 8),
+                              currentUser.userID.substring(0, 8),
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w500,
@@ -183,7 +183,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                             Text(
-                              user.first.email,
+                              currentUser.email,
                               style: const TextStyle(
                                 fontSize: 18,
                               ),
@@ -227,7 +227,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                             Text(
-                              user.first.provider,
+                              currentUser.provider,
                               style: const TextStyle(
                                 fontSize: 18,
                               ),

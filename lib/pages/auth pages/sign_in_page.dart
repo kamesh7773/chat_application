@@ -57,12 +57,10 @@ class _SignInPageState extends State<SignInPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               //! App Logo
-              Image.asset(
-                "assets/images/App Logo.png",
-              ),
-              SizedBox(height: 30),
+              Image.asset("assets/logo/Logo_light_theme.svg"),
+              const SizedBox(height: 30),
               //! Text
-              Text(
+              const Text(
                 "Sign In",
                 style: TextStyle(
                   fontSize: 26,
@@ -84,7 +82,7 @@ class _SignInPageState extends State<SignInPage> {
                         hintText: "E-mail",
                         validator: FormValidator.emailValidator,
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       TextFeildWidget(
                         controller: _passwordControllar,
                         hintText: "Password",
@@ -98,7 +96,7 @@ class _SignInPageState extends State<SignInPage> {
                           },
                           icon: Icon(
                             _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
-                            color: Color.fromARGB(255, 2, 239, 159),
+                            color: const Color.fromARGB(255, 2, 239, 159),
                           ),
                         ),
                       ),
@@ -115,20 +113,20 @@ class _SignInPageState extends State<SignInPage> {
                   text: "Sign in",
                 ),
               ),
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
               //! Sign In Button
               InkWell(
                 onTap: () {
                   Navigator.of(context).pushNamed(RoutesNames.forgotPasswordPage);
                 },
-                child: Text(
+                child: const Text(
                   "Forgot password?",
                   style: TextStyle(
-                    color: const Color.fromARGB(255, 104, 101, 101),
+                    color: Color.fromARGB(255, 104, 101, 101),
                   ),
                 ),
               ),
-              SizedBox(height: 26),
+              const SizedBox(height: 26),
 
               const Text("Or continue with"),
 
@@ -199,20 +197,20 @@ class _SignInPageState extends State<SignInPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                     "Don't have an account?",
                     style: TextStyle(
-                      color: const Color.fromARGB(255, 104, 101, 101),
+                      color: Color.fromARGB(255, 104, 101, 101),
                     ),
                   ),
                   GestureDetector(
                     onTap: () {
                       Navigator.of(context).pushNamed(RoutesNames.signUpPage);
                     },
-                    child: Text(
+                    child: const Text(
                       " Sign up",
                       style: TextStyle(
-                        color: const Color.fromARGB(255, 2, 239, 159),
+                        color: Color.fromARGB(255, 2, 239, 159),
                         fontWeight: FontWeight.w700,
                       ),
                     ),

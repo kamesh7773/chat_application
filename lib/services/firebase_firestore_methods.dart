@@ -53,20 +53,26 @@ class FirebaseFireStoreMethods {
   }
 
   //! Method for fetching current User Details for Profile Page.
-  Stream<List<UserModel>> fetchingCurrentUserDetails() {
-    // get the current user ID
+  Stream<UserModel> fetchingCurrentUserDetails() {
+    // Get the current user ID
     final String currentUserID = _auth.currentUser!.uid;
 
-    // get the user collection
+    // Get the user collection
     final CollectionReference users = _db.collection("users");
 
     try {
-      // Fetch all users where isOnline is not false
-      return users.snapshots().map((snapshot) {
-        return snapshot.docs.map((doc) => UserModel.fromJson(doc.data() as Map<String, dynamic>)).where((user) => user.userID == currentUserID).toList();
+      // Fetch the current user's details as a Stream<UserModel>
+      return users.snapshots().asyncMap((snapshot) async {
+        // Find the matching user document
+        final doc = snapshot.docs.firstWhere(
+          (doc) => (doc.data() as Map<String, dynamic>)['userID'] == currentUserID,
+        );
+
+        // Return the UserModel for the current user
+        return UserModel.fromJson(doc.data() as Map<String, dynamic>);
       });
     } catch (error) {
-      throw error.toString();
+      throw Exception(error.toString());
     }
   }
 
@@ -326,7 +332,12 @@ class FirebaseFireStoreMethods {
   }
 
   //! Method that update the callLogs on user Collection.
-  Future<void> updateCallLogs({required String userName, required String imageUrl, required bool isVideoCall, required bool isInComing}) async {
+  Future<void> updateCallLogs({
+    required String userName,
+    required String imageUrl,
+    required bool isVideoCall,
+    required bool isInComing,
+  }) async {
     try {
       // Reference to the current user's document in the main collection
       final DocumentReference currentUserID = _db.collection("users").doc(_auth.currentUser!.uid);

@@ -25,7 +25,7 @@ class TextFeildWidget extends StatefulWidget {
 class TextFeildWidgetState extends State<TextFeildWidget> {
   // Border Style
   final OutlineInputBorder borderStyle = OutlineInputBorder(
-    borderSide: BorderSide(color: Colors.transparent),
+    borderSide: const BorderSide(color: Colors.transparent),
     borderRadius: BorderRadius.circular(50),
   );
 
@@ -37,12 +37,10 @@ class TextFeildWidgetState extends State<TextFeildWidget> {
       validator: widget.validator,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       decoration: InputDecoration(
-        filled: true,
-        fillColor: Color.fromARGB(255, 225, 247, 237),
         hintText: widget.hintText,
-        prefix: SizedBox(width: 10),
+        prefix: const SizedBox(width: 10),
         suffixIcon: widget.iconbutton,
-        hintStyle: TextStyle(
+        hintStyle: const TextStyle(
           fontWeight: FontWeight.bold,
         ),
         enabledBorder: borderStyle,

@@ -324,4 +324,28 @@ class FirebaseFireStoreMethods {
       throw error.toString();
     }
   }
+
+  //! Method that update the callLogs on user Collection.
+  Future<void> updateCallLogs({required String userName, required String imageUrl, required bool isVideoCall, required bool isInComing}) async {
+    try {
+      // Reference to the current user's document in the main collection
+      final DocumentReference currentUserID = _db.collection("users").doc(_auth.currentUser!.uid);
+
+      // Construct the new message map
+      Map<String, dynamic> callInfo = {
+        "userName": userName,
+        "imageUrl": imageUrl,
+        "isInComing": isInComing,
+        "isVideoCall": isVideoCall,
+        "timeStamp": DateTime.now(),
+      };
+
+      // Updating lastMessage feild at OtherUser "users" firestore collection.
+      await currentUserID.update({
+        "callLogs": FieldValue.arrayUnion([callInfo]),
+      });
+    } catch (error) {
+      throw error.toString();
+    }
+  }
 }

@@ -3,7 +3,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_application/main.dart';
 import 'package:chat_application/models/user_model.dart';
 import 'package:chat_application/providers/zego_avatar_provider.dart';
+import 'package:chat_application/services/firebase_firestore_methods.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:colored_print/colored_print.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,8 +15,13 @@ import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 class ZegoMethods {
   /// on user login
   static void onUserLogin() async {
+    // Variables related to Firebase instances
+    final FirebaseFirestore db = FirebaseFirestore.instance;
     // Fecting Current User Details from the Shared Preferences.
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+    // Instance of FirestoreMethod class
+    final FirebaseFireStoreMethods firebaseFireStoreMethods = FirebaseFireStoreMethods();
+
     final String? userID = prefs.getString('userID');
     final String? name = prefs.getString('name');
 
@@ -49,20 +56,31 @@ class ZegoMethods {
         ),
       ),
       invitationEvents: ZegoUIKitPrebuiltCallInvitationEvents(
+        //! Method that fire when user recive any kind of call (audio/video)
         onIncomingCallReceived: (callID, caller, callType, callees, customData) async {
           // get the current user ID
-          final String currentUserID = caller.id;
+          final String callerUserID = caller.id;
 
           // get the user collection
-          final CollectionReference users = FirebaseFirestore.instance.collection("users");
+          final CollectionReference callerUserCollection = db.collection("users");
 
           try {
-            // get the current user document
-            final DocumentSnapshot userDocument = await users.doc(currentUserID).get();
-            // convert the document data into UserModel
-            final UserModel user = UserModel.fromJson(userDocument.data() as Map<String, dynamic>);
+            // get the currentUser document
+            final DocumentSnapshot callerUserDocument = await callerUserCollection.doc(callerUserID).get();
 
-            navigatorKey.currentContext!.read<ZegoAvatarProvider>().updateAvatarImageUrl(imageURL: user.imageUrl);
+            // convert the document data into UserModel
+            final UserModel userModel = UserModel.fromJson(callerUserDocument.data() as Map<String, dynamic>);
+
+            // Updating Image Using Provider Method on Zego Method Avatar Image Url
+            navigatorKey.currentContext!.read<ZegoAvatarProvider>().updateAvatarImageUrl(imageURL: userModel.imageUrl);
+
+            // Updating Calllogs on the User Firebase Database.
+            firebaseFireStoreMethods.updateCallLogs(
+              userName: caller.name,
+              imageUrl: userModel.imageUrl,
+              isVideoCall: callType == ZegoCallInvitationType.videoCall ? true : false,
+              isInComing: true,
+            );
           } catch (error) {
             throw error.toString();
           }

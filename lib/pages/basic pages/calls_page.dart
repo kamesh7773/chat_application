@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_application/models/user_model.dart';
 import 'package:chat_application/services/firebase_firestore_methods.dart';
-import 'package:chat_application/utils/date_time_calculator_for_users.dart';
+import 'package:chat_application/utils/date_time_calculator_for_unseenmsg.dart';
 import 'package:colored_print/colored_print.dart';
 import 'package:flutter/material.dart';
 
@@ -95,14 +95,23 @@ class _CallsPageState extends State<CallsPage> {
                           title: const Text("Kamesh Singh"),
                           subtitle: Row(
                             children: [
-                              const Icon(
-                                Icons.arrow_outward_sharp,
-                                color: Color.fromARGB(255, 0, 191, 108),
-                                size: 22,
-                              ),
+                              user.callLogs![index].isInComing
+                                  ? const Icon(
+                                      Icons.arrow_outward_sharp,
+                                      color: Color.fromARGB(255, 0, 191, 108),
+                                      size: 22,
+                                    )
+                                  : const RotatedBox(
+                                      quarterTurns: 50,
+                                      child: Icon(
+                                        Icons.arrow_outward_sharp,
+                                        color: Colors.red,
+                                        size: 22,
+                                      ),
+                                    ),
                               const SizedBox(width: 8),
                               Text(
-                                DateTimeCalculatorForUsers.getLastActiveTime(lastSeen: user.callLogs![index].timeStamp.toDate(), isOnline: false),
+                                DateTimeCalculatorForUnseenmsg.getLastActiveTime(lastSeen: user.callLogs![index].timeStamp.toDate()),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
@@ -114,11 +123,17 @@ class _CallsPageState extends State<CallsPage> {
                           ),
                           trailing: IconButton(
                             onPressed: () {},
-                            icon: const Icon(
-                              Icons.videocam_sharp,
-                              color: Color.fromARGB(255, 0, 191, 108),
-                              size: 26,
-                            ),
+                            icon: user.callLogs![index].isVideoCall
+                                ? const Icon(
+                                    Icons.videocam_sharp,
+                                    color: Color.fromARGB(255, 0, 191, 108),
+                                    size: 26,
+                                  )
+                                : const Icon(
+                                    Icons.call,
+                                    color: Color.fromARGB(255, 0, 191, 108),
+                                    size: 26,
+                                  ),
                           ),
                         );
                       }

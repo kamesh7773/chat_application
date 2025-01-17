@@ -169,39 +169,40 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ),
                   Selector<OnlineOfflineStatusProvider, bool>(
-                      selector: (context, data) => data.isOnline,
-                      builder: (context, value, child) {
-                        return Stack(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(50),
-                              child: CachedNetworkImage(
-                                width: 46,
-                                height: 46,
-                                imageUrl: widget.imageUrl,
-                                errorWidget: (context, url, error) => const Icon(Icons.error),
-                              ),
+                    selector: (context, data) => data.isOnline,
+                    builder: (context, value, child) {
+                      return Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(50),
+                            child: CachedNetworkImage(
+                              width: 46,
+                              height: 46,
+                              imageUrl: widget.imageUrl,
+                              errorWidget: (context, url, error) => const Icon(Icons.error),
                             ),
-                            //! If User online then we show green dot.
-                            value
-                                ? Positioned(
-                                    bottom: 2,
-                                    right: 0.5,
-                                    child: Container(
-                                      width: 10,
-                                      height: 10,
-                                      decoration: BoxDecoration(
-                                        color: const Color.fromARGB(255, 0, 191, 108),
-                                        shape: BoxShape.circle,
-                                        border: Border.all(color: Colors.white, width: 2),
-                                      ),
+                          ),
+                          //! If User online then we show green dot.
+                          value
+                              ? Positioned(
+                                  bottom: 2,
+                                  right: 0.5,
+                                  child: Container(
+                                    width: 10,
+                                    height: 10,
+                                    decoration: BoxDecoration(
+                                      color: const Color.fromARGB(255, 0, 191, 108),
+                                      shape: BoxShape.circle,
+                                      border: Border.all(color: Colors.white, width: 2),
                                     ),
-                                  )
-                                // else we show SizedBox().
-                                : const SizedBox(),
-                          ],
-                        );
-                      }),
+                                  ),
+                                )
+                              // else we show SizedBox().
+                              : const SizedBox(),
+                        ],
+                      );
+                    },
+                  ),
                   const SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

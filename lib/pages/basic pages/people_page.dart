@@ -36,6 +36,7 @@ class _PeoplePageState extends State<PeoplePage> {
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w100,
+                          color: Colors.white,
                         ),
                       ),
                     ),

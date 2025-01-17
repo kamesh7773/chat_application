@@ -1,4 +1,3 @@
-import 'package:chat_application/theme/extension.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -11,24 +10,41 @@ class ChatAppTheme {
 
   static final ThemeData lightMode = ThemeData(
     brightness: Brightness.light,
-    fontFamily: "Lato",
-
-    //! Extension's
-    extensions: <ThemeExtension<dynamic>>[
-      MyColors.light,
-    ],
 
     //! Appbar Theme
-    appBarTheme: AppBarTheme(
-      backgroundColor: Colors.grey.shade300,
-      centerTitle: true,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Colors.white,
     ),
 
+    scaffoldBackgroundColor: Colors.white,
+
     //! ColorScheme Theme
-    colorScheme: const ColorScheme.light(),
+    colorSchemeSeed: const Color.fromARGB(255, 2, 239, 159),
 
     //! textTheme Theme
-    textTheme: GoogleFonts.latoTextTheme(),
+    textTheme: GoogleFonts.latoTextTheme(const TextTheme(
+      bodyLarge: TextStyle(color: Colors.black), // Set text color for dark theme
+      bodyMedium: TextStyle(color: Colors.black),
+      bodySmall: TextStyle(color: Colors.black),
+    )),
+    textSelectionTheme: const TextSelectionThemeData(
+      cursorColor: Color.fromARGB(255, 2, 239, 159),
+    ),
+
+    //! Textfromfeild Theme
+    inputDecorationTheme: const InputDecorationTheme(
+      filled: true,
+      fillColor: Color.fromARGB(255, 225, 247, 237),
+    ),
+
+    //! Action Chip Theme
+    chipTheme: ChipThemeData(
+      backgroundColor: Colors.white,
+      color: WidgetStateProperty.all<Color?>(Colors.white),
+      labelStyle: const TextStyle(
+        color: Colors.black,
+      ),
+    ),
   );
 
   //? ---------------
@@ -37,11 +53,6 @@ class ChatAppTheme {
 
   static final ThemeData darkMode = ThemeData(
     brightness: Brightness.dark,
-
-    //! Extension's
-    extensions: <ThemeExtension<dynamic>>[
-      MyColors.dark,
-    ],
 
     //! Appbar Theme
     appBarTheme: const AppBarTheme(

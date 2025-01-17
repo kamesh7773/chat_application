@@ -4,6 +4,7 @@ import 'package:chat_application/routes/rotues_names.dart';
 import 'package:chat_application/services/firebase_firestore_methods.dart';
 import 'package:colored_print/colored_print.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class SearchPage extends StatefulWidget {
   final String heading;
@@ -111,8 +112,11 @@ class _SearchPageState extends State<SearchPage> {
               builder: (context, snapshot) {
                 // If snapshot is still loading then show CircularProgressIndicator.
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
+                  return Center(
+                    child: LoadingAnimationWidget.progressiveDots(
+                      color: const Color.fromARGB(255, 0, 191, 108),
+                      size: 50,
+                    ),
                   );
                 }
 

@@ -47,6 +47,7 @@ class _HomePageState extends State<HomePage> {
                         "Chats",
                         style: TextStyle(
                           fontSize: 22,
+                          color: Colors.white,
                         ),
                       ),
                     ),

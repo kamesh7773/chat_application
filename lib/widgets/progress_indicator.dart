@@ -11,7 +11,7 @@ class ProgressIndicators {
           canPop: true, //! Set this to false once you debug your code.
           child: Center(
             child: LoadingAnimationWidget.progressiveDots(
-              color: Color.fromARGB(255, 0, 191, 108),
+              color: const Color.fromARGB(255, 0, 191, 108),
               size: 50,
             ),
           ),

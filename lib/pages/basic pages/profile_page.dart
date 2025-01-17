@@ -37,6 +37,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w100,
+                            color: Colors.white,
                           ),
                         ),
                       ),

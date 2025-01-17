@@ -1,4 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chat_application/models/user_model.dart';
+import 'package:chat_application/routes/rotues_names.dart';
+import 'package:chat_application/services/firebase_firestore_methods.dart';
+import 'package:colored_print/colored_print.dart';
 import 'package:flutter/material.dart';
 
 class SearchPage extends StatefulWidget {
@@ -10,6 +14,10 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  // varible declartion
+  String searchName = "";
+  final FirebaseFireStoreMethods _firebaseFireStoreMethods = FirebaseFireStoreMethods();
+
   // Border Style
   final OutlineInputBorder borderStyle = OutlineInputBorder(
     borderSide: const BorderSide(color: Colors.transparent),
@@ -61,7 +69,12 @@ class _SearchPageState extends State<SearchPage> {
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: TextField(
+                  child: TextFormField(
+                    onChanged: (value) {
+                      setState(() {
+                        searchName = value;
+                      });
+                    },
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
                       hintText: "Search",
@@ -93,23 +106,71 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              padding: EdgeInsets.zero,
-              itemCount: 6,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  leading: ClipRRect(
-                    borderRadius: BorderRadius.circular(50),
-                    child: CachedNetworkImage(
-                      fit: BoxFit.fitHeight,
-                      width: 46,
-                      height: 46,
-                      imageUrl: "https://lh3.googleusercontent.com/a/ACg8ocIyALSQ9RxFBgY_vFTHaHT5LxFQYeGVEQzaGa_kpE_ntzhUZzU=s96-c",
-                      errorWidget: (context, url, error) => const Icon(Icons.error),
-                    ),
-                  ),
-                  title: const Text("Kamesh Singh"),
-                );
+            child: StreamBuilder<List<UserModel>>(
+              stream: _firebaseFireStoreMethods.serachingUserBasedOnName(keyword: searchName),
+              builder: (context, snapshot) {
+                // If snapshot is still loading then show CircularProgressIndicator.
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+
+                // If snapshot has error then show error message.
+                if (snapshot.hasError) {
+                  ColoredPrint.warning(snapshot.error.toString());
+                  return Center(
+                    child: Text(snapshot.error.toString()),
+                  );
+                }
+
+                // If snapshot has data then show ListView.builder.
+                if (snapshot.hasData) {
+                  // Here we are converting the snapshot data into List<UserModel>.
+                  final List<UserModel> listofUser = snapshot.data!;
+                  return ListView.builder(
+                    padding: EdgeInsets.zero,
+                    itemCount: listofUser.length,
+                    itemBuilder: (context, index) {
+                      // retiving each user data from UserModal.
+                      final user = listofUser[index];
+                      return ListTile(
+                        onTap: () {
+                          //! Navigate user to Chat Screen Page.
+                          Navigator.of(context).pushNamed(
+                            RoutesNames.chatScreenPage,
+                            arguments: {
+                              "userID": user.userID,
+                              "name": user.name,
+                              "email": user.email,
+                              "imageUrl": user.imageUrl,
+                              "isOnline": user.isOnline,
+                              "lastSeen": user.lastSeen,
+                            },
+                          );
+                        },
+                        leading: ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: CachedNetworkImage(
+                            fit: BoxFit.fitHeight,
+                            width: 46,
+                            height: 46,
+                            imageUrl: user.imageUrl,
+                            errorWidget: (context, url, error) => const Icon(Icons.error),
+                          ),
+                        ),
+                        title: Text(user.name),
+                      );
+                    },
+                  );
+                }
+
+                // else condiation
+                else {
+                  return const Center(
+                    child: Text("Else Condition"),
+                  );
+                }
               },
             ),
           ),

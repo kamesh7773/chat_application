@@ -335,7 +335,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
             //! Textfeild section.
             Padding(
-              padding: const EdgeInsets.only(top: 4.0),
+              padding: const EdgeInsets.only(top: 4.0, right: 10),
               child: Row(
                 children: [
                   Padding(
@@ -390,7 +390,6 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10),
                   StatefulBuilder(
                     builder: (context, mySetState) {
                       // Add a listener to the TextEditingController to track changes in the text field
@@ -422,7 +421,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 8),
           ],
         ),
       ),

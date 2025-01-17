@@ -76,6 +76,28 @@ class FirebaseFireStoreMethods {
     }
   }
 
+  //! Method for seraching user based on their name.
+  Stream<List<UserModel>> serachingUserBasedOnName({required keyword}) {
+    // Get the users collection
+    final CollectionReference users = _db.collection("users");
+
+    try {
+      // Retrieve the current user's ID
+      String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+
+      // Filter out the current user using a Firestore query (Here we are only fetcing the user that userID is not same as current userID)
+      return users.where('userID', isNotEqualTo: currentUserId).orderBy("name").startAt([keyword]).endAt([keyword + "\uf8ff"]).snapshots().map((snapshot) {
+            // Map the snapshot documents into a list of UserModel
+            return snapshot.docs.map((doc) {
+              return UserModel.fromJson(doc.data() as Map<String, dynamic>);
+            }).toList();
+          });
+    } catch (error) {
+      // Handle any errors that occur
+      throw Exception(error.toString());
+    }
+  }
+
   //! Method for sending the Messages.
   Future<void> sendMessage({required String reciverID, required String message}) async {
     // get current userID

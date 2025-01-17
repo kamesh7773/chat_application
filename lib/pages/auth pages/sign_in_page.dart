@@ -191,7 +191,7 @@ class _SignInPageState extends State<SignInPage> {
                   const SizedBox(width: 20),
                   GestureDetector(
                     onTap: () {
-                      FirebaseAuthMethods.signInWithGoogle(context: context);
+                      FirebaseAuthMethods.signInwithFacebook(context: context);
                     },
                     child: MediaQuery.of(context).platformBrightness == Brightness.light
                         ? Card(

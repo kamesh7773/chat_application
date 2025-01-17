@@ -189,11 +189,11 @@ class _HomePageState extends State<HomePage> {
                             //! If User online then we show green dot.
                             user.isOnline
                                 ? Positioned(
-                                    bottom: 0,
-                                    right: 0,
+                                    bottom: 1.5,
+                                    right: 1.5,
                                     child: Container(
-                                      width: 13,
-                                      height: 13,
+                                      width: 12,
+                                      height: 12,
                                       decoration: BoxDecoration(
                                         color: const Color.fromARGB(255, 0, 191, 108),
                                         shape: BoxShape.circle,

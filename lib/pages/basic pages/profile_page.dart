@@ -260,7 +260,6 @@ class _ProfilePageState extends State<ProfilePage> {
                             const Text(
                               "04 March 2024",
                               style: TextStyle(
-                                color: Colors.black,
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
                               ),

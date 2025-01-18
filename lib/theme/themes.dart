@@ -33,6 +33,7 @@ class ChatAppTheme {
 
     //! Textfromfeild Theme
     inputDecorationTheme: const InputDecorationTheme(
+      contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       filled: true,
       fillColor: Color.fromARGB(255, 225, 247, 237),
     ),
@@ -75,6 +76,7 @@ class ChatAppTheme {
 
     //! Textfromfeild Theme
     inputDecorationTheme: const InputDecorationTheme(
+      contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       filled: true,
       fillColor: Color.fromARGB(255, 46, 47, 69),
     ),

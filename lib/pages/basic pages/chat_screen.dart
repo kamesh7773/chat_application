@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chat_application/services/message_encrption_service.dart';
+
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../providers/zego_avatar_provider.dart';
 import '../../routes/rotues_names.dart';
 import '../../widgets/send_call_button.dart';
@@ -46,18 +49,30 @@ class _ChatScreenState extends State<ChatScreen> {
   late StreamSubscription<DocumentSnapshot<Map<String, dynamic>>> subscription;
 
   // variables decalaration
+  final storage = const FlutterSecureStorage();
   final FirebaseFireStoreMethods firebaseFireStoreMethods = FirebaseFireStoreMethods();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   bool isTyping = false;
   Timer? _typingTimer;
   bool _isUserTyping = false;
+  // ignore: prefer_typing_uninitialized_variables
+  late var storedKey;
+  // ignore: prefer_typing_uninitialized_variables
+  late var storedIV;
 
   // Border Style
   final OutlineInputBorder borderStyle = OutlineInputBorder(
     borderSide: const BorderSide(color: Colors.transparent),
     borderRadius: BorderRadius.circular(50),
   );
+
+  // Method for retriving the AES and IV keys
+  void retrivingKeys() async {
+    final encrypt = await MessageEncrptionService().retrivingEncryptedKeys();
+    storedKey = encrypt.storedKey;
+    storedIV = encrypt.storedIV;
+  }
 
   // Method tha send the message.
   void sendMessage() async {
@@ -70,6 +85,8 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
+
+    retrivingKeys();
 
     context.read<ZegoAvatarProvider>().updateAvatarImageUrl(imageURL: widget.imageUrl);
 
@@ -294,7 +311,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
                                 return Chatbubble(
                                   isCurrentUser: isCurrentUser,
-                                  message: message.message,
+                                  message: MessageEncrptionService().decryptingMessage(encryptedMessage: message.message, key: storedKey, iv: storedIV),
                                   isMessageSeen: message.isSeen,
                                   timestamp: message.timestamp,
                                 );

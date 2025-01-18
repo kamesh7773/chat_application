@@ -1,3 +1,5 @@
+import 'package:chat_application/services/message_encrption_service.dart';
+
 import '../models/message_model.dart';
 import '../models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -114,13 +116,16 @@ class FirebaseFireStoreMethods {
       final bool otherSideUserInsideChatroom = data["isInsideChatRoom"];
       final bool isOnline = data["isOnline"];
 
+      // Encrypting the message before sending.
+      final encryptedMessage = await MessageEncrptionService().encryptingMessage(message: message);
+
       // If Other Side of User InSide the ChatRoom Then we setSeen to True
       if (otherSideUserInsideChatroom && isOnline) {
         // create a new message
         MessageModel newMessage = MessageModel(
           senderID: currentUserID,
           reciverID: reciverID,
-          message: message,
+          message: encryptedMessage,
           isSeen: true,
           timestamp: timestamp,
         );
@@ -148,7 +153,7 @@ class FirebaseFireStoreMethods {
         MessageModel newMessage = MessageModel(
           senderID: currentUserID,
           reciverID: reciverID,
-          message: message,
+          message: encryptedMessage,
           isSeen: false,
           timestamp: timestamp,
         );

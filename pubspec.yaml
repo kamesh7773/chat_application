@@ -50,6 +50,9 @@ dependencies:
   zego_uikit_prebuilt_call: ^4.16.21
   # State management related packages
   provider: ^6.1.2
+  # message encyption
+  encrypt: ^5.0.3
+  flutter_secure_storage: ^9.2.4
   # Other Imp package
   pinput: ^5.0.0
   google_fonts: ^6.2.1

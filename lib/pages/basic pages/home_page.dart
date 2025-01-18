@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chat_application/providers/last_message_provider.dart';
-import 'package:chat_application/utils/date_time_calculator_for_users.dart';
+import '../../providers/last_message_provider.dart';
+import '../../utils/date_time_calculator_for_users.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import '../../models/user_model.dart';
@@ -175,18 +175,31 @@ class _HomePageState extends State<HomePage> {
                         },
                         leading: Stack(
                           children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(50),
-                              child: CachedNetworkImage(
-                                fit: BoxFit.fitHeight,
-                                width: 50,
-                                height: 50,
-                                imageUrl: user.imageUrl,
-                                errorWidget: (context, url, error) {
-                                  return const Icon(Icons.error);
-                                },
-                              ),
-                            ),
+                            user.provider == "Email & Password"
+                                ? CircleAvatar(
+                                    backgroundColor: MediaQuery.of(context).platformBrightness == Brightness.light ? const Color.fromARGB(255, 0, 191, 108) : const Color.fromARGB(255, 45, 67, 83),
+                                    radius: 25,
+                                    child: Text(
+                                      user.name.substring(0, 1),
+                                      style: const TextStyle(
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  )
+                                : ClipRRect(
+                                    borderRadius: BorderRadius.circular(50),
+                                    child: CachedNetworkImage(
+                                      fit: BoxFit.fitHeight,
+                                      width: 50,
+                                      height: 50,
+                                      imageUrl: user.imageUrl,
+                                      errorWidget: (context, url, error) {
+                                        return const Icon(Icons.error);
+                                      },
+                                    ),
+                                  ),
                             //! If User online then we show green dot.
                             user.isOnline
                                 ? Positioned(

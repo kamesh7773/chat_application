@@ -76,7 +76,7 @@ class _BottomNavigationBarPageState extends State<BottomNavigationBarPage> with 
       body: pages[_page],
       bottomNavigationBar: Theme(
         data: ThemeData(
-          splashColor: MediaQuery.of(context).platformBrightness == Brightness.light ? Colors.white : const Color.fromARGB(255, 98, 96, 96),
+          splashFactory: NoSplash.splashFactory,
           highlightColor: Colors.transparent,
           applyElevationOverlayColor: true,
         ),

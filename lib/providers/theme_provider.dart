@@ -1,5 +1,5 @@
 import 'dart:ui';
-import 'package:chat_application/theme/themes.dart';
+import '../theme/themes.dart';
 import 'package:flutter/material.dart';
 
 class ThemeProvider extends ChangeNotifier {

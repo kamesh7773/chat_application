@@ -1,4 +1,4 @@
-import 'package:chat_application/services/firebase_firestore_methods.dart';
+import '../services/firebase_firestore_methods.dart';
 import 'package:flutter/foundation.dart';
 
 class LastMessageProvider extends ChangeNotifier {

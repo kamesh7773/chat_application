@@ -1,7 +1,7 @@
-import 'package:chat_application/providers/last_message_provider.dart';
-import 'package:chat_application/providers/theme_provider.dart';
-import 'package:chat_application/providers/zego_avatar_provider.dart';
-import 'package:chat_application/services/zego_methods.dart';
+import 'providers/last_message_provider.dart';
+import 'providers/theme_provider.dart';
+import 'providers/zego_avatar_provider.dart';
+import 'services/zego_methods.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 

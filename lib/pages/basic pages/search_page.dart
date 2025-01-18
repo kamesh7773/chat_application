@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chat_application/models/user_model.dart';
-import 'package:chat_application/routes/rotues_names.dart';
-import 'package:chat_application/services/firebase_firestore_methods.dart';
+import '../../models/user_model.dart';
+import '../../routes/rotues_names.dart';
+import '../../services/firebase_firestore_methods.dart';
 import 'package:colored_print/colored_print.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';

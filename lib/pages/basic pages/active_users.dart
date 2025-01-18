@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chat_application/models/user_model.dart';
-import 'package:chat_application/services/firebase_firestore_methods.dart';
+import '../../models/user_model.dart';
+import '../../services/firebase_firestore_methods.dart';
 import 'package:flutter/material.dart';
 
 class ActiveUsers extends StatefulWidget {
@@ -21,10 +21,10 @@ class _ActiveUsersState extends State<ActiveUsers> {
           //! AppBar
           Container(
             width: double.infinity,
-            color: Color.fromARGB(255, 0, 191, 108),
+            color: const Color.fromARGB(255, 0, 191, 108),
             child: Column(
               children: [
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -35,14 +35,14 @@ class _ActiveUsersState extends State<ActiveUsers> {
                           //! Navigate User to Back Screen.
                           Navigator.of(context).pop();
                         },
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.arrow_back_ios,
                           color: Colors.white,
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 0),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 0),
                       child: Text(
                         "Active users",
                         style: TextStyle(
@@ -54,7 +54,7 @@ class _ActiveUsersState extends State<ActiveUsers> {
                     ),
                   ],
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
               ],
             ),
           ),
@@ -65,7 +65,7 @@ class _ActiveUsersState extends State<ActiveUsers> {
               builder: (context, snapshot) {
                 // If snapshot is still loading then show CircularProgressIndicator.
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }
@@ -111,7 +111,7 @@ class _ActiveUsersState extends State<ActiveUsers> {
                                   width: 13,
                                   height: 13,
                                   decoration: BoxDecoration(
-                                    color: Color.fromARGB(255, 0, 191, 108),
+                                    color: const Color.fromARGB(255, 0, 191, 108),
                                     shape: BoxShape.circle,
                                     border: Border.all(color: Colors.white, width: 2),
                                   ),
@@ -119,14 +119,14 @@ class _ActiveUsersState extends State<ActiveUsers> {
                               ),
                             ],
                           ),
-                          title: Text("Kamesh Singh"),
-                          subtitle: Text(
+                          title: const Text("Kamesh Singh"),
+                          subtitle: const Text(
                             "(239) 555-0108",
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: 14,
-                              color: const Color.fromARGB(255, 116, 114, 114),
+                              color: Color.fromARGB(255, 116, 114, 114),
                             ),
                           ),
                         ),
@@ -137,7 +137,7 @@ class _ActiveUsersState extends State<ActiveUsers> {
 
                 // else condiation
                 else {
-                  return Center(
+                  return const Center(
                     child: Text("Else Condition"),
                   );
                 }

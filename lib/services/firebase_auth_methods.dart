@@ -1,4 +1,4 @@
-import 'package:chat_application/services/zego_methods.dart';
+import 'zego_methods.dart';
 
 import '../routes/rotues_names.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_application/services/message_encrption_service.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:pointycastle/asymmetric/api.dart';
 import '../../providers/zego_avatar_provider.dart';
 import '../../routes/rotues_names.dart';
 import '../../widgets/send_call_button.dart';
@@ -25,6 +26,7 @@ class ChatScreen extends StatefulWidget {
   final String name;
   final String email;
   final String imageUrl;
+  final RSAPublicKey rsaPublicKey;
 
   const ChatScreen({
     super.key,
@@ -32,6 +34,7 @@ class ChatScreen extends StatefulWidget {
     required this.name,
     required this.email,
     required this.imageUrl,
+    required this.rsaPublicKey,
   });
 
   @override
@@ -69,7 +72,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   // Method tha send the message.
   void sendMessage() async {
-    await firebaseFireStoreMethods.sendMessage(receiverID: widget.userID, message: _messageController.text);
+    await firebaseFireStoreMethods.sendMessage(receiverID: widget.userID, message: _messageController.text, recipientPublicKey: widget.rsaPublicKey);
 
     // after sending the message we clear the controllar
     _messageController.clear();

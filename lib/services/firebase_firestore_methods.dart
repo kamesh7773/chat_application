@@ -121,15 +121,12 @@ class FirebaseFireStoreMethods {
       final bool otherSideUserInsideChatroom = data["isInsideChatRoom"];
       final bool isOnline = data["isOnline"];
 
-      // Step 4.1: Generate AES key for encryption
-      final aesKey = Key.fromSecureRandom(32); // 256-bit AES key
+      // Encrypt the message using AES
+      final result = await MessageEncrptionService().encryptMessage(message: message);
 
-      // Step 4.2: Encrypt the message using AES
-      final encryptedMessage = MessageEncrptionService().encryptMessage(message);
-
-      // Step 4.3: Encrypt AES Key & IV using the recipient's public RSA key
-      String encryptedAESKey = MessageEncrptionService().rsaEncrypt(aesKey.bytes, recipientPublicKey);
-      String encryptedIV = MessageEncrptionService().rsaEncrypt(iv.bytes, recipientPublicKey);
+      // Encrypt AES Key & IV using the recipient's public RSA key
+      String encryptedAESKey = MessageEncrptionService().rsaEncrypt(result.aesKey.bytes, recipientPublicKey);
+      String encryptedIV = MessageEncrptionService().rsaEncrypt(result.iv.bytes, recipientPublicKey);
 
       // If Other Side of User InSide the ChatRoom Then we setSeen to True
       if (otherSideUserInsideChatroom && isOnline) {
@@ -137,7 +134,10 @@ class FirebaseFireStoreMethods {
         MessageModel newMessage = MessageModel(
           senderID: currentUserID,
           reciverID: receiverID,
-          message: encryptedMessage,
+          message: result.encryptedMessage,
+          encryptedAESKey: encryptedAESKey,
+          encryptedIV: encryptedIV,
+          myPublicKey: recipientPublicKey,
           isSeen: true,
           timestamp: timestamp,
         );
@@ -165,7 +165,10 @@ class FirebaseFireStoreMethods {
         MessageModel newMessage = MessageModel(
           senderID: currentUserID,
           reciverID: receiverID,
-          message: encryptedMessage,
+          message: result.encryptedMessage,
+          encryptedAESKey: encryptedAESKey,
+          encryptedIV: encryptedIV,
+          myPublicKey: recipientPublicKey,
           isSeen: false,
           timestamp: timestamp,
         );

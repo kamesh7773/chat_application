@@ -81,6 +81,7 @@ class Routes {
             name: args["name"],
             email: args["email"],
             imageUrl: args["imageUrl"],
+            rsaPublicKey: args["rsaPublicKey"],
           ),
         );
 

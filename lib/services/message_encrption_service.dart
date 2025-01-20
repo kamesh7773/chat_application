@@ -1,43 +1,66 @@
 // import 'package:encrypt/encrypt.dart';
+import 'dart:math';
+import 'dart:typed_data';
+
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:pointycastle/api.dart';
+import 'package:pointycastle/asymmetric/api.dart';
+import 'package:pointycastle/key_generators/api.dart';
+
+import 'package:pointycastle/key_generators/rsa_key_generator.dart';
+import 'package:pointycastle/random/fortuna_random.dart';
 
 class MessageEncrptionService {
-  // Generate a 256-bit AES key and a random IV
-  final key = Key.fromSecureRandom(32); // 32 bytes = 256 bits
-  final iv = IV.fromSecureRandom(16); // 16 bytes = 128 bits
+  // creating the instance of FlutterSecureStorage
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  final storage = const FlutterSecureStorage();
+  //! Step 1: Generate RSA Key Pair (public/private)
+  AsymmetricKeyPair<PublicKey, PrivateKey> generateRSAKeyPair() {
+    final secureRandom = FortunaRandom();
+    final random = Random.secure();
+    final seeds = Uint8List(32);
+    for (int i = 0; i < seeds.length; i++) {
+      seeds[i] = random.nextInt(256);
+    }
+    secureRandom.seed(KeyParameter(seeds));
 
-  Future<({Key storedKey, IV storedIV})> retrivingEncryptedKeys() async {
-    // Retrieve AES key and IV
-    final Key storedKey = Key.fromBase64(await storage.read(key: 'aesKey') ?? "");
-    final IV storedIV = IV.fromBase64(await storage.read(key: 'aesIV') ?? "");
+    final keyParams = RSAKeyGeneratorParameters(
+      BigInt.from(65537), // Public exponent
+      2048, // Key size (2048 bits)
+      12, // Certainty
+    );
 
-    return (storedKey: storedKey, storedIV: storedIV);
+    final keyGenerator = RSAKeyGenerator()..init(ParametersWithRandom(keyParams, secureRandom));
+
+    return keyGenerator.generateKeyPair();
   }
 
-  // This Method return the Encrypter Key and IV.
-  Future<String> encryptingMessage({required message}) async {
-    // Save AES key and IV
-    await storage.write(key: 'aesKey', value: key.base64);
-    await storage.write(key: 'aesIV', value: iv.base64);
+  //! Step 2: Store RSA Keys Securely (Private and Public)
+  Future<void> storeKeys(RSAPrivateKey privateKey, RSAPublicKey publicKey) async {
+    // Convert keys to PEM or Base64 string for storage
+    String privateKeyString = privateKey.toString();
+    String publicKeyString = publicKey.toString();
 
-    final encryptedData = await retrivingEncryptedKeys();
-
-    final encrypter = Encrypter(AES(encryptedData.storedKey, mode: AESMode.cbc));
-
-    final encryptedMessage = encrypter.encrypt(message, iv: encryptedData.storedIV).base64;
-
-    return encryptedMessage;
+    // Store the private key securely on the device
+    await _storage.write(key: 'private_key', value: privateKeyString);
+    // Store the public key (can be shared securely)
+    await _storage.write(key: 'public_key', value: publicKeyString);
   }
 
-  // This Method Decrypt the Message.
-  String decryptingMessage({required String encryptedMessage, required Key key, required IV iv}) {
-    final encrypter = Encrypter(AES(key, mode: AESMode.cbc));
+  //! Step 3: AES Encryption for Message
+  final encrypter = Encrypter(AES(Key.fromSecureRandom(32), mode: AESMode.cbc));
+  final iv = IV.fromSecureRandom(16); // AES IV (128-bit)
 
-    // Decrypt the message
-    final decryptedMessage = encrypter.decrypt64(encryptedMessage, iv: iv);
-    return decryptedMessage;
+  String encryptMessage(String message) {
+    final encrypted = encrypter.encrypt(message, iv: iv);
+    return encrypted.base64;
+  }
+
+  //! Step 4: Encrypt AES Key and IV using RSA (for sending them securely)
+  String rsaEncrypt(Uint8List data, RSAPublicKey publicKey) {
+    final encryptor = Encrypter(RSA(publicKey: publicKey));
+    final encryptedData = encryptor.encryptBytes(data);
+    return encryptedData.base64;
   }
 }

@@ -1,4 +1,6 @@
 import 'package:chat_application/services/message_encrption_service.dart';
+import 'package:encrypt/encrypt.dart';
+import 'package:pointycastle/asymmetric/api.dart';
 
 import '../models/message_model.dart';
 import '../models/user_model.dart';
@@ -10,14 +12,18 @@ class FirebaseFireStoreMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
+  static const String usersCollection = "users";
+  static const String chatRoomsCollection = "chatRooms";
+  static const String messagesCollection = "messages";
+
   //! Method for fetching all the users from Firestore database except the current user.
   Stream<List<UserModel>> fetchingUsers() {
     // Get the users collection
-    final CollectionReference users = _db.collection("users");
+    final CollectionReference users = _db.collection(usersCollection);
 
     try {
       // Retrieve the current user's ID
-      String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+      String currentUserId = _auth.currentUser!.uid;
 
       // Filter out the current user using a Firestore query (Here we are only fetcing the user that userID is not same as current userID)
       return users.where('userID', isNotEqualTo: currentUserId).snapshots().map((snapshot) {
@@ -35,11 +41,11 @@ class FirebaseFireStoreMethods {
   //! Method for fetching all the users from Firestore database except the current user.
   Stream<List<UserModel>> fetchingOnlineUsers() {
     // Get the users collection
-    final CollectionReference users = _db.collection("users");
+    final CollectionReference users = _db.collection(usersCollection);
 
     try {
       // Retrieve the current user's ID
-      String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+      String currentUserId = _auth.currentUser!.uid;
 
       // Fetch all users where isOnline is not false
       return users.where('isOnline', isNotEqualTo: false).snapshots().map((snapshot) {
@@ -60,7 +66,7 @@ class FirebaseFireStoreMethods {
     final String currentUserID = _auth.currentUser!.uid;
 
     // Get the user collection
-    final CollectionReference users = _db.collection("users");
+    final CollectionReference users = _db.collection(usersCollection);
 
     try {
       // Fetch the current user's details as a Stream<UserModel>
@@ -79,16 +85,16 @@ class FirebaseFireStoreMethods {
   }
 
   //! Method for seraching user based on their name.
-  Stream<List<UserModel>> serachingUserBasedOnName({required keyword}) {
+  Stream<List<UserModel>> searchingUserBasedOnName({required String keyword}) {
     // Get the users collection
-    final CollectionReference users = _db.collection("users");
+    final CollectionReference users = _db.collection(usersCollection);
 
     try {
       // Retrieve the current user's ID
-      String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+      String currentUserId = _auth.currentUser!.uid;
 
       // Filter out the current user using a Firestore query (Here we are only fetcing the user that userID is not same as current userID)
-      return users.where('userID', isNotEqualTo: currentUserId).orderBy("name").startAt([keyword]).endAt([keyword + "\uf8ff"]).snapshots().map((snapshot) {
+      return users.where('userID', isNotEqualTo: currentUserId).orderBy("name").startAt([keyword]).endAt(["$keyword\uf8ff"]).snapshots().map((snapshot) {
             // Map the snapshot documents into a list of UserModel
             return snapshot.docs.map((doc) {
               return UserModel.fromJson(doc.data() as Map<String, dynamic>);
@@ -101,94 +107,102 @@ class FirebaseFireStoreMethods {
   }
 
   //! Method for sending the Messages.
-  Future<void> sendMessage({required String reciverID, required String message}) async {
+  Future<void> sendMessage({required String receiverID, required String message, required RSAPublicKey recipientPublicKey}) async {
     // get current userID
     final String currentUserID = _auth.currentUser!.uid;
 
     final Timestamp timestamp = Timestamp.now();
 
     // get the other side of user collection feild value "isInsideChatRoom"
-    final Future<DocumentSnapshot<Map<String, dynamic>>> snapshot = _db.collection("users").doc(reciverID.toString()).get();
+    final DocumentReference<Map<String, dynamic>> receiverDoc = _db.collection(usersCollection).doc(receiverID);
 
-    snapshot.then((value) async {
-      final data = value.data() as Map<String, dynamic>;
-
+    try {
+      final data = (await receiverDoc.get()).data()!;
       final bool otherSideUserInsideChatroom = data["isInsideChatRoom"];
       final bool isOnline = data["isOnline"];
 
-      // Encrypting the message before sending.
-      final encryptedMessage = await MessageEncrptionService().encryptingMessage(message: message);
+      // Step 4.1: Generate AES key for encryption
+      final aesKey = Key.fromSecureRandom(32); // 256-bit AES key
+
+      // Step 4.2: Encrypt the message using AES
+      final encryptedMessage = MessageEncrptionService().encryptMessage(message);
+
+      // Step 4.3: Encrypt AES Key & IV using the recipient's public RSA key
+      String encryptedAESKey = MessageEncrptionService().rsaEncrypt(aesKey.bytes, recipientPublicKey);
+      String encryptedIV = MessageEncrptionService().rsaEncrypt(iv.bytes, recipientPublicKey);
 
       // If Other Side of User InSide the ChatRoom Then we setSeen to True
       if (otherSideUserInsideChatroom && isOnline) {
         // create a new message
         MessageModel newMessage = MessageModel(
           senderID: currentUserID,
-          reciverID: reciverID,
+          reciverID: receiverID,
           message: encryptedMessage,
           isSeen: true,
           timestamp: timestamp,
         );
 
         // Get the Document refreence of current user ID.
-        final DocumentReference<Map<String, dynamic>> users = _db.collection("users").doc(currentUserID);
+        final DocumentReference<Map<String, dynamic>> userDoc = _db.collection(usersCollection).doc(currentUserID);
 
         // Get the Document refreence of current user ID.
-        final DocumentReference<Map<String, dynamic>> otherUser = _db.collection("users").doc(reciverID);
+        final DocumentReference<Map<String, dynamic>> otherUserDoc = _db.collection(usersCollection).doc(receiverID);
 
         // add new message collection inside the Users collections.
         // here we are storing chat collection inside the user collection and inside the ChatRoom Collection we are storing our message collection
-        await users.collection("chatRooms").doc(reciverID).collection("messages").add(newMessage.toMap());
+        await userDoc.collection(chatRoomsCollection).doc(receiverID).collection(messagesCollection).add(newMessage.toMap());
 
         // add new message collection inside the OtherUser collections.
         // here we are storing chat collection inside the OtherUser collection and inside the ChatRoom Collection we are storing our message collection
-        await otherUser.collection("chatRooms").doc(currentUserID).collection("messages").add(newMessage.toMap());
+        await otherUserDoc.collection(chatRoomsCollection).doc(currentUserID).collection(messagesCollection).add(newMessage.toMap());
 
         // Here we update the LastMessage.
-        // await updateLastMessage(otherUserID: reciverID);
+        // await updateLastMessage(otherUserID: receiverID);
       }
       // else we set isSeen to false and add the send message to UnseenMessage List of Map to ther User document.
       else {
         // create a new message
         MessageModel newMessage = MessageModel(
           senderID: currentUserID,
-          reciverID: reciverID,
+          reciverID: receiverID,
           message: encryptedMessage,
           isSeen: false,
           timestamp: timestamp,
         );
 
         // Get the Document refreence of current user ID.
-        final DocumentReference<Map<String, dynamic>> users = _db.collection("users").doc(currentUserID);
+        final DocumentReference<Map<String, dynamic>> userDoc = _db.collection(usersCollection).doc(currentUserID);
 
         // Get the Document refreence of current user ID.
-        final DocumentReference<Map<String, dynamic>> otherUser = _db.collection("users").doc(reciverID);
+        final DocumentReference<Map<String, dynamic>> otherUserDoc = _db.collection(usersCollection).doc(receiverID);
 
         // add new message collection inside the Users collections.
         // here we are storing chat collection inside the user collection and inside the ChatRoom Collection we are storing our message collection
-        await users.collection("chatRooms").doc(reciverID).collection("messages").add(newMessage.toMap());
+        await userDoc.collection(chatRoomsCollection).doc(receiverID).collection(messagesCollection).add(newMessage.toMap());
 
         // add new message collection inside the OtherUser collections.
         // here we are storing chat collection inside the OtherUser collection and inside the ChatRoom Collection we are storing our message collection
-        await otherUser.collection("chatRooms").doc(currentUserID).collection("messages").add(newMessage.toMap());
+        await otherUserDoc.collection(chatRoomsCollection).doc(currentUserID).collection(messagesCollection).add(newMessage.toMap());
 
         // Here we update the LastMessage.
-        // await updateLastMessage(otherUserID: reciverID);
+        // await updateLastMessage(otherUserID: receiverID);
 
         // Here we add the send Message to UnSeenMessage List of Map to Other User Side because when user is not inside the chat room we will show those unseen message on HomePage with HighLited Text.
-        await updateUnseenMessage(userID: currentUserID, otherUserID: reciverID);
+        await updateUnseenMessage(userID: currentUserID, otherUserID: receiverID);
       }
-    });
+    } catch (error) {
+      throw Exception(error.toString());
+    }
   }
 
   //! Method updating last message on user database. (showing the last msg on home screen)
   Future<void> updateUnseenMessage({required String userID, required String otherUserID}) async {
     try {
       // Reference to the others user's document in the main collection
-      final DocumentReference currentUserID = _db.collection("users").doc(userID.toString());
+      final DocumentReference currentUserDoc = _db.collection(usersCollection).doc(userID);
 
       // get the messages collection that is inside the chatRooms collection
-      final CollectionReference messages = currentUserID.collection("chatRooms").doc(otherUserID).collection("messages");
+      final CollectionReference messages = currentUserDoc.collection(chatRoomsCollection).doc(otherUserID).collection(messagesCollection);
 
       Future<QuerySnapshot<Object?>> snapshot = messages.orderBy("timestamp", descending: false).get();
 
@@ -204,21 +218,21 @@ class FirebaseFireStoreMethods {
         };
 
         // Updating lastMessage feild at OtherUser "users" firestore collection.
-        await currentUserID.update({
+        await currentUserDoc.update({
           "unSeenMessages": FieldValue.arrayUnion([newMessage]),
         });
       });
     } catch (error) {
-      throw error.toString();
+      throw Exception(error.toString());
     }
   }
 
   //! Method for getting the Messages.
   Stream<List<MessageModel>> getMessages({required String otherUserID}) {
-    final DocumentReference<Map<String, dynamic>> currentUserID = _db.collection("users").doc(_auth.currentUser!.uid);
+    final DocumentReference<Map<String, dynamic>> currentUserDoc = _db.collection(usersCollection).doc(_auth.currentUser!.uid);
 
     // get the messages collection that is inside the chatRooms collection
-    final CollectionReference messages = currentUserID.collection("chatRooms").doc(otherUserID).collection("messages");
+    final CollectionReference messages = currentUserDoc.collection(chatRoomsCollection).doc(otherUserID).collection(messagesCollection);
 
     try {
       // Here we are the snapShot and with help of map() we retive that snapShot.
@@ -230,50 +244,50 @@ class FirebaseFireStoreMethods {
         }).toList();
       });
     } catch (error) {
-      throw error.toString();
+      throw Exception(error.toString());
     }
   }
 
   //! Methods that updates the user Online/Offine Status.
-  Future<void> isOnlineStatus({required bool isOnline, required DateTime datetime}) {
+  Future<void> isOnlineStatus({required bool isOnline, required DateTime datetime}) async {
     try {
       // Reference to the current user's document in the main collection
-      final DocumentReference currentUserID = _db.collection("users").doc(_auth.currentUser!.uid.toString());
+      final DocumentReference currentUserDoc = _db.collection(usersCollection).doc(_auth.currentUser!.uid);
 
-      return currentUserID.update({
+      await currentUserDoc.update({
         "isOnline": isOnline,
         "lastSeen": datetime,
       });
     } catch (error) {
-      throw error.toString();
+      throw Exception(error.toString());
     }
   }
 
   //! Methods that updates the is user Typing.
-  Future<void> isUserTyping({required String userID, required bool isTyping}) {
+  Future<void> isUserTyping({required String userID, required bool isTyping}) async {
     try {
       // Reference to the current user's document in the main collection
-      final DocumentReference user = _db.collection("users").doc(userID);
+      final DocumentReference userDoc = _db.collection(usersCollection).doc(userID);
 
-      return user.update({
+      await userDoc.update({
         "isTyping": isTyping,
       });
     } catch (error) {
-      throw error.toString();
+      throw Exception(error.toString());
     }
   }
 
   //! Methods that updates the is user inside the chat room or not.
-  Future<void> isInsideChatRoom({required bool status}) {
+  Future<void> isInsideChatRoom({required bool status}) async {
     try {
       // Reference to the current user's document in the main collection
-      final DocumentReference user = _db.collection("users").doc(_auth.currentUser!.uid);
+      final DocumentReference userDoc = _db.collection(usersCollection).doc(_auth.currentUser!.uid);
 
-      return user.update({
+      await userDoc.update({
         "isInsideChatRoom": status,
       });
     } catch (error) {
-      throw error.toString();
+      throw Exception(error.toString());
     }
   }
 
@@ -281,10 +295,10 @@ class FirebaseFireStoreMethods {
   Future<String> updateLastMessage({required String otherUserID}) async {
     try {
       // Reference to the others user's document in the main collection
-      final DocumentReference currentUserID = _db.collection("users").doc(_auth.currentUser!.uid);
+      final DocumentReference currentUserDoc = _db.collection(usersCollection).doc(_auth.currentUser!.uid);
 
       // get the messages collection that is inside the chatRooms collection
-      final CollectionReference messages = currentUserID.collection("chatRooms").doc(otherUserID).collection("messages");
+      final CollectionReference messages = currentUserDoc.collection(chatRoomsCollection).doc(otherUserID).collection(messagesCollection);
 
       QuerySnapshot<Object?> snapshot = await messages.orderBy("timestamp", descending: false).get();
 
@@ -297,7 +311,7 @@ class FirebaseFireStoreMethods {
         return "";
       }
     } catch (error) {
-      throw error.toString();
+      throw Exception(error.toString());
     }
   }
 
@@ -310,15 +324,14 @@ class FirebaseFireStoreMethods {
   }) async {
     // if other side of user present inside the chat room then we update the IsSeen of message status of our message is to true
     if (isOtherUserInsideChatRoom && isOnline) {
-      final DocumentReference<Map<String, dynamic>> currentUserID = _db.collection("users").doc(userID);
-
-      final DocumentReference<Map<String, dynamic>> otherUserId = _db.collection("users").doc(otherUserID);
+      final DocumentReference<Map<String, dynamic>> currentUserDoc = _db.collection(usersCollection).doc(userID);
+      final DocumentReference<Map<String, dynamic>> otherUserDoc = _db.collection(usersCollection).doc(otherUserID);
 
       // Here we are fething current Users Collection "chatRooms" --> "messages" where sendId is current login user and "isSeen" == false.
-      final Query<Map<String, dynamic>> currentUserMessagesRef = currentUserID.collection("chatRooms").doc(otherUserID).collection("messages").where('senderID', isEqualTo: _auth.currentUser!.uid).where('isSeen', isEqualTo: false).limit(50);
+      final Query<Map<String, dynamic>> currentUserMessagesRef = currentUserDoc.collection(chatRoomsCollection).doc(otherUserID).collection(messagesCollection).where('senderID', isEqualTo: _auth.currentUser!.uid).where('isSeen', isEqualTo: false).limit(50);
 
       // Here we are fething Other Side of Users Collection "chatRooms" --> "messages" where sendId is current login user and "isSeen" == false.
-      final Query<Map<String, dynamic>> otherSideUserMessagesRef = otherUserId.collection("chatRooms").doc(otherUserID).collection("messages").where('senderID', isEqualTo: _auth.currentUser!.uid).where('isSeen', isEqualTo: false).limit(50);
+      final Query<Map<String, dynamic>> otherSideUserMessagesRef = otherUserDoc.collection(chatRoomsCollection).doc(otherUserID).collection(messagesCollection).where('senderID', isEqualTo: _auth.currentUser!.uid).where('isSeen', isEqualTo: false).limit(50);
 
       // here we are getting all the refernce of thoese document inside the messages collection thoese isSeen is false. (current user)
       final querySnapshotOfCurrentUser = await currentUserMessagesRef.get();
@@ -348,13 +361,13 @@ class FirebaseFireStoreMethods {
   Future<void> deleteUnseenMessages({required String userID}) async {
     try {
       // Reference to the current user's document in the main collection
-      final DocumentReference user = _db.collection("users").doc(userID);
+      final DocumentReference userDoc = _db.collection(usersCollection).doc(userID);
 
-      return user.update({
+      await userDoc.update({
         "unSeenMessages": [],
       });
     } catch (error) {
-      throw error.toString();
+      throw Exception(error.toString());
     }
   }
 
@@ -367,7 +380,7 @@ class FirebaseFireStoreMethods {
   }) async {
     try {
       // Reference to the current user's document in the main collection
-      final DocumentReference currentUserID = _db.collection("users").doc(_auth.currentUser!.uid);
+      final DocumentReference currentUserDoc = _db.collection(usersCollection).doc(_auth.currentUser!.uid);
 
       // Construct the new message map
       Map<String, dynamic> callInfo = {
@@ -379,11 +392,11 @@ class FirebaseFireStoreMethods {
       };
 
       // Updating lastMessage feild at OtherUser "users" firestore collection.
-      await currentUserID.update({
+      await currentUserDoc.update({
         "callLogs": FieldValue.arrayUnion([callInfo]),
       });
     } catch (error) {
-      throw error.toString();
+      throw Exception(error.toString());
     }
   }
 }

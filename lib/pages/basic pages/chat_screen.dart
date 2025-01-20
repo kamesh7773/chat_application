@@ -67,16 +67,9 @@ class _ChatScreenState extends State<ChatScreen> {
     borderRadius: BorderRadius.circular(50),
   );
 
-  // Method for retriving the AES and IV keys
-  void retrivingKeys() async {
-    final encrypt = await MessageEncrptionService().retrivingEncryptedKeys();
-    storedKey = encrypt.storedKey;
-    storedIV = encrypt.storedIV;
-  }
-
   // Method tha send the message.
   void sendMessage() async {
-    await firebaseFireStoreMethods.sendMessage(reciverID: widget.userID, message: _messageController.text);
+    await firebaseFireStoreMethods.sendMessage(receiverID: widget.userID, message: _messageController.text);
 
     // after sending the message we clear the controllar
     _messageController.clear();
@@ -85,8 +78,6 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-
-    retrivingKeys();
 
     context.read<ZegoAvatarProvider>().updateAvatarImageUrl(imageURL: widget.imageUrl);
 
@@ -311,7 +302,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
                                 return Chatbubble(
                                   isCurrentUser: isCurrentUser,
-                                  message: MessageEncrptionService().decryptingMessage(encryptedMessage: message.message, key: storedKey, iv: storedIV),
+                                  // message: MessageEncrptionService().decryptingMessage(encryptedMessage: message.message, key: storedKey, iv: storedIV),
+                                  message: message.message,
                                   isMessageSeen: message.isSeen,
                                   timestamp: message.timestamp,
                                 );

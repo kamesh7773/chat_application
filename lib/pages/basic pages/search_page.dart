@@ -108,7 +108,7 @@ class _SearchPageState extends State<SearchPage> {
           ),
           Expanded(
             child: StreamBuilder<List<UserModel>>(
-              stream: _firebaseFireStoreMethods.serachingUserBasedOnName(keyword: searchName),
+              stream: _firebaseFireStoreMethods.searchingUserBasedOnName(keyword: searchName),
               builder: (context, snapshot) {
                 // If snapshot is still loading then show CircularProgressIndicator.
                 if (snapshot.connectionState == ConnectionState.waiting) {

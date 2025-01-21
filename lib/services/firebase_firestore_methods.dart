@@ -1,6 +1,8 @@
+import 'package:basic_utils/basic_utils.dart';
 import 'package:chat_application/services/message_encrption_service.dart';
-import 'package:encrypt/encrypt.dart';
+import 'package:colored_print/colored_print.dart';
 import 'package:pointycastle/asymmetric/api.dart';
+import 'package:rsa_encrypt/rsa_encrypt.dart';
 
 import '../models/message_model.dart';
 import '../models/user_model.dart';
@@ -107,7 +109,7 @@ class FirebaseFireStoreMethods {
   }
 
   //! Method for sending the Messages.
-  Future<void> sendMessage({required String receiverID, required String message, required RSAPublicKey recipientPublicKey}) async {
+  Future<void> sendMessage({required String receiverID, required String message, required String recipientPublicKey}) async {
     // get current userID
     final String currentUserID = _auth.currentUser!.uid;
 
@@ -124,9 +126,14 @@ class FirebaseFireStoreMethods {
       // Encrypt the message using AES
       final result = await MessageEncrptionService().encryptMessage(message: message);
 
-      // // Encrypt AES Key & IV using the recipient's public RSA key
-      String encryptedAESKey = MessageEncrptionService().rsaEncrypt(result.aesKey.bytes, recipientPublicKey);
-      String encryptedIV = MessageEncrptionService().rsaEncrypt(result.iv.bytes, recipientPublicKey);
+      // Converting String RSA Public Key to RSA Public Key.
+      var helper = RsaKeyHelper();
+
+      final RSAPublicKey publicKey = helper.parsePublicKeyFromPem(recipientPublicKey);
+
+      // Encrypt AES Key & IV using the recipient's public RSA key
+      String encryptedAESKey = MessageEncrptionService().rsaEncrypt(result.aesKey.bytes, publicKey);
+      String encryptedIV = MessageEncrptionService().rsaEncrypt(result.iv.bytes, publicKey);
 
       // If Other Side of User InSide the ChatRoom Then we setSeen to True
       if (otherSideUserInsideChatroom && isOnline) {
@@ -135,9 +142,8 @@ class FirebaseFireStoreMethods {
           senderID: currentUserID,
           reciverID: receiverID,
           message: result.encryptedMessage,
-          encryptedAESKey: encryptedAESKey,
-          encryptedIV: encryptedIV,
-          myPublicKey: recipientPublicKey,
+          encryptedAESKey: "encryptedAESKey",
+          encryptedIV: "encryptedIV",
           isSeen: true,
           timestamp: timestamp,
         );
@@ -166,9 +172,8 @@ class FirebaseFireStoreMethods {
           senderID: currentUserID,
           reciverID: receiverID,
           message: result.encryptedMessage,
-          encryptedAESKey: encryptedAESKey,
-          encryptedIV: encryptedIV,
-          myPublicKey: recipientPublicKey,
+          encryptedAESKey: "encryptedAESKey",
+          encryptedIV: "encryptedIV",
           isSeen: false,
           timestamp: timestamp,
         );
@@ -194,6 +199,7 @@ class FirebaseFireStoreMethods {
         await updateUnseenMessage(userID: currentUserID, otherUserID: receiverID);
       }
     } catch (error) {
+      ColoredPrint.warning(error);
       throw Exception(error.toString());
     }
   }

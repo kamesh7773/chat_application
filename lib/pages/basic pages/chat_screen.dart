@@ -1,10 +1,8 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chat_application/services/message_encrption_service.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:pointycastle/asymmetric/api.dart';
 import '../../providers/zego_avatar_provider.dart';
 import '../../routes/rotues_names.dart';
 import '../../widgets/send_call_button.dart';
@@ -26,7 +24,7 @@ class ChatScreen extends StatefulWidget {
   final String name;
   final String email;
   final String imageUrl;
-  final RSAPublicKey rsaPublicKey;
+  final String rsaPublicKey;
 
   const ChatScreen({
     super.key,
@@ -418,7 +416,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       // else the text is not empty then we Send Text Icon Widget.
                       else {
                         return Padding(
-                          padding: const EdgeInsets.only(right: 10),
+                          padding: const EdgeInsets.only(left: 6),
                           child: InkWell(
                             onTap: sendMessage,
                             child: const Icon(

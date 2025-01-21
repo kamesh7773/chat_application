@@ -163,7 +163,7 @@ class FirebaseAuthMethods {
           );
 
           // Method for creating RSA Public and Private keys for Message Encryption.
-          MessageEncrptionService().generateRSAKeyPairAndEncode();
+          await MessageEncrptionService().generateRSAKeyPairAndEncode();
 
           // Retiving the RSA Key
           final key = await MessageEncrptionService().returnRSAKeys();
@@ -707,7 +707,7 @@ class FirebaseAuthMethods {
               // else user docuemnt is not present on firestore users collection it mens user is sign up for first time so...
               else {
                 // Method for creating RSA Public and Private keys for Message Encryption.
-                MessageEncrptionService().generateRSAKeyPairAndEncode();
+                await MessageEncrptionService().generateRSAKeyPairAndEncode();
 
                 // Retiving the RSA Key
                 final key = await MessageEncrptionService().returnRSAKeys();
@@ -895,7 +895,7 @@ class FirebaseAuthMethods {
             // else user docuemnt is not present on firestore users collection it mens user is sign up for first time so...
             else {
               // Method for creating RSA Public and Private keys for Message Encryption.
-              MessageEncrptionService().generateRSAKeyPairAndEncode();
+              await MessageEncrptionService().generateRSAKeyPairAndEncode();
 
               // Retiving the RSA Key
               final key = await MessageEncrptionService().returnRSAKeys();

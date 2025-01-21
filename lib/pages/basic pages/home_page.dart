@@ -173,6 +173,7 @@ class _HomePageState extends State<HomePage> {
                               "imageUrl": user.imageUrl,
                               "isOnline": user.isOnline,
                               "lastSeen": user.lastSeen,
+                              "rsaPublicKey": user.rsaPublicKey,
                             },
                           );
                         },

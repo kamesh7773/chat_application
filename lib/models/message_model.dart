@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:pointycastle/asymmetric/api.dart';
 
 class MessageModel {
   final String senderID;
@@ -7,7 +6,6 @@ class MessageModel {
   final String message;
   final String encryptedAESKey;
   final String encryptedIV;
-  final RSAPublicKey myPublicKey;
   final bool isSeen;
   final Timestamp timestamp;
 
@@ -17,7 +15,6 @@ class MessageModel {
     required this.message,
     required this.encryptedAESKey,
     required this.encryptedIV,
-    required this.myPublicKey,
     required this.isSeen,
     required this.timestamp,
   });
@@ -41,7 +38,6 @@ class MessageModel {
         message: json["message"],
         encryptedAESKey: json["encryptedAESKey"],
         encryptedIV: json["encryptedIV"],
-        myPublicKey: json["myPublicKey"],
         isSeen: json["isSeen"],
         timestamp: json["timestamp"],
       );
@@ -52,7 +48,6 @@ class MessageModel {
         "message": message,
         "encryptedAESKey": encryptedAESKey,
         "encryptedIV": encryptedIV,
-        "myPublicKey": myPublicKey,
         "isSeen": isSeen,
         "timestamp": timestamp,
       };

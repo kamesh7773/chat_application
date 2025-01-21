@@ -1,59 +1,46 @@
 // import 'package:encrypt/encrypt.dart';
-import 'dart:math';
+
 import 'dart:typed_data';
 
+import 'package:colored_print/colored_print.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:pointycastle/api.dart';
 import 'package:pointycastle/asymmetric/api.dart';
-import 'package:pointycastle/key_generators/api.dart';
-
-import 'package:pointycastle/key_generators/rsa_key_generator.dart';
-import 'package:pointycastle/random/fortuna_random.dart';
+import 'package:rsa_encrypt/rsa_encrypt.dart';
+import 'package:pointycastle/api.dart' as crypto;
 
 class MessageEncrptionService {
   // creating the instance of FlutterSecureStorage
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   //! Method that Generates RSA Key Pair (public/private)
-  Future generateRSAKeyPair() async {
+  void generateRSAKeyPairAndEncode() async {
+    //Future to hold our KeyPair
+    Future<crypto.AsymmetricKeyPair> futureKeyPair;
+    //to store the KeyPair once we get data from our future
+    crypto.AsymmetricKeyPair keyPair;
+
+    var helper = RsaKeyHelper();
+
+    Future<crypto.AsymmetricKeyPair<crypto.PublicKey, crypto.PrivateKey>> getKeyPair() {
+      return helper.computeRSAKeyPair(helper.getSecureRandom());
+    }
+
+    futureKeyPair = getKeyPair();
+    keyPair = await futureKeyPair;
+
+    var public = helper.encodePublicKeyToPemPKCS1(keyPair.publicKey as RSAPublicKey);
+
+    ColoredPrint.warning(public);
+  }
+
+  //! Step 2: Method That return the RSA Key's (Private and Public)
+  Future<({String? rsaPublicKey, String? rsaPrivateKey})> returnRSAKeys() async {
     // First we read the Key from flutter secure storage if key are already genrated then we do not genrate them again
     final String? rsaPrivateKey = await _storage.read(key: 'private_key');
     final String? rsaPublicKey = await _storage.read(key: 'public_key');
 
-    if (rsaPrivateKey == null && rsaPublicKey == null) {
-      final secureRandom = FortunaRandom();
-      final random = Random.secure();
-      final seeds = Uint8List(32);
-      for (int i = 0; i < seeds.length; i++) {
-        seeds[i] = random.nextInt(256);
-      }
-      secureRandom.seed(KeyParameter(seeds));
-
-      final keyParams = RSAKeyGeneratorParameters(
-        BigInt.from(65537), // Public exponent
-        2048, // Key size (2048 bits)
-        12, // Certainty
-      );
-
-      RSAKeyGenerator().init(ParametersWithRandom(keyParams, secureRandom));
-
-      // Store RSA Key pair Securely (Private and Public) to flutter secure storage.
-      String privateKeyString = privateKey.toString();
-      String publicKeyString = publicKey.toString();
-    }
-  }
-
-  //! Step 2: Store RSA Keys Securely (Private and Public)
-  Future<void> storeKeys(RSAPrivateKey privateKey, RSAPublicKey publicKey) async {
-    // Convert keys to PEM or Base64 string for storage
-    String privateKeyString = privateKey.toString();
-    String publicKeyString = publicKey.toString();
-
-    // Store the private key securely on the device
-    await _storage.write(key: 'private_key', value: privateKeyString);
-    // Store the public key (can be shared securely)
-    await _storage.write(key: 'public_key', value: publicKeyString);
+    return (rsaPublicKey: rsaPublicKey, rsaPrivateKey: rsaPrivateKey);
   }
 
   // Method that encryped the user message and write AES Key, IV to flutter secure storage and also return the AES Key, IV & Encrypted Message.

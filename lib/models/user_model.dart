@@ -16,6 +16,7 @@ class UserModel {
   bool isInsideChatRoom;
   List<UnSeenMessage>? unSeenMessages;
   String provider;
+  String rsaPublicKey;
   String userID;
   List<CallLog>? callLogs;
 
@@ -29,6 +30,7 @@ class UserModel {
     required this.isInsideChatRoom,
     this.unSeenMessages,
     required this.provider,
+    required this.rsaPublicKey,
     required this.userID,
     required this.callLogs,
   });
@@ -43,6 +45,7 @@ class UserModel {
         isInsideChatRoom: json["isInsideChatRoom"] ?? false,
         unSeenMessages: json["unSeenMessages"] == null ? null : List<UnSeenMessage>.from(json["unSeenMessages"].map((x) => UnSeenMessage.fromJson(x))),
         provider: json["provider"] ?? '',
+        rsaPublicKey: json["rsaPublicKey"] ?? '',
         userID: json["userID"] ?? '',
         callLogs: json["callLogs"] == null ? null : List<CallLog>.from(json["callLogs"].map((x) => CallLog.fromJson(x))),
       );
@@ -57,6 +60,7 @@ class UserModel {
         "isInsideChatRoom": isInsideChatRoom,
         "unSeenMessages": unSeenMessages == null ? null : List<dynamic>.from(unSeenMessages!.map((x) => x.toJson())),
         "provider": provider,
+        "rsaPublicKey": rsaPublicKey,
         "userID": userID,
         "callLogs": callLogs == null ? null : List<dynamic>.from(callLogs!.map((x) => x.toJson())),
       };

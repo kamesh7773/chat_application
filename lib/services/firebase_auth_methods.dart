@@ -1,3 +1,5 @@
+import 'package:chat_application/services/message_encrption_service.dart';
+
 import 'zego_methods.dart';
 
 import '../routes/rotues_names.dart';
@@ -160,6 +162,12 @@ class FirebaseAuthMethods {
             password: password,
           );
 
+          // Method for creating RSA Public and Private keys for Message Encryption.
+          MessageEncrptionService().generateRSAKeyPairAndEncode();
+
+          // Retiving the RSA Key
+          final key = await MessageEncrptionService().returnRSAKeys();
+
           // Store user data in Firestore
           await _firestoreDB.collection("users").doc(_auth.currentUser!.uid).set({
             "name": fullName,
@@ -171,6 +179,7 @@ class FirebaseAuthMethods {
             "lastSeen": DateTime.now(),
             "unSeenMessages": [],
             "provider": "Email & Password",
+            "rsaPublicKey": key.rsaPublicKey,
             "userID": _auth.currentUser!.uid,
           });
 
@@ -697,6 +706,12 @@ class FirebaseAuthMethods {
               }
               // else user docuemnt is not present on firestore users collection it mens user is sign up for first time so...
               else {
+                // Method for creating RSA Public and Private keys for Message Encryption.
+                MessageEncrptionService().generateRSAKeyPairAndEncode();
+
+                // Retiving the RSA Key
+                final key = await MessageEncrptionService().returnRSAKeys();
+
                 // Create "users" collection so we can store user-specific user datastore or user info inside the Firestore "users" collection.
                 await _firestoreDB.collection("users").doc(_auth.currentUser!.uid).set({
                   "name": userCredential.additionalUserInfo!.profile!["name"],
@@ -708,6 +723,7 @@ class FirebaseAuthMethods {
                   "lastSeen": DateTime.now(),
                   "unSeenMessages": [],
                   "provider": "Google",
+                  "rsaPublicKey": key.rsaPublicKey,
                   "userID": _auth.currentUser!.uid,
                 });
 
@@ -878,6 +894,12 @@ class FirebaseAuthMethods {
             }
             // else user docuemnt is not present on firestore users collection it mens user is sign up for first time so...
             else {
+              // Method for creating RSA Public and Private keys for Message Encryption.
+              MessageEncrptionService().generateRSAKeyPairAndEncode();
+
+              // Retiving the RSA Key
+              final key = await MessageEncrptionService().returnRSAKeys();
+
               // Create "users" collection so we can store user-specific user data
               await _firestoreDB.collection("users").doc(_auth.currentUser!.uid).set({
                 "name": userCredentail.additionalUserInfo!.profile!["name"],
@@ -889,6 +911,7 @@ class FirebaseAuthMethods {
                 "lastSeen": DateTime.now(),
                 "unSeenMessages": [],
                 "provider": "Facebook",
+                "rsaPublicKey": key.rsaPublicKey,
                 "userID": _auth.currentUser!.uid,
               });
 

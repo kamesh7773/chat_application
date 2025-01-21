@@ -124,7 +124,7 @@ class FirebaseFireStoreMethods {
       // Encrypt the message using AES
       final result = await MessageEncrptionService().encryptMessage(message: message);
 
-      // Encrypt AES Key & IV using the recipient's public RSA key
+      // // Encrypt AES Key & IV using the recipient's public RSA key
       String encryptedAESKey = MessageEncrptionService().rsaEncrypt(result.aesKey.bytes, recipientPublicKey);
       String encryptedIV = MessageEncrptionService().rsaEncrypt(result.iv.bytes, recipientPublicKey);
 

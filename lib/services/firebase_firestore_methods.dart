@@ -1,7 +1,5 @@
-import 'package:basic_utils/basic_utils.dart';
 import 'package:chat_application/services/message_encrption_service.dart';
 import 'package:colored_print/colored_print.dart';
-import 'package:pointycastle/asymmetric/api.dart';
 import 'package:rsa_encrypt/rsa_encrypt.dart';
 
 import '../models/message_model.dart';
@@ -123,17 +121,16 @@ class FirebaseFireStoreMethods {
       final bool otherSideUserInsideChatroom = data["isInsideChatRoom"];
       final bool isOnline = data["isOnline"];
 
+      // Parse the RSA public key of recipient from PEM format.
+      RsaKeyHelper helper = RsaKeyHelper();
+      final publicKey = helper.parsePublicKeyFromPem(recipientPublicKey);
+
       // Encrypt the message using AES
       final result = await MessageEncrptionService().encryptMessage(message: message);
 
-      // Converting String RSA Public Key to RSA Public Key.
-      var helper = RsaKeyHelper();
-
-      final RSAPublicKey publicKey = helper.parsePublicKeyFromPem(recipientPublicKey);
-
       // Encrypt AES Key & IV using the recipient's public RSA key
-      String encryptedAESKey = MessageEncrptionService().rsaEncrypt(result.aesKey.bytes, publicKey);
-      String encryptedIV = MessageEncrptionService().rsaEncrypt(result.iv.bytes, publicKey);
+      String encryptedAESKey = MessageEncrptionService().rsaEncrypt(data: result.aesKey.base64, publicKey: publicKey);
+      String encryptedIV = MessageEncrptionService().rsaEncrypt(data: result.iv, publicKey: publicKey);
 
       // If Other Side of User InSide the ChatRoom Then we setSeen to True
       if (otherSideUserInsideChatroom && isOnline) {
@@ -142,8 +139,8 @@ class FirebaseFireStoreMethods {
           senderID: currentUserID,
           reciverID: receiverID,
           message: result.encryptedMessage,
-          encryptedAESKey: "encryptedAESKey",
-          encryptedIV: "encryptedIV",
+          encryptedAESKey: encryptedAESKey,
+          encryptedIV: encryptedIV,
           isSeen: true,
           timestamp: timestamp,
         );
@@ -172,8 +169,8 @@ class FirebaseFireStoreMethods {
           senderID: currentUserID,
           reciverID: receiverID,
           message: result.encryptedMessage,
-          encryptedAESKey: "encryptedAESKey",
-          encryptedIV: "encryptedIV",
+          encryptedAESKey: encryptedAESKey,
+          encryptedIV: encryptedIV,
           isSeen: false,
           timestamp: timestamp,
         );

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chat_application/services/message_encrption_service.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../providers/zego_avatar_provider.dart';
@@ -298,12 +299,13 @@ class _ChatScreenState extends State<ChatScreen> {
                                 // getting messages by Index.
                                 final message = data[reverseIndex];
 
+                                MessageEncrptionService().mesageDecrypation(message: message.message, encryptedAESKey: message.encryptedAESKey, encryptedIV: message.encryptedIV);
+
                                 // is current user
                                 var isCurrentUser = message.senderID == _auth.currentUser!.uid;
 
                                 return Chatbubble(
                                   isCurrentUser: isCurrentUser,
-                                  // message: MessageEncrptionService().decryptingMessage(encryptedMessage: message.message, key: storedKey, iv: storedIV),
                                   message: message.message,
                                   isMessageSeen: message.isSeen,
                                   timestamp: message.timestamp,

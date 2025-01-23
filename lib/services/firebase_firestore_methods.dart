@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:chat_application/services/message_encrption_service.dart';
 import 'package:colored_print/colored_print.dart';
+import 'package:flutter/material.dart';
 import 'package:rsa_encrypt/rsa_encrypt.dart';
 
 import '../models/message_model.dart';
@@ -129,8 +132,8 @@ class FirebaseFireStoreMethods {
       final result = await MessageEncrptionService().encryptMessage(message: message);
 
       // Encrypt AES Key & IV using the recipient's public RSA key
-      String encryptedAESKey = MessageEncrptionService().rsaEncrypt(data: result.aesKey.base64, publicKey: publicKey);
-      String encryptedIV = MessageEncrptionService().rsaEncrypt(data: result.iv, publicKey: publicKey);
+      String encryptedAESKey = MessageEncrptionService().rsaEncrypt(data: result.aesKey.bytes, publicKey: publicKey);
+      String encryptedIV = MessageEncrptionService().rsaEncrypt(data: result.iv.bytes, publicKey: publicKey);
 
       // If Other Side of User InSide the ChatRoom Then we setSeen to True
       if (otherSideUserInsideChatroom && isOnline) {

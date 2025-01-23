@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:chat_application/services/message_encrption_service.dart';
 import 'package:colored_print/colored_print.dart';
-import 'package:flutter/material.dart';
 import 'package:rsa_encrypt/rsa_encrypt.dart';
 
 import '../models/message_model.dart';
@@ -161,9 +158,6 @@ class FirebaseFireStoreMethods {
         // add new message collection inside the OtherUser collections.
         // here we are storing chat collection inside the OtherUser collection and inside the ChatRoom Collection we are storing our message collection
         await otherUserDoc.collection(chatRoomsCollection).doc(currentUserID).collection(messagesCollection).add(newMessage.toMap());
-
-        // Here we update the LastMessage.
-        // await updateLastMessage(otherUserID: receiverID);
       }
       // else we set isSeen to false and add the send message to UnseenMessage List of Map to ther User document.
       else {
@@ -191,9 +185,6 @@ class FirebaseFireStoreMethods {
         // add new message collection inside the OtherUser collections.
         // here we are storing chat collection inside the OtherUser collection and inside the ChatRoom Collection we are storing our message collection
         await otherUserDoc.collection(chatRoomsCollection).doc(currentUserID).collection(messagesCollection).add(newMessage.toMap());
-
-        // Here we update the LastMessage.
-        // await updateLastMessage(otherUserID: receiverID);
 
         // Here we add the send Message to UnSeenMessage List of Map to Other User Side because when user is not inside the chat room we will show those unseen message on HomePage with HighLited Text.
         await updateUnseenMessage(userID: currentUserID, otherUserID: receiverID);

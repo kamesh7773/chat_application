@@ -65,6 +65,13 @@ class MessageEncrptionService {
     return encryptedData.base64;
   }
 
+  //! Method that Decrypt AES Key and IV using RSA Private key of Our Own key.
+  Uint8List rsaDecrypt({required String data, required RSAPrivateKey privateKey}) {
+    final decryptor = Encrypter(RSA(privateKey: privateKey));
+    final List<int> decryptedBytes = decryptor.decryptBytes(Encrypted.fromBase64(data));
+    return Uint8List.fromList(decryptedBytes); // Convert List<int> to Uint8List
+  }
+
   //! Method that encryped the user message and write AES Key, IV to flutter secure storage and also return the AES Key, IV & Encrypted Message.
   Future<({String encryptedMessage, Key aesKey, IV iv})> encryptMessage({required String message}) async {
     try {
@@ -81,6 +88,11 @@ class MessageEncrptionService {
 
       // encrypting the message.
       final encryptedMsg = encrypter.encrypt(message, iv: iv);
+      // decrypting the message.
+      final decryptedMsg = encrypter.decrypt(encryptedMsg, iv: iv);
+
+      ColoredPrint.warning(encryptedMsg.base64);
+      ColoredPrint.warning(decryptedMsg);
 
       // returning the encrypted Message and AES Key and IV that is used for Encrpting the meseage.
       return (encryptedMessage: encryptedMsg.base64, aesKey: aesKey, iv: iv);
@@ -89,14 +101,47 @@ class MessageEncrptionService {
     }
   }
 
-  //! Method that Decrypt AES Key and IV using RSA Private key of Our Own key.
-  dynamic decryptAESKey({required String data, required RSAPrivateKey privateKey}) {
+  Future<({String encryptedMessage, Key aesKey, IV iv})> encryptionDecryption({required String message, required String recipientPublicKey, required String recipientPrivateKey}) async {
     try {
-      final decryptor = Encrypter(RSA(privateKey: privateKey));
-      final decryptedKeyBytes = decryptor.decryptBytes(Encrypted.fromBase64(data));
-      return decryptedKeyBytes;
+      // Reading AES Key & IV from flutter secure storage if key are already genrated then we do not genrate them again
+      final String? stringAESKey = await _storage.read(key: 'AES_key');
+      final String? stringIV = await _storage.read(key: 'IV');
+
+      // Converting AES Key & IV from String dataType to their orignal State because flutter secure storage store the data in the String data type.
+      final Key aesKey = Key(base64Decode(stringAESKey!));
+      final IV iv = IV(base64Decode(stringIV!));
+
+      // crating Encrypter instance for encrption.
+      final encrypter = Encrypter(AES(aesKey, mode: AESMode.cbc));
+
+      // encrypting the message.
+      final encryptedMsg = encrypter.encrypt(message, iv: iv);
+
+      // Encrypting the AES Key and IV using other's users RSA Public Key
+      RsaKeyHelper helper = RsaKeyHelper();
+      final RSAPublicKey publicKey = helper.parsePublicKeyFromPem(recipientPublicKey);
+      final RSAPrivateKey privateKey = helper.parsePrivateKeyFromPem(recipientPrivateKey);
+
+      final encryptedAESKey = rsaEncrypt(data: aesKey.bytes, publicKey: publicKey);
+      final encryptedIV = rsaEncrypt(data: iv.bytes, publicKey: publicKey);
+
+      // Decrypting the AES Key and IV using other's users RSA Private Key
+      final Uint8List decryptedAESKeyBytes = rsaDecrypt(data: encryptedAESKey, privateKey: privateKey);
+      final Uint8List decryptedIVBytes = rsaDecrypt(data: encryptedIV, privateKey: privateKey);
+
+      // Wrap the decrypted bytes into Key and IV objects
+      final Key decryptedAESKey = Key(decryptedAESKeyBytes);
+      final IV decryptedIV = IV(decryptedIVBytes);
+
+      // encrypting the message.
+      final encrypterd = Encrypter(AES(decryptedAESKey, mode: AESMode.cbc));
+      final decryptedMsg = encrypterd.decrypt(encryptedMsg, iv: decryptedIV);
+
+      ColoredPrint.warning(decryptedMsg);
+
+      // returning the encrypted Message and AES Key and IV that is used for Encrpting the meseage.
+      return (encryptedMessage: encryptedMsg.base64, aesKey: aesKey, iv: iv);
     } catch (e) {
-      ColoredPrint.warning(e);
       throw e.toString();
     }
   }
@@ -111,12 +156,12 @@ class MessageEncrptionService {
     final privateKey = helper.parsePrivateKeyFromPem(pemPrivateKey);
 
     // Decrypt the AES key
-    final Key aesKey = decryptAESKey(data: encryptedAESKey, privateKey: privateKey);
+    // final Key aesKey = rsaDecrypt(data: encryptedAESKey, privateKey: privateKey);
 
     // Decrypt the IV
-    final iv = decryptAESKey(data: encryptedIV, privateKey: privateKey);
+    final iv = rsaDecrypt(data: encryptedIV, privateKey: privateKey);
 
-    ColoredPrint.warning(aesKey.runtimeType);
+    // ColoredPrint.warning(aesKey.runtimeType);
     ColoredPrint.warning(iv.runtimeType);
   }
 }

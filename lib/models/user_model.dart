@@ -17,6 +17,7 @@ class UserModel {
   List<UnSeenMessage>? unSeenMessages;
   String provider;
   String rsaPublicKey;
+  String rsaPrivateKey;
   String userID;
   List<CallLog>? callLogs;
 
@@ -31,6 +32,7 @@ class UserModel {
     this.unSeenMessages,
     required this.provider,
     required this.rsaPublicKey,
+    required this.rsaPrivateKey,
     required this.userID,
     required this.callLogs,
   });
@@ -46,6 +48,7 @@ class UserModel {
         unSeenMessages: json["unSeenMessages"] == null ? null : List<UnSeenMessage>.from(json["unSeenMessages"].map((x) => UnSeenMessage.fromJson(x))),
         provider: json["provider"] ?? '',
         rsaPublicKey: json["rsaPublicKey"] ?? '',
+        rsaPrivateKey: json["rsaPrivateKey"] ?? '',
         userID: json["userID"] ?? '',
         callLogs: json["callLogs"] == null ? null : List<CallLog>.from(json["callLogs"].map((x) => CallLog.fromJson(x))),
       );
@@ -61,6 +64,7 @@ class UserModel {
         "unSeenMessages": unSeenMessages == null ? null : List<dynamic>.from(unSeenMessages!.map((x) => x.toJson())),
         "provider": provider,
         "rsaPublicKey": rsaPublicKey,
+        "rsaPrivateKey": rsaPrivateKey,
         "userID": userID,
         "callLogs": callLogs == null ? null : List<dynamic>.from(callLogs!.map((x) => x.toJson())),
       };

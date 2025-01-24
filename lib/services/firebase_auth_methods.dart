@@ -163,10 +163,10 @@ class FirebaseAuthMethods {
           );
 
           // Method for creating RSA Public and Private keys for Message Encryption.
-          await MessageEncrptionService().generateRSAKeyPairAndEncode();
+          await MessageEncrptionService().generateKeys();
 
           // Retiving the RSA Key
-          final key = await MessageEncrptionService().returnRSAKeys();
+          final key = await MessageEncrptionService().returnKeys();
 
           // Store user data in Firestore
           await _firestoreDB.collection("users").doc(_auth.currentUser!.uid).set({
@@ -707,10 +707,10 @@ class FirebaseAuthMethods {
               // else user docuemnt is not present on firestore users collection it mens user is sign up for first time so...
               else {
                 // Method for creating RSA Public and Private keys for Message Encryption.
-                await MessageEncrptionService().generateRSAKeyPairAndEncode();
+                await MessageEncrptionService().generateKeys();
 
                 // Retiving the RSA Key
-                final key = await MessageEncrptionService().returnRSAKeys();
+                final key = await MessageEncrptionService().returnKeys();
 
                 // Create "users" collection so we can store user-specific user datastore or user info inside the Firestore "users" collection.
                 await _firestoreDB.collection("users").doc(_auth.currentUser!.uid).set({
@@ -895,10 +895,10 @@ class FirebaseAuthMethods {
             // else user docuemnt is not present on firestore users collection it mens user is sign up for first time so...
             else {
               // Method for creating RSA Public and Private keys for Message Encryption.
-              await MessageEncrptionService().generateRSAKeyPairAndEncode();
+              await MessageEncrptionService().generateKeys();
 
               // Retiving the RSA Key
-              final key = await MessageEncrptionService().returnRSAKeys();
+              final key = await MessageEncrptionService().returnKeys();
 
               // Create "users" collection so we can store user-specific user data
               await _firestoreDB.collection("users").doc(_auth.currentUser!.uid).set({

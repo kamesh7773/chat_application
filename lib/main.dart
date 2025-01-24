@@ -110,7 +110,7 @@ class _MyAppState extends State<MyApp> {
             title: 'Chat Application',
             theme: value,
             onGenerateRoute: Routes.generateRoute,
-            initialRoute: RoutesNames.signInPage,
+            initialRoute: RoutesNames.signInPage ,
           );
         },
       ),

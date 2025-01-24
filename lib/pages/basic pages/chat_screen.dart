@@ -299,7 +299,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                 // getting messages by Index.
                                 final message = data[reverseIndex];
 
-                                MessageEncrptionService().mesageDecrypation(message: message.message, encryptedAESKey: message.encryptedAESKey, encryptedIV: message.encryptedIV);
+                                // MessageEncrptionService().mesageDecrypation(message: message.message, encryptedAESKey: message.encryptedAESKey, encryptedIV: message.encryptedIV);
 
                                 // is current user
                                 var isCurrentUser = message.senderID == _auth.currentUser!.uid;

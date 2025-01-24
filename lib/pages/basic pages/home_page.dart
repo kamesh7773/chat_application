@@ -75,7 +75,10 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       ActionChip(
                         onPressed: () {
-                          MessageEncrptionService().generateRSAKeyPairAndEncode();
+                          //* Hello my name is kamesh
+                          // MessageEncrptionService().generateKeys();
+                          // MessageEncrptionService().returnKeys();
+                          MessageEncrptionService().encryptMessage(message: "Hello");
                         },
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
                         shadowColor: Colors.black,

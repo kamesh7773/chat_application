@@ -107,10 +107,10 @@ class _OtpPageState extends State<OtpPage> {
             children: [
               //! App Logo
               Image.asset(
-                MediaQuery.of(context).platformBrightness == Brightness.light ? "assets/logo/Logo_light_theme.png" : "assets/logo/Logo_dark_theme.png",
-                height: 120,
+                "assets/logo/logo.png",
+                height: 105,
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 40),
               const Text(
                 "Check your email for a code",
                 style: TextStyle(

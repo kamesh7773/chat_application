@@ -1,4 +1,4 @@
-import 'package:chat_application/services/message_encrption_service.dart';
+import 'message_encrption_service.dart';
 import 'package:colored_print/colored_print.dart';
 import 'package:pointycastle/asymmetric/api.dart';
 import 'package:rsa_encrypt/rsa_encrypt.dart';

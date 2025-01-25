@@ -1,13 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../providers/bottom_nav_image_provider.dart';
-import '../../services/firebase_firestore_methods.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../providers/bottom_nav_image_provider.dart';
+import '../../services/firebase_firestore_methods.dart';
 import 'calls_page.dart';
 import 'home_page.dart';
 import 'people_page.dart';
 import 'profile_page.dart';
-import 'package:flutter/material.dart';
 
 class BottomNavigationBarPage extends StatefulWidget {
   const BottomNavigationBarPage({super.key});

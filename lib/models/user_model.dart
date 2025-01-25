@@ -17,7 +17,6 @@ class UserModel {
   List<UnSeenMessage>? unSeenMessages;
   String provider;
   String rsaPublicKey;
-
   String userID;
   List<CallLog>? callLogs;
 

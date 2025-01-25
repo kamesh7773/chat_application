@@ -1,4 +1,4 @@
-import 'package:chat_application/services/message_encrption_service.dart';
+import 'message_encrption_service.dart';
 
 import 'zego_methods.dart';
 
@@ -181,6 +181,7 @@ class FirebaseAuthMethods {
             "provider": "Email & Password",
             "rsaPublicKey": key.rsaPublicKey,
             "userID": _auth.currentUser!.uid,
+            "callLogs": [],
           });
 
           // Fetch current user info from Firestore
@@ -725,6 +726,7 @@ class FirebaseAuthMethods {
                   "provider": "Google",
                   "rsaPublicKey": key.rsaPublicKey,
                   "userID": _auth.currentUser!.uid,
+                  "callLogs": [],
                 });
 
                 // Fetch current userId info from "users" collection
@@ -913,6 +915,7 @@ class FirebaseAuthMethods {
                 "provider": "Facebook",
                 "rsaPublicKey": key.rsaPublicKey,
                 "userID": _auth.currentUser!.uid,
+                "callLogs": [],
               });
 
               // Fetch current userId info from "users" collection

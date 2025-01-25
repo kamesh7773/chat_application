@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chat_application/services/message_encrption_service.dart';
+import '../../services/message_encrption_service.dart';
 import '../../providers/last_message_provider.dart';
 import '../../utils/date_time_calculator_for_users.dart';
 import 'package:firebase_auth/firebase_auth.dart';

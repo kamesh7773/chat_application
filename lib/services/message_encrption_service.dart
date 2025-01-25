@@ -88,11 +88,6 @@ class MessageEncrptionService {
 
       // encrypting the message.
       final encryptedMsg = encrypter.encrypt(message, iv: iv);
-      // decrypting the message.
-      final decryptedMsg = encrypter.decrypt(encryptedMsg, iv: iv);
-
-      ColoredPrint.warning(encryptedMsg.base64);
-      ColoredPrint.warning(decryptedMsg);
 
       // returning the encrypted Message and AES Key and IV that is used for Encrpting the meseage.
       return (encryptedMessage: encryptedMsg.base64, aesKey: aesKey, iv: iv);
@@ -117,13 +112,15 @@ class MessageEncrptionService {
       // encrypting the message.
       final encryptedMsg = encrypter.encrypt(message, iv: iv);
 
-      // Encrypting the AES Key and IV using other's users RSA Public Key
+      // Converting PEM RSA Private and Public key to Orignal State so they can be used for Encryption.
       RsaKeyHelper helper = RsaKeyHelper();
       final RSAPublicKey publicKey = helper.parsePublicKeyFromPem(recipientPublicKey);
       final RSAPrivateKey privateKey = helper.parsePrivateKeyFromPem(recipientPrivateKey);
 
       final encryptedAESKey = rsaEncrypt(data: aesKey.bytes, publicKey: publicKey);
       final encryptedIV = rsaEncrypt(data: iv.bytes, publicKey: publicKey);
+
+      //* ----------------- Decryption Part -----------------  */
 
       // Decrypting the AES Key and IV using other's users RSA Private Key
       final Uint8List decryptedAESKeyBytes = rsaDecrypt(data: encryptedAESKey, privateKey: privateKey);
@@ -133,7 +130,7 @@ class MessageEncrptionService {
       final Key decryptedAESKey = Key(decryptedAESKeyBytes);
       final IV decryptedIV = IV(decryptedIVBytes);
 
-      // encrypting the message.
+      // decrypting the message.
       final encrypterd = Encrypter(AES(decryptedAESKey, mode: AESMode.cbc));
       final decryptedMsg = encrypterd.decrypt(encryptedMsg, iv: decryptedIV);
 
@@ -147,21 +144,48 @@ class MessageEncrptionService {
   }
 
   //! Method that decrypted the
-  Future<void> mesageDecrypation({required String senderID, required String encryptedAESKey, required String encryptedIV, required String message}) async {
+  Future<String> mesageDecrypation({required String currentUserID, required String senderID, required String encryptedAESKey, required String encryptedIV, required String encryptedMessage}) async {
     // reading the RSA Private Key from flutter secure storage.
     final pemPrivateKey = await _storage.read(key: 'private_Key');
+    final currentUserAESKey = await _storage.read(key: 'AES_key');
+    final currentUserIV = await _storage.read(key: 'IV');
 
     // Parse the RSA private key directly from PEM format
     RsaKeyHelper helper = RsaKeyHelper();
     final privateKey = helper.parsePrivateKeyFromPem(pemPrivateKey);
 
-    // Decrypt the AES key
-    // final Key aesKey = rsaDecrypt(data: encryptedAESKey, privateKey: privateKey);
+    // Decrypting the AES Key and IV using other's users RSA Private Key
+    final Uint8List decryptedAESKeyBytes = rsaDecrypt(data: encryptedAESKey, privateKey: privateKey);
+    final Uint8List decryptedIVBytes = rsaDecrypt(data: encryptedIV, privateKey: privateKey);
 
-    // Decrypt the IV
-    final iv = rsaDecrypt(data: encryptedIV, privateKey: privateKey);
+    // convet the decrypted bytes into Key and IV objects
+    final Key currentUserDecryptedAESKey = Key(base64Decode(currentUserAESKey!));
+    final IV currentUserDecryptedIV = IV(base64Decode(currentUserIV!));
 
-    // ColoredPrint.warning(aesKey.runtimeType);
-    ColoredPrint.warning(iv.runtimeType);
+    final Key recipientUserDecryptedAESKey = Key(decryptedAESKeyBytes);
+    final IV recipientUserDecryptedIV = IV(decryptedIVBytes);
+
+    // Convert the encrypted message String to an Encrypted object
+    final Encrypted encryptedData = Encrypted.fromBase64(encryptedMessage);
+
+    ColoredPrint.warning(senderID);
+    ColoredPrint.warning(currentUserID);
+
+    // decrypting the message.
+    if (senderID == currentUserID) {
+      ColoredPrint.warning("true");
+      final encrypterd = Encrypter(AES(currentUserDecryptedAESKey, mode: AESMode.cbc));
+      final decryptedMsg = encrypterd.decrypt(encryptedData, iv: currentUserDecryptedIV);
+
+
+      return decryptedMsg;
+    } else {
+      ColoredPrint.warning("false");
+      final encrypterd = Encrypter(AES(recipientUserDecryptedAESKey, mode: AESMode.cbc));
+      final decryptedMsg = encrypterd.decrypt(encryptedData, iv: recipientUserDecryptedIV);
+
+
+      return decryptedMsg;
+    }
   }
 }

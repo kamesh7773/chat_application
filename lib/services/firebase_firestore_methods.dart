@@ -225,25 +225,47 @@ class FirebaseFireStoreMethods {
 
   //! Method for getting the Messages.
   Stream<List<MessageModel>> getMessages({required String otherUserID}) {
-    // construt chatRoom ID for two users (sorted to ensure uniqueness)
+    // Construct chatRoom ID for two users (sorted to ensure uniqueness)
     List<String> ids = [_auth.currentUser!.uid, otherUserID];
     ids.sort();
-    // Creating the chatRoomID by combining currentUserID and reciverUserID. ("ZEL264FDSXEFD_KJLADSFJLSAJD")
     String chatRoomID = ids.join("_");
 
-    // get the messages collection that is inside the chatRooms collection
+    // Get the messages collection inside chatRooms collection
     final CollectionReference messages = _db.collection(chatRoomsCollection).doc(chatRoomID).collection(messagesCollection);
 
     try {
-      // Here we are the snapShot and with help of map() we retive that snapShot.
-      return messages.orderBy("timestamp", descending: false).snapshots().map((snapshot) {
-        // Here we retrive the documents from snapShot.
-        return snapshot.docs.map((doc) {
-          // Here we are converting each SnapShot document Map<String ,dynamic> and pass to the fromJson mehtod so we can convert it into NoteModel.
-          return MessageModel.fromJson(doc.data() as Map<String, dynamic>);
-        }).toList();
+      // Use asyncMap to handle asynchronous operations
+      return messages.orderBy("timestamp", descending: false).snapshots().asyncMap((snapshot) async {
+        // Fetch and process each document asynchronously
+        final List<MessageModel> messageList = await Future.wait(snapshot.docs.map((doc) async {
+          final Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+          // Fetch encrypted fields
+          final String senderID = data['senderID'];
+          final String encryptedMessage = data['message'];
+          final String encryptedAESKey = data['encryptedAESKey'];
+          final String encryptedIV = data['encryptedIV'];
+
+          // Decrypt the message asynchronously
+          final String decryptedMessage = await MessageEncrptionService().mesageDecrypation(
+            currentUserID: _auth.currentUser!.uid,
+            senderID: senderID,
+            encryptedMessage: encryptedMessage,
+            encryptedAESKey: encryptedAESKey,
+            encryptedIV: encryptedIV,
+          );
+
+          // Replace the encrypted message with the decrypted message
+          data['message'] = decryptedMessage;
+
+          // Convert the updated map to a MessageModel
+          return MessageModel.fromJson(data);
+        }).toList());
+
+        return messageList;
       });
     } catch (error) {
+      ColoredPrint.warning(error);
       throw Exception(error.toString());
     }
   }

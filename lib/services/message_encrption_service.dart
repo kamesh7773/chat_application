@@ -150,40 +150,38 @@ class MessageEncrptionService {
     final currentUserAESKey = await _storage.read(key: 'AES_key');
     final currentUserIV = await _storage.read(key: 'IV');
 
-    // Parse the RSA private key directly from PEM format
-    RsaKeyHelper helper = RsaKeyHelper();
-    final privateKey = helper.parsePrivateKeyFromPem(pemPrivateKey);
-
-    // Decrypting the AES Key and IV using other's users RSA Private Key
-    final Uint8List decryptedAESKeyBytes = rsaDecrypt(data: encryptedAESKey, privateKey: privateKey);
-    final Uint8List decryptedIVBytes = rsaDecrypt(data: encryptedIV, privateKey: privateKey);
-
-    // convet the decrypted bytes into Key and IV objects
+    // Converting AES Key & IV from String dataType to their orignal State because flutter secure storage store the data in the String data type.
     final Key currentUserDecryptedAESKey = Key(base64Decode(currentUserAESKey!));
     final IV currentUserDecryptedIV = IV(base64Decode(currentUserIV!));
-
-    final Key recipientUserDecryptedAESKey = Key(decryptedAESKeyBytes);
-    final IV recipientUserDecryptedIV = IV(decryptedIVBytes);
 
     // Convert the encrypted message String to an Encrypted object
     final Encrypted encryptedData = Encrypted.fromBase64(encryptedMessage);
 
-    ColoredPrint.warning(senderID);
-    ColoredPrint.warning(currentUserID);
-
-    // decrypting the message.
+    // if senderID of message model is current userID then we does not need the Private Key because we can can use the AES Key and IV that we have to store in
+    // flutter secure storage and we just use the AES Key and IV to decrpted our message.
     if (senderID == currentUserID) {
-      ColoredPrint.warning("true");
       final encrypterd = Encrypter(AES(currentUserDecryptedAESKey, mode: AESMode.cbc));
       final decryptedMsg = encrypterd.decrypt(encryptedData, iv: currentUserDecryptedIV);
 
-
       return decryptedMsg;
-    } else {
-      ColoredPrint.warning("false");
+    }
+    // else if senderID is not equal to current userID then it means that message is sended by User A to User B now User B use their RSA Private Key to decrypt the
+    // AES Key and IV of User A that is decrypted by the User B Public Key now User B can decrypt the AES Key and IV easly.
+    else {
+      // Parse the RSA private key directly from PEM format
+      RsaKeyHelper helper = RsaKeyHelper();
+      final privateKey = helper.parsePrivateKeyFromPem(pemPrivateKey);
+
+      // Decrypting the AES Key and IV using other's users RSA Private Key
+      final Uint8List decryptedAESKeyBytes = rsaDecrypt(data: encryptedAESKey, privateKey: privateKey);
+      final Uint8List decryptedIVBytes = rsaDecrypt(data: encryptedIV, privateKey: privateKey);
+
+      // Converting AES Key & IV from String dataType to their orignal State because flutter secure storage store the data in the String data type.
+      final Key recipientUserDecryptedAESKey = Key(decryptedAESKeyBytes);
+      final IV recipientUserDecryptedIV = IV(decryptedIVBytes);
+
       final encrypterd = Encrypter(AES(recipientUserDecryptedAESKey, mode: AESMode.cbc));
       final decryptedMsg = encrypterd.decrypt(encryptedData, iv: recipientUserDecryptedIV);
-
 
       return decryptedMsg;
     }

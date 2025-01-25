@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:colored_print/colored_print.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../providers/zego_avatar_provider.dart';
@@ -315,7 +316,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             builder: (context, specificValue, child) {
                               return specificValue
                                   ? const Padding(
-                                      padding: EdgeInsets.only(left: 15.0, top: 16, bottom: 10),
+                                      padding: EdgeInsets.only(left: 11.0, top: 2, bottom: 2),
                                       child: TypingIndicator(),
                                     )
                                   : const SizedBox();
@@ -327,6 +328,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
                     // if snapshot has error.
                     if (snapshot.hasError) {
+                      ColoredPrint.warning(snapshot.error);
                       return const Center(
                         child: Text("Something went wrong ⚠️"),
                       );

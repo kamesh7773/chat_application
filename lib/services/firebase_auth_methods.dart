@@ -180,7 +180,6 @@ class FirebaseAuthMethods {
             "unSeenMessages": [],
             "provider": "Email & Password",
             "rsaPublicKey": key.rsaPublicKey,
-            "rsaPrivateKey": key.rsaPrivateKey,
             "userID": _auth.currentUser!.uid,
           });
 
@@ -725,7 +724,6 @@ class FirebaseAuthMethods {
                   "unSeenMessages": [],
                   "provider": "Google",
                   "rsaPublicKey": key.rsaPublicKey,
-                  "rsaPrivateKey": key.rsaPrivateKey,
                   "userID": _auth.currentUser!.uid,
                 });
 
@@ -914,7 +912,6 @@ class FirebaseAuthMethods {
                 "unSeenMessages": [],
                 "provider": "Facebook",
                 "rsaPublicKey": key.rsaPublicKey,
-                "rsaPrivateKey": key.rsaPrivateKey,
                 "userID": _auth.currentUser!.uid,
               });
 

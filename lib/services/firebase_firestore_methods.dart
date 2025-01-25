@@ -331,7 +331,22 @@ class FirebaseFireStoreMethods {
       if (snapshot.docs.isNotEmpty) {
         Map<String, dynamic> lastMessageData = snapshot.docs.last.data() as Map<String, dynamic>;
 
-        return lastMessageData["message"];
+        // Fetch encrypted fields
+        final String senderID = lastMessageData['senderID'];
+        final String encryptedMessage = lastMessageData['message'];
+        final String encryptedAESKey = lastMessageData['encryptedAESKey'];
+        final String encryptedIV = lastMessageData['encryptedIV'];
+
+        // Decrypt the message asynchronously
+        final String decryptedMessage = await MessageEncrptionService().mesageDecrypation(
+          currentUserID: _auth.currentUser!.uid,
+          senderID: senderID,
+          encryptedMessage: encryptedMessage,
+          encryptedAESKey: encryptedAESKey,
+          encryptedIV: encryptedIV,
+        );
+
+        return decryptedMessage;
       } else {
         return "";
       }

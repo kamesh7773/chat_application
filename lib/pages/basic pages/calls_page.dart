@@ -46,19 +46,19 @@ class _CallsPageState extends State<CallsPage> {
               ],
             ),
           ),
-          //! User Chat List
+          //! Call Logs
           Expanded(
             child: StreamBuilder<UserModel>(
               stream: _firebaseFireStoreMethods.fetchingCurrentUserDetails(),
               builder: (context, snapshot) {
-                // If snapshot is still loading then show CircularProgressIndicator.
+                // If the snapshot is still loading, show a CircularProgressIndicator.
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }
 
-                // If snapshot has error then show error message.
+                // If the snapshot has an error, show an error message.
                 if (snapshot.hasError) {
                   return Center(
                     child: Text(snapshot.error.toString()),
@@ -66,7 +66,7 @@ class _CallsPageState extends State<CallsPage> {
                 }
 
                 if (snapshot.hasData) {
-                  // Here we are converting the snapshot data into List<UserModel>.
+                  // Convert the snapshot data into a UserModel.
                   final UserModel currentUserData = snapshot.data!;
 
                   return ListView.builder(
@@ -139,7 +139,7 @@ class _CallsPageState extends State<CallsPage> {
                   );
                 }
 
-                // else condiation
+                // Else condition
                 else {
                   return const Center(
                     child: Text("Else Condition"),

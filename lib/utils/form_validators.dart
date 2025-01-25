@@ -1,28 +1,28 @@
-//! This class holds all form validators.
+//! This class contains all form validators.
 
 class FormValidator {
 // -------------------------------
-// Method for validating Full name
+// Method for validating full name
 // -------------------------------
 
   static String? firstNameValidator(String? value) {
-    // If the text field is empty
+    // Check if the text field is empty
     if (value!.isEmpty) {
-      return "Please enter a Full name";
+      return "Please enter a full name";
     }
-    // For first name validation
+    // Validate the first name
     else if (!RegExp(r"^[a-zA-Z0-9]").hasMatch(value)) {
-      return "Enter a correct Full name";
+      return "Enter a valid full name";
     }
-    // First name must be no longer than 15 characters
+    // Ensure the first name is no longer than 30 characters
     else if (RegExp(r"^.{30}").hasMatch(value)) {
       return "Full name must be no longer than 30 characters";
     }
-    // First name should not contain special characters
+    // Ensure the first name does not contain special characters
     else if (RegExp(r"^(?=.*[#?!@$%^&*-+()/':;])").hasMatch(value)) {
       return "Full name should not contain special characters";
     }
-    // Else return nothing
+    // Return null if validation passes
     else {
       return null;
     }
@@ -33,15 +33,15 @@ class FormValidator {
 // ----------------------------
 
   static String? emailValidator(String? value) {
-    // If the text field is empty
+    // Check if the text field is empty
     if (value!.isEmpty) {
       return "Please enter an email";
     }
-    // RegExp for email validation
+    // Validate the email format
     else if (!RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+$").hasMatch(value)) {
-      return "Enter a correct email";
+      return "Enter a valid email";
     }
-    // Else return nothing
+    // Return null if validation passes
     else {
       return null;
     }
@@ -52,37 +52,37 @@ class FormValidator {
 // ------------------------------
 
   static String? passwordValidator(String? value) {
-    // If the text field is empty
+    // Check if the text field is empty
     if (value!.isEmpty) {
       return "Please enter a password";
     }
 
-    // validating atleast 8 chartors.
+    // Validate that the password has at least 8 characters
     else if (!RegExp(r'^.{8,}$').hasMatch(value)) {
-      return "Password required at least 8 characters";
+      return "Password must be at least 8 characters long";
     }
 
-    // validating at lest 1 number in password.
+    // Validate that the password contains at least 1 number
     else if (!RegExp(r'.*\d+.*').hasMatch(value)) {
-      return "Password required at least 1 number";
+      return "Password must contain at least 1 number";
     }
 
-    // validating at lest 1 lowercase in password.
+    // Validate that the password contains at least 1 lowercase letter
     else if (!RegExp(r'.*[a-z]+.*').hasMatch(value)) {
-      return "Password required at least 1 lowercase character";
+      return "Password must contain at least 1 lowercase letter";
     }
 
-    // validating at lest 1 uppercase in password.
+    // Validate that the password contains at least 1 uppercase letter
     else if (!RegExp(r'[A-Z]').hasMatch(value)) {
-      return "Password required at least 1 uppercase character";
+      return "Password must contain at least 1 uppercase letter";
     }
 
-    // validating at lest one special charctors in password.
+    // Validate that the password contains at least 1 special character
     else if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
-      return "Password required at least 1 sepcial character";
+      return "Password must contain at least 1 special character";
     }
 
-    // Else return nothing
+    // Return null if validation passes
     else {
       return null;
     }

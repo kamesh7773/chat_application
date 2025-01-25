@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
                     IconButton(
                       padding: EdgeInsets.zero,
                       onPressed: () {
-                        //! Navigate user to Search Page
+                        //! Navigate the user to the Search Page
                         Navigator.of(context).pushNamed(
                           RoutesNames.searchPage,
                           arguments: "Chats",
@@ -75,7 +75,7 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       ActionChip(
                         onPressed: () {
-                          //* Hello my name is kamesh
+                          //* Example usage of MessageEncryptionService
                           // MessageEncrptionService().generateKeys();
                           // MessageEncrptionService().returnKeys();
                           // MessageEncrptionService().encryptMessage(message: "Hello");
@@ -108,7 +108,7 @@ class _HomePageState extends State<HomePage> {
                       Flexible(
                         child: ActionChip(
                           onPressed: () {
-                            //! Navigate user to Active Users Page.
+                            //! Navigate the user to the Active Users Page.
                             Navigator.of(context).pushNamed(RoutesNames.activeUserPage);
                           },
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
@@ -141,38 +141,38 @@ class _HomePageState extends State<HomePage> {
             child: StreamBuilder<List<UserModel>>(
               stream: _firebaseFireStoreMethods.fetchingUsers(),
               builder: (context, snapshot) {
-                // If snapshot is still loading then show CircularProgressIndicator.
+                // If the snapshot is still loading, show a CircularProgressIndicator.
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }
 
-                // If snapshot has error then show error message.
+                // If the snapshot has an error, display the error message.
                 if (snapshot.hasError) {
                   return Center(
                     child: Text(snapshot.error.toString()),
                   );
                 }
 
-                // If snapshot has data then show ListView.builder.
+                // If the snapshot has data, display the ListView.builder.
                 if (snapshot.hasData) {
-                  // Here we are converting the snapshot data into List<UserModel>.
+                  // Convert the snapshot data into a List<UserModel>.
                   final List<UserModel> listofUser = snapshot.data!;
 
                   return ListView.builder(
                     padding: EdgeInsets.zero,
                     itemCount: listofUser.length,
                     itemBuilder: (context, index) {
-                      // retiving each user data from UserModal.
+                      // Retrieve each user's data from UserModel.
                       final user = listofUser[index];
 
-                      // This method get called for every other User and we pass with his userID.
+                      // This method is called for every user, passing their userID.
                       context.read<LastMessageProvider>().fetchLastMsg(otherUserID: user.userID);
 
                       return ListTile(
                         onTap: () {
-                          //! Navigate user to Chat Screen Page.
+                          //! Navigate the user to the Chat Screen Page.
                           Navigator.of(context).pushNamed(
                             RoutesNames.chatScreenPage,
                             arguments: {
@@ -213,7 +213,7 @@ class _HomePageState extends State<HomePage> {
                                       },
                                     ),
                                   ),
-                            //! If User online then we show green dot.
+                            //! If the user is online, display a green dot.
                             user.isOnline
                                 ? Positioned(
                                     bottom: 1.5,
@@ -228,7 +228,7 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                     ),
                                   )
-                                // else we show SizedBox().
+                                // Otherwise, display a SizedBox().
                                 : const SizedBox(),
                           ],
                         ),
@@ -236,11 +236,10 @@ class _HomePageState extends State<HomePage> {
                           user.name,
                           maxLines: 1,
                         ),
-                        //! if UnseenMessage List is Empty then we show the last Msg in subtitle as normal text other wise we show lastMsg in BOLD Text.
+                        //! If the UnseenMessage List is empty, show the last message in the subtitle as normal text; otherwise, show it in bold text.
                         subtitle: user.unSeenMessages!.isEmpty
                             ? Selector<LastMessageProvider, String>(
-                                // Here we fetch the Last Message of other User ID from Map that we create and we store the lastMsg with the key name of his User ID so it will very easy to retive
-                                // because we can fetch easly with provided UserID from map.
+                                // Fetch the last message of the other user ID from the map we created, storing the last message with the key name of their User ID for easy retrieval.
                                 selector: (context, provider) => provider.getLastMsg(user.userID),
                                 builder: (context, value, child) {
                                   return Text(
@@ -255,8 +254,7 @@ class _HomePageState extends State<HomePage> {
                                 },
                               )
                             : Selector<LastMessageProvider, String>(
-                                // Here we fetch the Last Message of other User ID from Map that we create and we store the lastMsg with the key name of his User ID so it will very easy to retive
-                                // because we can fetch easly with provided UserID from map.
+                                // Fetch the last message of the other user ID from the map we created, storing the last message with the key name of their User ID for easy retrieval.
                                 selector: (context, provider) => provider.getLastMsg(user.userID),
                                 builder: (context, value, child) {
                                   return Text(
@@ -270,7 +268,7 @@ class _HomePageState extends State<HomePage> {
                                   );
                                 },
                               ),
-                        //! if UnseenMessage List is Empty then...
+                        //! If the UnseenMessage List is empty, then...
                         trailing: user.unSeenMessages!.isEmpty
                             ? Padding(
                                 padding: const EdgeInsets.only(left: 10),
@@ -282,7 +280,7 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 ),
                               )
-                            //! If UnserSeenMessage Contains the Message then...
+                            //! If UnseenMessage contains messages, then...
                             : user.unSeenMessages!.last.reciverId == _auth.currentUser!.uid
                                 ? Padding(
                                     padding: const EdgeInsets.only(left: 80),
@@ -328,10 +326,10 @@ class _HomePageState extends State<HomePage> {
                   );
                 }
 
-                // else condiation
+                // Default case if no data is available
                 else {
                   return const Center(
-                    child: Text("Else Condition"),
+                    child: Text("No data available."),
                   );
                 }
               },

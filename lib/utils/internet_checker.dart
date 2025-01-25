@@ -4,13 +4,13 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 class InternetChecker {
   static late List<ConnectivityResult> connectivityResult;
 
-  // Future method for checking internet connectivity
+  // Future method to check internet connectivity
   static Future<bool> checkInternet() async {
     connectivityResult = await (Connectivity().checkConnectivity());
-    // If there is no internet, return "true"
+    // Return "true" if there is no internet connection
     if (connectivityResult.contains(ConnectivityResult.none)) {
       return true;
-    // If an internet connection is present, return "false"
+      // Return "false" if an internet connection is present
     } else {
       return false;
     }

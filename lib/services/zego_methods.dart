@@ -12,11 +12,11 @@ import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 
 class ZegoMethods {
-  /// on user login
+  /// Called when the user logs in
   static void onUserLogin() async {
     // Variables related to Firebase instances
     final FirebaseFirestore db = FirebaseFirestore.instance;
-    // Fecting Current User Details from the Shared Preferences.
+    // Fetching current user details from Shared Preferences
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     // Instance of FirestoreMethod class
     final FirebaseFireStoreMethods firebaseFireStoreMethods = FirebaseFireStoreMethods();
@@ -24,7 +24,7 @@ class ZegoMethods {
     final String? userID = prefs.getString('userID');
     final String? name = prefs.getString('name');
 
-    /// 4/5. initialized ZegoUIKitPrebuiltCallInvitationService when account is logged in or re-logged in
+    /// Initialize ZegoUIKitPrebuiltCallInvitationService when the account is logged in or re-logged in
     ZegoUIKitPrebuiltCallInvitationService().init(
       appID: 160183049,
       appSign: "497baabd20893bd87376fc8263b93f8e05e9fe60012de0d391efe7b45a9e836d",
@@ -55,25 +55,25 @@ class ZegoMethods {
         ),
       ),
       invitationEvents: ZegoUIKitPrebuiltCallInvitationEvents(
-        //! Method that fire when user recive any kind of call (audio/video)
+        //! Triggered when the user receives any kind of call (audio/video)
         onIncomingCallReceived: (callID, caller, callType, callees, customData) async {
-          // get the current user ID
+          // Get the current user ID
           final String callerUserID = caller.id;
 
-          // get the user collection
+          // Get the user collection
           final CollectionReference callerUserCollection = db.collection("users");
 
           try {
-            // get the currentUser document
+            // Get the current user document
             final DocumentSnapshot callerUserDocument = await callerUserCollection.doc(callerUserID).get();
 
-            // convert the document data into UserModel
+            // Convert the document data into UserModel
             final UserModel userModel = UserModel.fromJson(callerUserDocument.data() as Map<String, dynamic>);
 
-            // Updating Image Using Provider Method on Zego Method Avatar Image Url
+            // Update image using Provider method on Zego Method Avatar Image URL
             navigatorKey.currentContext!.read<ZegoAvatarProvider>().updateAvatarImageUrl(imageURL: userModel.imageUrl);
 
-            // Updating Calllogs on the User Firebase Database.
+            // Update call logs in the user's Firebase database
             firebaseFireStoreMethods.updateCallLogs(
               userName: caller.name,
               imageUrl: userModel.imageUrl,
@@ -84,22 +84,22 @@ class ZegoMethods {
             throw error.toString();
           }
         },
-        //! Method that fire when user diled any kind of call to other User (audio/video)
+        //! Triggered when the user dials any kind of call to another user (audio/video)
         onOutgoingCallSent: (callID, caller, callType, callees, customData) async {
-          // get the current user ID
+          // Get the current user ID
           final String callerUserID = callees.first.id;
 
-          // get the user collection
+          // Get the user collection
           final CollectionReference callerUserCollection = db.collection("users");
 
           try {
-            // get the currentUser document
+            // Get the current user document
             final DocumentSnapshot callerUserDocument = await callerUserCollection.doc(callerUserID).get();
 
-            // convert the document data into UserModel
+            // Convert the document data into UserModel
             final UserModel userModel = UserModel.fromJson(callerUserDocument.data() as Map<String, dynamic>);
 
-            // Updating Calllogs on the User Firebase Database.
+            // Update call logs in the user's Firebase database
             firebaseFireStoreMethods.updateCallLogs(
               userName: callees.first.name,
               imageUrl: userModel.imageUrl,
@@ -120,7 +120,7 @@ class ZegoMethods {
                 ? ZegoUIKitPrebuiltCallConfig.oneOnOneVideoCall()
                 : ZegoUIKitPrebuiltCallConfig.oneOnOneVoiceCall();
 
-        /// custom avatar
+        /// Custom avatar
         config.avatarBuilder = (context, size, user, extraInfo) {
           return Selector<ZegoAvatarProvider, String?>(
               selector: (context, data) => data.imageUrl,
@@ -142,7 +142,7 @@ class ZegoMethods {
               });
         };
 
-        /// support minimizing, show minimizing button
+        /// Support minimizing, show minimizing button
         config.bottomMenuBar.hideByClick = false;
         config.topMenuBar.isVisible = true;
         config.topMenuBar.buttons.insert(0, ZegoCallMenuBarButtonName.minimizingButton);
@@ -153,9 +153,9 @@ class ZegoMethods {
     );
   }
 
-  /// on user logout
+  /// Called when the user logs out
   static void onUserLogout() {
-    /// 5/5. de-initialization ZegoUIKitPrebuiltCallInvitationService when account is logged out
+    /// De-initialize ZegoUIKitPrebuiltCallInvitationService when the account is logged out
     ZegoUIKitPrebuiltCallInvitationService().uninit();
   }
 }

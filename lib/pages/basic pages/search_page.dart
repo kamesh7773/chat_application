@@ -15,11 +15,11 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  // varible declartion
+  // Variable declaration
   String searchName = "";
   final FirebaseFireStoreMethods _firebaseFireStoreMethods = FirebaseFireStoreMethods();
 
-  // Border Style
+  // Border style
   final OutlineInputBorder borderStyle = OutlineInputBorder(
     borderSide: const BorderSide(color: Colors.transparent),
     borderRadius: BorderRadius.circular(50),
@@ -46,7 +46,7 @@ class _SearchPageState extends State<SearchPage> {
                       child: IconButton(
                         padding: EdgeInsets.zero,
                         onPressed: () {
-                          //! Navigate user to Home Page.
+                          //! Navigate the user to the Home Page.
                           Navigator.of(context).pop();
                         },
                         icon: const Icon(
@@ -110,7 +110,7 @@ class _SearchPageState extends State<SearchPage> {
             child: StreamBuilder<List<UserModel>>(
               stream: _firebaseFireStoreMethods.searchingUserBasedOnName(keyword: searchName),
               builder: (context, snapshot) {
-                // If snapshot is still loading then show CircularProgressIndicator.
+                // If the snapshot is still loading, show a CircularProgressIndicator.
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(
                     child: LoadingAnimationWidget.progressiveDots(
@@ -120,7 +120,7 @@ class _SearchPageState extends State<SearchPage> {
                   );
                 }
 
-                // If snapshot has error then show error message.
+                // If the snapshot has an error, show an error message.
                 if (snapshot.hasError) {
                   ColoredPrint.warning(snapshot.error.toString());
                   return Center(
@@ -128,19 +128,19 @@ class _SearchPageState extends State<SearchPage> {
                   );
                 }
 
-                // If snapshot has data then show ListView.builder.
+                // If the snapshot has data, show a ListView.builder.
                 if (snapshot.hasData) {
-                  // Here we are converting the snapshot data into List<UserModel>.
-                  final List<UserModel> listofUser = snapshot.data!;
+                  // Convert the snapshot data into a List<UserModel>.
+                  final List<UserModel> listOfUser = snapshot.data!;
                   return ListView.builder(
                     padding: EdgeInsets.zero,
-                    itemCount: listofUser.length,
+                    itemCount: listOfUser.length,
                     itemBuilder: (context, index) {
-                      // retiving each user data from UserModal.
-                      final user = listofUser[index];
+                      // Retrieve each user's data from UserModel.
+                      final user = listOfUser[index];
                       return ListTile(
                         onTap: () {
-                          //! Navigate user to Chat Screen Page.
+                          //! Navigate the user to the Chat Screen Page.
                           Navigator.of(context).pushNamed(
                             RoutesNames.chatScreenPage,
                             arguments: {
@@ -169,7 +169,7 @@ class _SearchPageState extends State<SearchPage> {
                   );
                 }
 
-                // else condiation
+                // Else condition
                 else {
                   return const Center(
                     child: Text("Else Condition"),

@@ -30,20 +30,20 @@ class _BottomNavigationBarPageState extends State<BottomNavigationBarPage> with 
     const ProfilePage(),
   ];
 
-  // Method for changing the screen when the user taps on a bottom navigation icon
+  // Method to change the screen when the user taps on a bottom navigation icon
   void onPagedChanged(int page) {
     setState(() {
       _page = page;
     });
   }
 
-  //! Here we update the user's "isOnline" status when user get out or close the application.
+  //! Update the user's "isOnline" status when the user exits or closes the application.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
 
     if (state == AppLifecycleState.resumed) {
-      // Set user to online when app is in foreground
+      // Set user to online when the app is in the foreground
       firebaseFireStoreMethods.isOnlineStatus(
         isOnline: true,
         datetime: DateTime.now(),

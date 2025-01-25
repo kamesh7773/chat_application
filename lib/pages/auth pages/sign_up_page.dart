@@ -14,35 +14,35 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  // variable declaration
+  // Key for validating the sign-up form
   final GlobalKey<FormState> _signUpFormKey = GlobalKey<FormState>();
   bool _isPasswordVisible = true;
   bool _isConfirmPasswordVisible = true;
   String? errorText;
 
-  // Textediting Controllars declaration
-  late TextEditingController _fullNameControllar;
-  late TextEditingController _emailControllar;
-  late TextEditingController _passwordControllar;
-  late TextEditingController _confirmPasswordControllar;
+  // Controllers for text input fields
+  late TextEditingController _fullNameController;
+  late TextEditingController _emailController;
+  late TextEditingController _passwordController;
+  late TextEditingController _confirmPasswordController;
 
-  // Method for Email & Password Sign UP._
-  void emailPasswordSignUP() {
-    // First we validated that both password and confirmpassword textfeild text are same
-    if (_passwordControllar.value.text == _confirmPasswordControllar.value.text && _signUpFormKey.currentState!.validate()) {
+  // Method to handle sign-up with email and password
+  void emailPasswordSignUp() {
+    // Validate that the password and confirm password fields match
+    if (_passwordController.value.text == _confirmPasswordController.value.text && _signUpFormKey.currentState!.validate()) {
       setState(() {
         errorText = null;
       });
 
       FirebaseAuthMethods.signUpWithEmail(
         context: context,
-        fullName: _fullNameControllar.text.trim(),
-        email: _emailControllar.text.trim(),
-        password: _confirmPasswordControllar.text.trim(),
+        fullName: _fullNameController.text.trim(),
+        email: _emailController.text.trim(),
+        password: _confirmPasswordController.text.trim(),
       );
     } else {
       setState(() {
-        errorText = "Password does not match";
+        errorText = "Passwords do not match";
       });
     }
   }
@@ -50,18 +50,18 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   void initState() {
     super.initState();
-    _fullNameControllar = TextEditingController();
-    _emailControllar = TextEditingController();
-    _passwordControllar = TextEditingController();
-    _confirmPasswordControllar = TextEditingController();
+    _fullNameController = TextEditingController();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+    _confirmPasswordController = TextEditingController();
   }
 
   @override
   void dispose() {
-    _fullNameControllar.dispose();
-    _emailControllar.dispose();
-    _passwordControllar.dispose();
-    _confirmPasswordControllar.dispose();
+    _fullNameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -76,13 +76,13 @@ class _SignUpPageState extends State<SignUpPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                //! App Logo
+                // Display the app logo
                 Image.asset(
                   MediaQuery.of(context).platformBrightness == Brightness.light ? "assets/logo/Logo_light_theme.png" : "assets/logo/Logo_dark_theme.png",
                   height: 120,
                 ),
                 const SizedBox(height: 60),
-                //! Text
+                // Display the page title
                 Text(
                   "Sign Up",
                   style: TextStyle(
@@ -92,7 +92,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                //! Textfeilds
+                // Input fields for user details
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10.0,
@@ -101,19 +101,19 @@ class _SignUpPageState extends State<SignUpPage> {
                   child: Column(
                     children: [
                       TextFeildWidget(
-                        controller: _fullNameControllar,
+                        controller: _fullNameController,
                         hintText: "Full name",
                         validator: FormValidator.firstNameValidator,
                       ),
                       const SizedBox(height: 16),
                       TextFeildWidget(
-                        controller: _emailControllar,
+                        controller: _emailController,
                         hintText: "E-mail",
                         validator: FormValidator.emailValidator,
                       ),
                       const SizedBox(height: 16),
                       TextFeildWidget(
-                        controller: _passwordControllar,
+                        controller: _passwordController,
                         hintText: "Password",
                         validator: FormValidator.passwordValidator,
                         isPasswordVisible: _isPasswordVisible,
@@ -132,7 +132,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       const SizedBox(height: 16),
                       TextFeildWidget(
-                        controller: _confirmPasswordControllar,
+                        controller: _confirmPasswordController,
                         hintText: "Confirm password",
                         validator: FormValidator.passwordValidator,
                         isPasswordVisible: _isConfirmPasswordVisible,
@@ -144,7 +144,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             });
                           },
                           icon: Icon(
-                            _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                            _isConfirmPasswordVisible ? Icons.visibility_off : Icons.visibility,
                             color: const Color.fromARGB(255, 2, 239, 159),
                           ),
                         ),
@@ -152,17 +152,18 @@ class _SignUpPageState extends State<SignUpPage> {
                     ],
                   ),
                 ),
+                // Button to submit the sign-up form
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 10.0,
                   ),
                   child: CustomButton(
-                    voidCallback: emailPasswordSignUP,
+                    voidCallback: emailPasswordSignUp,
                     text: "Sign up",
                   ),
                 ),
                 const SizedBox(height: 25),
-                //! Don't have account?
+                // Prompt for users who already have an account
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

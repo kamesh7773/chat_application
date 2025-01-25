@@ -16,19 +16,19 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
-  // variable declaration
+  // Variable declarations
   final GlobalKey _formKey = GlobalKey<FormState>();
   bool _isPasswordVisible = true;
 
-  // Textediting Controllars
-  late TextEditingController _emailControllar;
-  late TextEditingController _passwordControllar;
+  // Text editing controllers
+  late TextEditingController _emailController;
+  late TextEditingController _passwordController;
 
-  // Firebase Email & Passoword Provider Sign IN.
-  void signIN() {
+  // Method to sign in using Firebase Email & Password Provider
+  void signIn() {
     FirebaseAuthMethods.signInWithEmail(
-      email: _emailControllar.text.trim(),
-      password: _passwordControllar.text.trim(),
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
       context: context,
     );
   }
@@ -36,14 +36,14 @@ class _SignInPageState extends State<SignInPage> {
   @override
   void initState() {
     super.initState();
-    _emailControllar = TextEditingController();
-    _passwordControllar = TextEditingController();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
   }
 
   @override
   void dispose() {
-    _emailControllar.dispose();
-    _passwordControllar.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
@@ -56,13 +56,13 @@ class _SignInPageState extends State<SignInPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              //! App Logo
+              // App logo
               Image.asset(
                 MediaQuery.of(context).platformBrightness == Brightness.light ? "assets/logo/Logo_light_theme.png" : "assets/logo/Logo_dark_theme.png",
                 height: 120,
               ),
               const SizedBox(height: 50),
-              //! Text
+              // Page title
               Text(
                 "Sign In",
                 style: TextStyle(
@@ -72,7 +72,7 @@ class _SignInPageState extends State<SignInPage> {
                 ),
               ),
               const SizedBox(height: 10),
-              //! Textfeilds
+              // Input fields
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 10.0,
@@ -83,13 +83,13 @@ class _SignInPageState extends State<SignInPage> {
                   child: Column(
                     children: [
                       TextFeildWidget(
-                        controller: _emailControllar,
+                        controller: _emailController,
                         hintText: "E-mail",
                         validator: FormValidator.emailValidator,
                       ),
                       const SizedBox(height: 16),
                       TextFeildWidget(
-                        controller: _passwordControllar,
+                        controller: _passwordController,
                         hintText: "Password",
                         validator: FormValidator.passwordValidator,
                         isPasswordVisible: _isPasswordVisible,
@@ -114,12 +114,12 @@ class _SignInPageState extends State<SignInPage> {
                   horizontal: 10.0,
                 ),
                 child: CustomButton(
-                  voidCallback: signIN,
+                  voidCallback: signIn,
                   text: "Sign in",
                 ),
               ),
               const SizedBox(height: 25),
-              //! Sign In Button
+              // Forgot password link
               InkWell(
                 onTap: () {
                   Navigator.of(context).pushNamed(RoutesNames.forgotPasswordPage);
@@ -142,7 +142,7 @@ class _SignInPageState extends State<SignInPage> {
 
               const SizedBox(height: 26),
 
-              // continue with Google or Facebook
+              // Continue with Google or Facebook
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -235,7 +235,7 @@ class _SignInPageState extends State<SignInPage> {
               ),
 
               const SizedBox(height: 30),
-              //! Don't have account?
+              // Sign up prompt
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

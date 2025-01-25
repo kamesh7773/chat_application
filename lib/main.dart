@@ -19,7 +19,7 @@ import 'routes/rotues_names.dart';
 import 'routes/routes.dart';
 import 'package:flutter/material.dart';
 
-/// 1/5: define a navigator key
+/// 1/5: Define a navigator key
 final navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
@@ -40,7 +40,7 @@ void main() async {
   // Check if the user is already logged in.
   bool isUserAuthenticated = await FirebaseAuthMethods.isUserLogin();
 
-  /// 2/5: set navigator key to ZegoUIKitPrebuiltCallInvitationService
+  /// 2/5: Set the navigator key for ZegoUIKitPrebuiltCallInvitationService
   ZegoUIKitPrebuiltCallInvitationService().setNavigatorKey(navigatorKey);
 
   ZegoUIKit().initLog().then((value) {
@@ -104,13 +104,12 @@ class _MyAppState extends State<MyApp> {
         selector: (context, data) => data.themeData,
         builder: (context, value, child) {
           return MaterialApp(
-            /// 3/5: register the navigator key to MaterialApp
+            /// 3/5: Register the navigator key with MaterialApp
             navigatorKey: widget.navigatorKey,
             debugShowCheckedModeBanner: false,
             title: 'Chat Application',
             theme: value,
             onGenerateRoute: Routes.generateRoute,
-            // initialRoute: RoutesNames.signInPage,
             initialRoute: widget.isUserAuthenticated ? RoutesNames.bottomNavigationBar : RoutesNames.signInPage,
           );
         },

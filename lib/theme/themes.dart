@@ -11,7 +11,7 @@ class ChatAppTheme {
   static final ThemeData lightMode = ThemeData(
     brightness: Brightness.light,
 
-    //! Appbar Theme
+    //! AppBar Theme
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.white,
     ),
@@ -21,9 +21,9 @@ class ChatAppTheme {
     //! ColorScheme Theme
     colorSchemeSeed: const Color.fromARGB(255, 2, 239, 159),
 
-    //! textTheme Theme
+    //! TextTheme
     textTheme: GoogleFonts.latoTextTheme(const TextTheme(
-      bodyLarge: TextStyle(color: Colors.black), // Set text color for dark theme
+      bodyLarge: TextStyle(color: Colors.black), // Set text color for light theme
       bodyMedium: TextStyle(color: Colors.black),
       bodySmall: TextStyle(color: Colors.black),
     )),
@@ -31,7 +31,7 @@ class ChatAppTheme {
       cursorColor: Color.fromARGB(255, 2, 239, 159),
     ),
 
-    //! Textfromfeild Theme
+    //! InputDecoration Theme
     inputDecorationTheme: const InputDecorationTheme(
       filled: true,
       fillColor: Color.fromARGB(255, 225, 247, 237),
@@ -54,7 +54,7 @@ class ChatAppTheme {
   static final ThemeData darkMode = ThemeData(
     brightness: Brightness.dark,
 
-    //! Appbar Theme
+    //! AppBar Theme
     appBarTheme: const AppBarTheme(
       backgroundColor: Color.fromARGB(255, 29, 29, 53),
     ),
@@ -63,7 +63,7 @@ class ChatAppTheme {
     //! ColorScheme Theme
     colorSchemeSeed: const Color.fromARGB(255, 2, 239, 159),
 
-    //! textTheme Theme
+    //! TextTheme
     textTheme: GoogleFonts.latoTextTheme(const TextTheme(
       bodyLarge: TextStyle(color: Colors.white), // Set text color for dark theme
       bodyMedium: TextStyle(color: Colors.white),
@@ -73,7 +73,7 @@ class ChatAppTheme {
       cursorColor: Color.fromARGB(255, 2, 239, 159),
     ),
 
-    //! Textfromfeild Theme
+    //! InputDecoration Theme
     inputDecorationTheme: const InputDecorationTheme(
       filled: true,
       fillColor: Color.fromARGB(255, 46, 47, 69),

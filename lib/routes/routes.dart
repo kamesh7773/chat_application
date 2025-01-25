@@ -16,27 +16,27 @@ import 'package:flutter/material.dart';
 class Routes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
-      //! Sign-In Page.
+      //! Sign-In Page
       case RoutesNames.signInPage:
         return MaterialPageRoute(
           builder: (context) => const SignInPage(),
         );
 
-      //! Sign-In Page.
+      //! Sign-Up Page
       case RoutesNames.signUpPage:
         return MaterialPageRoute(
           builder: (context) => const SignUpPage(),
         );
 
-      //! Forgot Password Page.
+      //! Forgot Password Page
       case RoutesNames.forgotPasswordPage:
         return MaterialPageRoute(
           builder: (context) => const ForgotPasswordPage(),
         );
 
-      //! OTP Page.
+      //! OTP Page
       case RoutesNames.otpPage:
-        // Retriving Data.
+        // Retrieving data
         final args = settings.arguments as Map<String, dynamic>;
 
         return MaterialPageRoute(
@@ -47,21 +47,21 @@ class Routes {
           ),
         );
 
-      //! BottomNavigationBar Page.
+      //! Bottom Navigation Bar Page
       case RoutesNames.bottomNavigationBar:
         return MaterialPageRoute(
           builder: (context) => const BottomNavigationBarPage(),
         );
 
-      //! Home Page.
+      //! Home Page
       case RoutesNames.homePage:
         return MaterialPageRoute(
           builder: (context) => const HomePage(),
         );
 
-      //! Search Page.
+      //! Search Page
       case RoutesNames.searchPage:
-        // Retriving the heading.
+        // Retrieving the heading
         final heading = settings.arguments as String;
 
         return MaterialPageRoute(
@@ -70,9 +70,9 @@ class Routes {
           ),
         );
 
-      //! Chat Screen Page.
+      //! Chat Screen Page
       case RoutesNames.chatScreenPage:
-        // Retriving Data.
+        // Retrieving data
         final args = settings.arguments as Map<String, dynamic>;
 
         return MaterialPageRoute(
@@ -85,25 +85,25 @@ class Routes {
           ),
         );
 
-      //! Active User Screen Page.
+      //! Active Users Page
       case RoutesNames.activeUserPage:
         return MaterialPageRoute(
           builder: (context) => const ActiveUsers(),
         );
 
-      //! People Screen Page.
+      //! People Page
       case RoutesNames.peoplePage:
         return MaterialPageRoute(
           builder: (context) => const PeoplePage(),
         );
 
-      //! People Screen Page.
+      //! Calls Page
       case RoutesNames.callsPage:
         return MaterialPageRoute(
           builder: (context) => const CallsPage(),
         );
 
-      //! Profile Screen Page.
+      //! Profile Page
       case RoutesNames.profilePage:
         return MaterialPageRoute(
           builder: (context) => const ProfilePage(),

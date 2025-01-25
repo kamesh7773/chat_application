@@ -51,12 +51,12 @@ class _ProfilePageState extends State<ProfilePage> {
             StreamBuilder<UserModel>(
               stream: _firebaseFireStoreMethods.fetchingCurrentUserDetails(),
               builder: (context, snapshot) {
-                // If snapshot is still loading then show CircularProgressIndicator.
+                // If the snapshot is still loading, show a LinearProgressIndicator.
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const LinearProgressIndicator();
                 }
 
-                // If snapshot has error then show error message.
+                // If the snapshot has an error, display the error message.
                 if (snapshot.hasError) {
                   return Center(
                     child: Text(snapshot.error.toString()),
@@ -64,7 +64,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 }
 
                 if (snapshot.hasData) {
-                  // Here we are converting the snapshot data into List<UserModel>.
+                  // Convert the snapshot data into a UserModel.
                   final UserModel currentUser = snapshot.data!;
                   return Column(
                     children: [
@@ -206,7 +206,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                             Text(
-                              "India,Rajasthan",
+                              "India, Rajasthan",
                               style: TextStyle(
                                 fontSize: 18,
                               ),
@@ -245,7 +245,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       ),
                       const SizedBox(height: 90),
-                      //! Logout Button.
+                      //! Logout Button
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Row(
@@ -290,10 +290,10 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   );
                 }
-                // else condiation
+                // Default case if no data is available
                 else {
                   return const Center(
-                    child: Text("Else Condition"),
+                    child: Text("No data available."),
                   );
                 }
               },

@@ -47,10 +47,10 @@ class _ChatScreenState extends State<ChatScreen> {
   // TextEditingController declaration
   late TextEditingController _messageController;
 
-  // StreamSubscription declaration (for listening the Sender message typing satues)
+  // StreamSubscription declaration (for listening to the sender's message typing status)
   late StreamSubscription<DocumentSnapshot<Map<String, dynamic>>> subscription;
 
-  // variables decalaration
+  // Variable declarations
   final storage = const FlutterSecureStorage();
   final FirebaseFireStoreMethods firebaseFireStoreMethods = FirebaseFireStoreMethods();
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -63,17 +63,17 @@ class _ChatScreenState extends State<ChatScreen> {
   // ignore: prefer_typing_uninitialized_variables
   late var storedIV;
 
-  // Border Style
+  // Border style
   final OutlineInputBorder borderStyle = OutlineInputBorder(
     borderSide: const BorderSide(color: Colors.transparent),
     borderRadius: BorderRadius.circular(50),
   );
 
-  // Method tha send the message.
+  // Method to send the message.
   void sendMessage() async {
     await firebaseFireStoreMethods.sendMessage(receiverID: widget.userID, message: _messageController.text, recipientPublicKey: widget.rsaPublicKey);
 
-    // after sending the message we clear the controllar
+    // After sending the message, clear the controller
     _messageController.clear();
   }
 
@@ -86,10 +86,10 @@ class _ChatScreenState extends State<ChatScreen> {
     _messageController = TextEditingController();
     firebaseFireStoreMethods.isInsideChatRoom(status: true);
 
-    // get the other side of user collection
+    // Get the other user's collection
     final otherSideofUser = _db.collection("users").doc(widget.userID).snapshots();
 
-    // Method for listening sender user "isTyping" Status on Firestore (whenever it change to truethen we show the Typing Status in Chat Screen in the Bottom Part)
+    // Method for listening to the sender's "isTyping" status on Firestore (whenever it changes to true, show the typing status in the chat screen at the bottom)
     subscription = otherSideofUser.listen(
       (snapshot) {
         if (mounted) {
@@ -97,7 +97,7 @@ class _ChatScreenState extends State<ChatScreen> {
           context.read<OnlineOfflineStatusProvider>().changeStatus(status: snapshot.get("isOnline"), lastSeen: snapshot.get("lastSeen"));
         }
 
-        //! When Other side of user get inside the chat room then udpate all the unseen message to seen.
+        //! When the other user enters the chat room, update all unseen messages to seen.
         firebaseFireStoreMethods.getAllUnseenMessagesAndUpdateToSeen(
           userID: _auth.currentUser!.uid,
           otherUserID: widget.userID,
@@ -105,13 +105,13 @@ class _ChatScreenState extends State<ChatScreen> {
           isOnline: snapshot.get("isOnline"),
         );
 
-        //! When other side of user get inside the chat room them we clear the Unseen Message List.
+        //! When the other user enters the chat room, clear the unseen message list.
         if (snapshot.get("isInsideChatRoom")) {
           firebaseFireStoreMethods.deleteUnseenMessages(userID: widget.userID);
         }
       },
       onDone: () {
-        throw "Sender Data fetched";
+        throw "Sender data fetched";
       },
       onError: (error) {
         throw error.toString();
@@ -119,7 +119,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  // Method for updating isTyping Status.
+  // Method for updating the isTyping status.
   void onTypingStarted() {
     _isUserTyping = true;
 
@@ -167,7 +167,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 children: [
                   IconButton(
                     onPressed: () {
-                      //! Navigate User to Back Screen.
+                      //! Navigate the user to the previous screen.
                       Navigator.of(context).pushNamedAndRemoveUntil(
                         RoutesNames.bottomNavigationBar,
                         (Route<dynamic> route) => false,
@@ -192,7 +192,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               errorWidget: (context, url, error) => const Icon(Icons.error),
                             ),
                           ),
-                          //! If User online then we show green dot.
+                          //! If the user is online, show a green dot.
                           value
                               ? Positioned(
                                   bottom: 2,
@@ -207,7 +207,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                     ),
                                   ),
                                 )
-                              // else we show SizedBox().
+                              // Otherwise, show a SizedBox().
                               : const SizedBox(),
                         ],
                       );
@@ -271,14 +271,14 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: StreamBuilder(
                   stream: firebaseFireStoreMethods.getMessages(otherUserID: widget.userID),
                   builder: (context, snapshot) {
-                    // if data is loading...
+                    // If data is loading...
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const SizedBox();
                     }
 
-                    // if snapshot has data.
+                    // If snapshot has data.
                     if (snapshot.hasData) {
-                      // convert the snapshot data into List<<MyMessageModel>
+                      // Convert the snapshot data into a List<MessageModel>
                       final List<MessageModel> data = snapshot.data as List<MessageModel>;
 
                       return Column(
@@ -287,19 +287,18 @@ class _ChatScreenState extends State<ChatScreen> {
                           Expanded(
                             child: ListView.builder(
                               key: _listKey,
-                              // set reverse to true so the listview start from the bottom so when user get into chat page so automatically
-                              // get down to bottom (last message)
+                              // Set reverse to true so the ListView starts from the bottom, automatically scrolling to the last message when the user enters the chat page.
                               reverse: true,
                               padding: EdgeInsets.zero,
                               itemCount: data.length,
                               itemBuilder: (context, index) {
-                                // When reverse: true is used, Adjusts the data indexing to match the reversed scroll order, ensuring the most recent messages are displayed correctly.
-                                final reverseIndex = data.length - 1 - index; // suppose data.length == 20 (20 - 1 = 19 - 0 = 19) as so and so..
+                                // When reverse: true is used, adjust the data indexing to match the reversed scroll order, ensuring the most recent messages are displayed correctly.
+                                final reverseIndex = data.length - 1 - index;
 
-                                // getting messages by Index.
+                                // Get messages by index.
                                 final message = data[reverseIndex];
 
-                                // is current user
+                                // Check if the current user is the sender.
                                 var isCurrentUser = message.senderID == _auth.currentUser!.uid;
 
                                 return Chatbubble(
@@ -326,7 +325,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       );
                     }
 
-                    // if snapshot has error.
+                    // If the snapshot has an error.
                     if (snapshot.hasError) {
                       ColoredPrint.warning(snapshot.error);
                       return const Center(
@@ -334,7 +333,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       );
                     }
 
-                    // else.
+                    // Else condition.
                     else {
                       return const Center(
                         child: Text("Else condition"),
@@ -345,7 +344,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
 
-            //! Textfeild section.
+            //! Text field section.
             Padding(
               padding: const EdgeInsets.only(top: 4.0, right: 10),
               child: Row(
@@ -410,11 +409,11 @@ class _ChatScreenState extends State<ChatScreen> {
                         mySetState(() {});
                       });
 
-                      // Check if the text is empty then we show SizedBox Widget.
+                      // Check if the text is empty, then show a SizedBox widget.
                       if (_messageController.text.isEmpty) {
                         return const SizedBox(); // Hide the icon when text is empty
                       }
-                      // else the text is not empty then we Send Text Icon Widget.
+                      // Else, if the text is not empty, show the Send Text Icon widget.
                       else {
                         return Padding(
                           padding: const EdgeInsets.only(left: 6),

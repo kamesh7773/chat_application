@@ -21,6 +21,17 @@ class FirebaseAuthMethods {
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static final FirebaseFirestore _firestoreDB = FirebaseFirestore.instance;
 
+  // Helper method to update shared preferences with user data
+  static Future<void> _updateSharedPreferences(Map<String, dynamic> userData) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString("name", userData["name"]);
+    await prefs.setString("email", userData["email"]);
+    await prefs.setString("imageUrl", userData["imageUrl"]);
+    await prefs.setString("provider", userData["provider"]);
+    await prefs.setString("userID", userData["userID"]);
+    await prefs.setBool('isLogin', true);
+  }
+
   // --------------------
   // Email Authentication
   // --------------------
@@ -165,7 +176,7 @@ class FirebaseAuthMethods {
           // Method for creating RSA Public and Private keys for Message Encryption.
           await MessageEncrptionService().generateKeys();
 
-          // Retiving the RSA Key
+          // Retrieving the RSA Key
           final key = await MessageEncrptionService().returnKeys();
 
           // Store user data in Firestore
@@ -190,17 +201,9 @@ class FirebaseAuthMethods {
           final userData = currentUserInfo.data();
 
           // Store user data in SharedPreferences
-          final SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.setString("name", userData!["name"]);
-          await prefs.setString("email", userData["email"]);
-          await prefs.setString("imageUrl", userData["imageUrl"]);
-          await prefs.setString("provider", userData["provider"]);
-          await prefs.setString("userID", userData["userID"]);
+          await _updateSharedPreferences(userData!);
 
-          // Set login status
-          await prefs.setBool('isLogin', true);
-
-          // Method for initlizing Zego package services.
+          // Method for initializing Zego package services.
           ZegoMethods.onUserLogin();
 
           // Redirect to HomePage after successful signup
@@ -357,7 +360,7 @@ class FirebaseAuthMethods {
       // Set isLogin to "true"
       await prefs.setBool('isLogin', true);
 
-      // Method for initlizing Zego package services.
+      // Method for initializing Zego package services.
       ZegoMethods.onUserLogin();
 
       // After successful login, redirect the user to the HomePage
@@ -480,9 +483,9 @@ class FirebaseAuthMethods {
     return associatedEmail;
   }
 
-  // --------------------------------------
+  // ------------------------------------------
   // Methods related to Google Auth (OAuth 2.0)
-  // --------------------------------------
+  // ------------------------------------------
 
   //! Method for Google Sign-In/Sign-Up (For Google, we don't have separate methods for signIn/signUp)
   static Future<void> signInWithGoogle({required BuildContext context}) async {
@@ -693,7 +696,7 @@ class FirebaseAuthMethods {
                 //* Seventh, set isLogin to "true"
                 await prefs.setBool('isLogin', true);
 
-                // Method for initlizing Zego package services.
+                // Method for initializing Zego package services.
                 ZegoMethods.onUserLogin();
 
                 //* Eighth, after successfully signing in/signing up redirect the user to the HomePage
@@ -710,7 +713,7 @@ class FirebaseAuthMethods {
                 // Method for creating RSA Public and Private keys for Message Encryption.
                 await MessageEncrptionService().generateKeys();
 
-                // Retiving the RSA Key
+                // Retrieving the RSA Key
                 final key = await MessageEncrptionService().returnKeys();
 
                 // Create "users" collection so we can store user-specific user datastore or user info inside the Firestore "users" collection.
@@ -808,9 +811,9 @@ class FirebaseAuthMethods {
     }
   }
 
-  // ----------------------------
+  // --------------------------------
   // Methods related to Facebook Auth
-  // ----------------------------
+  // --------------------------------
 
   //! Method for Facebook Sign-In/Sign-Up
   static Future<void> signInwithFacebook({required BuildContext context}) async {
@@ -882,7 +885,7 @@ class FirebaseAuthMethods {
               //* Seventh, after successfully signing in/signing up we set the isSignUpforFirstTime shared preference value to true.
               await prefs.setBool('signUpWithFacebook', false);
 
-              // Method for initlizing Zego package services.
+              // Method for initializing Zego package services.
               ZegoMethods.onUserLogin();
 
               //* Eighth, after successfully signing in redirect the user to the HomePage
@@ -899,7 +902,7 @@ class FirebaseAuthMethods {
               // Method for creating RSA Public and Private keys for Message Encryption.
               await MessageEncrptionService().generateKeys();
 
-              // Retiving the RSA Key
+              // Retrieving the RSA Key
               final key = await MessageEncrptionService().returnKeys();
 
               // Create "users" collection so we can store user-specific user data
@@ -1032,7 +1035,7 @@ class FirebaseAuthMethods {
       // This method signs out the user from all Firebase auth Providers
       await _auth.signOut();
 
-      // Discarding the zegoCloud runing services in background.
+      // Discarding the zegoCloud running services in background.
       ZegoMethods.onUserLogout();
 
       // Redirecting user to Welcome Page
@@ -1083,3 +1086,4 @@ class FirebaseAuthMethods {
     return userData;
   }
 }
+

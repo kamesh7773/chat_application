@@ -8,10 +8,10 @@ class ThemeProvider extends ChangeNotifier {
 
   //! ThemeProvider Class Constructor
   ThemeProvider(String savedLevel) {
-    // After initializing the radio button value, we call setTheme() to set the application theme according to the initialized value
+    // After initializing the radio button value, call setTheme() to set the application theme according to the initialized value.
     setTheme();
-    // This code executes the setTheme() method when Android System brightness changes.
-    // This is used when the user has set the App Theme to "System". When "System" is selected,
+    // This code executes the setTheme() method when the Android system brightness changes.
+    // It is used when the user has set the app theme to "System". When "System" is selected,
     // if the system theme changes from dark to light (or vice versa), setTheme() is called to
     // update the application theme accordingly.
     PlatformDispatcher.instance.onPlatformBrightnessChanged = setTheme;

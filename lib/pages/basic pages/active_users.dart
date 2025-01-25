@@ -32,7 +32,7 @@ class _ActiveUsersState extends State<ActiveUsers> {
                       padding: const EdgeInsets.symmetric(horizontal: 0),
                       child: IconButton(
                         onPressed: () {
-                          //! Navigate User to Back Screen.
+                          //! Navigate the user to the previous screen.
                           Navigator.of(context).pop();
                         },
                         icon: const Icon(
@@ -63,14 +63,14 @@ class _ActiveUsersState extends State<ActiveUsers> {
             child: StreamBuilder<List<UserModel>>(
               stream: _firebaseFireStoreMethods.fetchingOnlineUsers(),
               builder: (context, snapshot) {
-                // If snapshot is still loading then show CircularProgressIndicator.
+                // If the snapshot is still loading, show a CircularProgressIndicator.
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }
 
-                // If snapshot has error then show error message.
+                // If the snapshot has an error, display the error message.
                 if (snapshot.hasError) {
                   return Center(
                     child: Text(snapshot.error.toString()),
@@ -78,14 +78,14 @@ class _ActiveUsersState extends State<ActiveUsers> {
                 }
 
                 if (snapshot.hasData) {
-                  // Here we are converting the snapshot data into List<UserModel>.
+                  // Convert the snapshot data into a List<UserModel>.
                   final List<UserModel> listofUser = snapshot.data!;
 
                   return ListView.builder(
                     padding: EdgeInsets.zero,
                     itemCount: listofUser.length,
                     itemBuilder: (context, index) {
-                      // retiving each user data from UserModal.
+                      // Retrieve each user's data from UserModel.
                       final user = listofUser[index];
 
                       return Padding(
@@ -103,7 +103,7 @@ class _ActiveUsersState extends State<ActiveUsers> {
                                   errorWidget: (context, url, error) => const Icon(Icons.error),
                                 ),
                               ),
-                              //! If User online then
+                              //! If the user is online, display the indicator
                               Positioned(
                                 bottom: 0,
                                 right: 0,
@@ -135,10 +135,10 @@ class _ActiveUsersState extends State<ActiveUsers> {
                   );
                 }
 
-                // else condiation
+                // Default case if no data is available
                 else {
                   return const Center(
-                    child: Text("Else Condition"),
+                    child: Text("No active users available."),
                   );
                 }
               },

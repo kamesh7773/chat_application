@@ -16,7 +16,7 @@
     <!-- Permission added for Zego flutter package -->
 
     <application
-        android:label="Freedom"
+        android:label="Chatify"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
 

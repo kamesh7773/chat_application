@@ -1,3 +1,8 @@
+import 'dart:math';
+
+import 'package:chat_application/services/notification_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'message_encrption_service.dart';
 import 'package:colored_print/colored_print.dart';
 import 'package:pointycastle/asymmetric/api.dart';
@@ -109,6 +114,11 @@ class FirebaseFireStoreMethods {
 
   //! Method for sending messages.
   Future<void> sendMessage({required String receiverID, required String message, required String recipientPublicKey}) async {
+    // creating the instance of SharedPreferences
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    final String? senderName = prefs.getString('name');
+
     // Get current userID
     final String currentUserID = _auth.currentUser!.uid;
 
@@ -139,6 +149,7 @@ class FirebaseFireStoreMethods {
         MessageModel newMessage = MessageModel(
           senderID: currentUserID,
           reciverID: receiverID,
+          senderName: senderName!,
           message: result.encryptedMessage,
           encryptedAESKey: encryptedAESKey,
           encryptedIV: encryptedIV,
@@ -161,6 +172,7 @@ class FirebaseFireStoreMethods {
         MessageModel newMessage = MessageModel(
           senderID: currentUserID,
           reciverID: receiverID,
+          senderName: senderName!,
           message: result.encryptedMessage,
           encryptedAESKey: encryptedAESKey,
           encryptedIV: encryptedIV,
@@ -242,6 +254,7 @@ class FirebaseFireStoreMethods {
 
           // Fetch encrypted fields
           final String senderID = data['senderID'];
+          final String senderName = data['senderName'];
           final String encryptedMessage = data['message'];
           final String encryptedAESKey = data['encryptedAESKey'];
           final String encryptedIV = data['encryptedIV'];
@@ -253,6 +266,15 @@ class FirebaseFireStoreMethods {
             encryptedMessage: encryptedMessage,
             encryptedAESKey: encryptedAESKey,
             encryptedIV: encryptedIV,
+          );
+
+          //! Here We are showing a chat app Notification on click.
+          AwesomeNotificationsAPI.instantNotification(
+            id: Random().nextInt(100),
+            currentUserID: _auth.currentUser!.uid,
+            senderID: senderID,
+            title: senderName,
+            body: decryptedMessage,
           );
 
           // Replace the encrypted message with the decrypted message

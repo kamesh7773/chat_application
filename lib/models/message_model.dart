@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class MessageModel {
   final String senderID;
   final String reciverID;
+  final String senderName;
   final String message;
   final String encryptedAESKey;
   final String encryptedIV;
@@ -12,6 +13,7 @@ class MessageModel {
   MessageModel({
     required this.senderID,
     required this.reciverID,
+    required this.senderName,
     required this.message,
     required this.encryptedAESKey,
     required this.encryptedIV,
@@ -24,6 +26,7 @@ class MessageModel {
     return {
       "senderID": senderID,
       "reciverID": reciverID,
+      "senderName": senderName,
       "message": message,
       "encryptedAESKey": encryptedAESKey,
       "encryptedIV": encryptedIV,
@@ -35,6 +38,7 @@ class MessageModel {
   factory MessageModel.fromJson(Map<String, dynamic> json) => MessageModel(
         senderID: json["senderID"],
         reciverID: json["reciverID"],
+        senderName: json["senderName"],
         message: json["message"],
         encryptedAESKey: json["encryptedAESKey"],
         encryptedIV: json["encryptedIV"],
@@ -45,6 +49,7 @@ class MessageModel {
   Map<String, dynamic> toJson() => {
         "senderID": senderID,
         "reciverID": reciverID,
+        "senderName": senderName,
         "message": message,
         "encryptedAESKey": encryptedAESKey,
         "encryptedIV": encryptedIV,

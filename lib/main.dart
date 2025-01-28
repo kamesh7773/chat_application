@@ -1,3 +1,5 @@
+import 'package:chat_application/services/notification_service.dart';
+
 import 'providers/last_message_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/zego_avatar_provider.dart';
@@ -11,8 +13,6 @@ import 'providers/typing_status_provider.dart';
 import 'services/firebase_auth_methods.dart';
 import 'services/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:provider/provider.dart';
 
 import 'routes/rotues_names.dart';
@@ -20,22 +20,15 @@ import 'routes/routes.dart';
 import 'package:flutter/material.dart';
 
 /// 1/5: Define a navigator key
-final navigatorKey = GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // Initialize Facebook sign-in/sign-up for Flutter web apps only.
-  if (kIsWeb) {
-    await FacebookAuth.i.webAndDesktopInitialize(
-      appId: "1518795865449666",
-      cookie: true,
-      xfbml: true,
-      version: "v13.0",
-    );
-  }
+  // Here we intilize the flutter Awesome Notifications.
+  AwesomeNotificationsAPI.initlization();
 
   // Check if the user is already logged in.
   bool isUserAuthenticated = await FirebaseAuthMethods.isUserLogin();

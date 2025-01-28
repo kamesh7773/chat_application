@@ -204,7 +204,7 @@ class FirebaseAuthMethods {
           await _updateSharedPreferences(userData!);
 
           // Method for initializing Zego package services.
-          ZegoMethods.onUserLogin();
+          await ZegoMethods.onUserLogin();
 
           // Redirect to HomePage after successful signup
           if (context.mounted) {
@@ -361,7 +361,7 @@ class FirebaseAuthMethods {
       await prefs.setBool('isLogin', true);
 
       // Method for initializing Zego package services.
-      ZegoMethods.onUserLogin();
+      await ZegoMethods.onUserLogin();
 
       // After successful login, redirect the user to the HomePage
       if (context.mounted) {
@@ -697,7 +697,7 @@ class FirebaseAuthMethods {
                 await prefs.setBool('isLogin', true);
 
                 // Method for initializing Zego package services.
-                ZegoMethods.onUserLogin();
+                await ZegoMethods.onUserLogin();
 
                 //* Eighth, after successfully signing in/signing up redirect the user to the HomePage
                 if (context.mounted) {
@@ -886,7 +886,7 @@ class FirebaseAuthMethods {
               await prefs.setBool('signUpWithFacebook', false);
 
               // Method for initializing Zego package services.
-              ZegoMethods.onUserLogin();
+              await ZegoMethods.onUserLogin();
 
               //* Eighth, after successfully signing in redirect the user to the HomePage
               if (context.mounted) {
@@ -1086,4 +1086,3 @@ class FirebaseAuthMethods {
     return userData;
   }
 }
-

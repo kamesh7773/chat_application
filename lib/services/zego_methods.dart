@@ -13,7 +13,7 @@ import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 
 class ZegoMethods {
   /// Called when the user logs in
-  static void onUserLogin() async {
+  static Future<void> onUserLogin() async {
     // Variables related to Firebase instances
     final FirebaseFirestore db = FirebaseFirestore.instance;
     // Fetching current user details from Shared Preferences

@@ -1,5 +1,7 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:colored_print/colored_print.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:flutter/material.dart';
 
 class AwesomeNotificationsAPI {
@@ -126,5 +128,28 @@ class AwesomeNotificationsAPI {
   static void cancelAllNotifications() {
     _notifications.cancelAll();
     ColoredPrint.warning("All Notification got cancel");
+  }
+
+  //! Method for sending notification to sepcific user by the FCM Token.
+  static Future<void> sendNotification(String recipientToken, String title, String message) async {
+    const String backendUrl = 'https://mature-sissy-montu-113ea327.koyeb.app/send-notification'; // Replace with your backend URL
+
+    final response = await http.post(
+      Uri.parse(backendUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(<String, String>{
+        'recipientToken': "fZPrq9O9TKi2Mi4q6t4ShK:APA91bEVdvGYouKJmlHJ-rZPITi40pv6n1SNnektr4clBhjnQ2CLMRBe2VbnnEPBWZXBDWPsw8f9xHjW6rlzt9TgfRozznidy4w7PKHvV_3-1C85tvsOxVE",
+        'title': title,
+        'message': message,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      throw 'Notification sent successfully';
+    } else {
+      throw 'Failed to send notification: ${response.body}';
+    }
   }
 }

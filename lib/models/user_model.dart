@@ -18,6 +18,7 @@ class UserModel {
   String provider;
   String rsaPublicKey;
   String userID;
+  String fcmToken;
   List<CallLog>? callLogs;
 
   UserModel({
@@ -32,6 +33,7 @@ class UserModel {
     required this.provider,
     required this.rsaPublicKey,
     required this.userID,
+    required this.fcmToken,
     required this.callLogs,
   });
 
@@ -47,6 +49,7 @@ class UserModel {
         provider: json["provider"] ?? '',
         rsaPublicKey: json["rsaPublicKey"] ?? '',
         userID: json["userID"] ?? '',
+        fcmToken: json["fcmToken"] ?? '',
         callLogs: json["callLogs"] == null ? null : List<CallLog>.from(json["callLogs"].map((x) => CallLog.fromJson(x))),
       );
 
@@ -62,6 +65,7 @@ class UserModel {
         "provider": provider,
         "rsaPublicKey": rsaPublicKey,
         "userID": userID,
+        "fcmToken": fcmToken,
         "callLogs": callLogs == null ? null : List<dynamic>.from(callLogs!.map((x) => x.toJson())),
       };
 }

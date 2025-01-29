@@ -1,7 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_application/services/notification_service.dart';
-import 'package:colored_print/colored_print.dart';
-import '../../services/message_encrption_service.dart';
 import '../../providers/last_message_provider.dart';
 import '../../utils/date_time_calculator_for_users.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -76,7 +74,9 @@ class _HomePageState extends State<HomePage> {
                   child: Row(
                     children: [
                       ActionChip(
-                        onPressed: () {},
+                        onPressed: () {
+                          AwesomeNotificationsAPI.sendNotification("recipientToken", "kaesh", "jdfajdasadfadlskfj");
+                        },
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
                         shadowColor: Colors.black,
                         elevation: 3,
@@ -174,6 +174,7 @@ class _HomePageState extends State<HomePage> {
                               "isOnline": user.isOnline,
                               "lastSeen": user.lastSeen,
                               "rsaPublicKey": user.rsaPublicKey,
+                              "fcmToken": user.fcmToken,
                             },
                           );
                         },

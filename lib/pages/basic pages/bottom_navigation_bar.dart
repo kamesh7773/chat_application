@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,6 +22,7 @@ class _BottomNavigationBarPageState extends State<BottomNavigationBarPage> with 
   int _page = 0;
   String imageURL = "";
   FirebaseFireStoreMethods firebaseFireStoreMethods = FirebaseFireStoreMethods();
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   // List of pages for the bottom navigation bar
   List<Widget> pages = [
@@ -62,6 +64,11 @@ class _BottomNavigationBarPageState extends State<BottomNavigationBarPage> with 
     super.initState();
     context.read<BottomNavImageProvider>().fetchProfileImage();
     WidgetsBinding.instance.addObserver(this);
+
+    // Updating the FCM token if it get's changes over time.
+    _firebaseMessaging.onTokenRefresh.listen((newToken) {
+      FirebaseFireStoreMethods().updateFcmToken();
+    });
   }
 
   @override

@@ -1,3 +1,5 @@
+import 'package:chat_application/services/firebase_firestore_methods.dart';
+
 import 'message_encrption_service.dart';
 
 import 'zego_methods.dart';
@@ -206,6 +208,9 @@ class FirebaseAuthMethods {
           // Method for initializing Zego package services.
           await ZegoMethods.onUserLogin();
 
+          // adding the FCM Token in user DB.
+          FirebaseFireStoreMethods().updateFcmToken();
+
           // Redirect to HomePage after successful signup
           if (context.mounted) {
             Navigator.pop(context);
@@ -362,6 +367,9 @@ class FirebaseAuthMethods {
 
       // Method for initializing Zego package services.
       await ZegoMethods.onUserLogin();
+
+      // adding the FCM Token in user DB.
+      await FirebaseFireStoreMethods().updateFcmToken();
 
       // After successful login, redirect the user to the HomePage
       if (context.mounted) {
@@ -699,6 +707,9 @@ class FirebaseAuthMethods {
                 // Method for initializing Zego package services.
                 await ZegoMethods.onUserLogin();
 
+                // adding the FCM Token in user DB.
+                await FirebaseFireStoreMethods().updateFcmToken();
+
                 //* Eighth, after successfully signing in/signing up redirect the user to the HomePage
                 if (context.mounted) {
                   Navigator.of(context).pop();
@@ -749,6 +760,12 @@ class FirebaseAuthMethods {
 
                 //* Seventh, set isLogin to "true"
                 await prefs.setBool('isLogin', true);
+
+                // Method for initializing Zego package services.
+                await ZegoMethods.onUserLogin();
+
+                // adding the FCM Token in user DB.
+                await FirebaseFireStoreMethods().updateFcmToken();
 
                 //* Eighth, after successfully signing in/signing up redirect the user to the HomePage
                 if (context.mounted) {
@@ -882,8 +899,8 @@ class FirebaseAuthMethods {
               //* Sixth, set isLogin to "true"
               await prefs.setBool('isLogin', true);
 
-              //* Seventh, after successfully signing in/signing up we set the isSignUpforFirstTime shared preference value to true.
-              await prefs.setBool('signUpWithFacebook', false);
+              // adding the FCM Token in user DB.
+              await FirebaseFireStoreMethods().updateFcmToken();
 
               // Method for initializing Zego package services.
               await ZegoMethods.onUserLogin();
@@ -938,6 +955,12 @@ class FirebaseAuthMethods {
 
               //* Sixth, set isLogin to "true"
               await prefs.setBool('isLogin', true);
+
+              // adding the FCM Token in user DB.
+              await FirebaseFireStoreMethods().updateFcmToken();
+
+              // Method for initializing Zego package services.
+              await ZegoMethods.onUserLogin();
 
               //* Seventh, after successfully signing in redirect the user to the HomePage
               if (context.mounted) {

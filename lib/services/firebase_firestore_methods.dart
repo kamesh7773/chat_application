@@ -1,7 +1,4 @@
-import 'dart:math';
-
-import 'package:chat_application/services/notification_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'message_encrption_service.dart';
 import 'package:colored_print/colored_print.dart';
@@ -17,6 +14,7 @@ class FirebaseFireStoreMethods {
   // Variables related to Firebase instances
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   static const String usersCollection = "users";
   static const String chatRoomsCollection = "chatRooms";
@@ -114,11 +112,6 @@ class FirebaseFireStoreMethods {
 
   //! Method for sending messages.
   Future<void> sendMessage({required String receiverID, required String message, required String recipientPublicKey}) async {
-    // creating the instance of SharedPreferences
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    final String? senderName = prefs.getString('name');
-
     // Get current userID
     final String currentUserID = _auth.currentUser!.uid;
 
@@ -149,7 +142,6 @@ class FirebaseFireStoreMethods {
         MessageModel newMessage = MessageModel(
           senderID: currentUserID,
           reciverID: receiverID,
-          senderName: senderName!,
           message: result.encryptedMessage,
           encryptedAESKey: encryptedAESKey,
           encryptedIV: encryptedIV,
@@ -172,7 +164,6 @@ class FirebaseFireStoreMethods {
         MessageModel newMessage = MessageModel(
           senderID: currentUserID,
           reciverID: receiverID,
-          senderName: senderName!,
           message: result.encryptedMessage,
           encryptedAESKey: encryptedAESKey,
           encryptedIV: encryptedIV,
@@ -254,7 +245,6 @@ class FirebaseFireStoreMethods {
 
           // Fetch encrypted fields
           final String senderID = data['senderID'];
-          final String senderName = data['senderName'];
           final String encryptedMessage = data['message'];
           final String encryptedAESKey = data['encryptedAESKey'];
           final String encryptedIV = data['encryptedIV'];
@@ -266,15 +256,6 @@ class FirebaseFireStoreMethods {
             encryptedMessage: encryptedMessage,
             encryptedAESKey: encryptedAESKey,
             encryptedIV: encryptedIV,
-          );
-
-          //! Here We are showing a chat app Notification on click.
-          AwesomeNotificationsAPI.instantNotification(
-            id: Random().nextInt(100),
-            currentUserID: _auth.currentUser!.uid,
-            senderID: senderID,
-            title: senderName,
-            body: decryptedMessage,
           );
 
           // Replace the encrypted message with the decrypted message
@@ -450,6 +431,24 @@ class FirebaseFireStoreMethods {
       // Update the callLogs field in the user's "users" Firestore collection.
       await currentUserDoc.update({
         "callLogs": FieldValue.arrayUnion([callInfo]),
+      });
+    } catch (error) {
+      throw Exception(error.toString());
+    }
+  }
+
+  //! Method to update the FCM Token
+  Future<void> updateFcmToken() async {
+    try {
+      // retriving the token from firebase instance.
+      String? token = await _firebaseMessaging.getToken();
+
+      // Reference to the current user's document in the main collection
+      final DocumentReference userDoc = _db.collection(usersCollection).doc(_auth.currentUser!.uid);
+
+      // updating or adding the FCM Token on currentUser DB.
+      await userDoc.update({
+        "fcmToken": token,
       });
     } catch (error) {
       throw Exception(error.toString());

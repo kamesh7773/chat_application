@@ -82,6 +82,7 @@ class Routes {
             email: args["email"],
             imageUrl: args["imageUrl"],
             rsaPublicKey: args["rsaPublicKey"],
+            fcmToken: args["fcmToken"],
           ),
         );
 

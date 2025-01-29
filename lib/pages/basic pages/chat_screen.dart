@@ -26,6 +26,7 @@ class ChatScreen extends StatefulWidget {
   final String email;
   final String imageUrl;
   final String rsaPublicKey;
+  final String fcmToken;
 
   const ChatScreen({
     super.key,
@@ -34,6 +35,8 @@ class ChatScreen extends StatefulWidget {
     required this.email,
     required this.imageUrl,
     required this.rsaPublicKey,
+    required this.fcmToken,
+
   });
 
   @override

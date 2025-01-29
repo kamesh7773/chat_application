@@ -1,8 +1,11 @@
+import 'dart:ui';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:chat_application/services/message_encrption_service.dart';
 import 'package:colored_print/colored_print.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:flutter/material.dart';
 
 class AwesomeNotificationsAPI {
   // creating instance of AwesomeNotifications
@@ -52,6 +55,21 @@ class AwesomeNotificationsAPI {
       onNotificationDisplayedMethod: AwesomeNotificationsAPI.onNotificationDisplayedMethod,
       onDismissActionReceivedMethod: AwesomeNotificationsAPI.onDismissActionReceivedMethod,
     );
+
+    //! Listen for when a user taps on a notification and the app is opened as a result.
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      ColoredPrint.warning("getting called");
+      // Handle the message and show notification using Awesome Notifications
+      _instantNotification(id: 1, data: message.data);
+    });
+
+    //! Listen for when a notification is received while the app is in the background.
+    //! When notification is received from firebase then this method get called and it fires the
+    //! method that is responsible for showing awesome notification.
+    FirebaseMessaging.onBackgroundMessage((RemoteMessage message) {
+      _instantNotification(id: 1, data: message.data);
+      return _instantNotification(id: 1, data: message.data);
+    });
   }
 
   //? Use this method to detect when a new notification or a schedule is created
@@ -89,45 +107,28 @@ class AwesomeNotificationsAPI {
   //! ------------------------------------
   //! Method for Notification for Chat App
   //! ------------------------------------
-  static Future<void> instantNotification({
+  static Future<void> _instantNotification({
     required int id,
-    required String currentUserID,
-    required String senderID,
-    required String title,
-    required String body,
-    Map<String, String?>? payload,
+    required Map<String, dynamic> data,
   }) async {
-    // if UserId is equal to SenderID then it's means that new message is sended by the current user so we don't gonna show the notification.
-    if (senderID == currentUserID) {
-      return;
-    }
-    // else we show the notification.
-    else {
-      _notifications.createNotification(
-        content: NotificationContent(
-          id: id,
-          channelKey: "basic_channel",
-          title: title,
-          body: body,
-          payload: payload,
-          color: Colors.green,
-          //! Here we also set the layout Notification for Chat App.
-          notificationLayout: NotificationLayout.Inbox,
-        ),
-        //! Here is the action button that we show in notification so user can reply message or perfrom some action.
-        actionButtons: [
-          NotificationActionButton(key: "1", label: "reply", requireInputText: true),
-          NotificationActionButton(key: "2", label: "Mark as read"),
-          NotificationActionButton(key: "3", label: "close"),
-        ],
-      );
-    }
-  }
-
-  //! Method for canceling all the Awesome Notification.
-  static void cancelAllNotifications() {
-    _notifications.cancelAll();
-    ColoredPrint.warning("All Notification got cancel");
+    ColoredPrint.warning(data);
+    _notifications.createNotification(
+      content: NotificationContent(
+        id: id,
+        channelKey: "basic_channel",
+        title: "dfasdfasd",
+        body: "djfdasjfjkdsjfklsda",
+        color: const Color.fromARGB(255, 0, 191, 108),
+        //! Here we also set the layout Notification for Chat App.
+        notificationLayout: NotificationLayout.Inbox,
+      ),
+      //! Here is the action button that we show in notification so user can reply message or perfrom some action.
+      actionButtons: [
+        NotificationActionButton(key: "1", label: "reply", requireInputText: true),
+        NotificationActionButton(key: "2", label: "Mark as read"),
+        NotificationActionButton(key: "3", label: "close"),
+      ],
+    );
   }
 
   //! Method for sending notification to sepcific user by the FCM Token.
@@ -140,14 +141,14 @@ class AwesomeNotificationsAPI {
         'Content-Type': 'application/json',
       },
       body: jsonEncode(<String, String>{
-        'recipientToken': "fZPrq9O9TKi2Mi4q6t4ShK:APA91bEVdvGYouKJmlHJ-rZPITi40pv6n1SNnektr4clBhjnQ2CLMRBe2VbnnEPBWZXBDWPsw8f9xHjW6rlzt9TgfRozznidy4w7PKHvV_3-1C85tvsOxVE",
+        'recipientToken': "eQ89LAuYQZqYO1Mvcki7a6:APA91bFz2FkbvZzV7jrI9z2TkTIgJQAAjnDRW-Cf5wGkDBtSOkluvo_unEgBS7_2IyvBIDH1BTCO0ZaBDacLV129kH7hSZN_9ST-YMi20O-fyUVwmTchUZM",
         'title': title,
         'message': message,
       }),
     );
 
     if (response.statusCode == 200) {
-      throw 'Notification sent successfully';
+      throw 'Notification sent successfully ✅';
     } else {
       throw 'Failed to send notification: ${response.body}';
     }

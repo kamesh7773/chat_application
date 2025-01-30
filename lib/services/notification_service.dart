@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:colored_print/colored_print.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -117,6 +115,26 @@ class AwesomeNotificationsAPI {
         channelKey: "basic_channel",
         title: remoteMessage.notification?.title,
         body: remoteMessage.notification?.body,
+        color: const Color.fromARGB(255, 0, 191, 108),
+        //! Here we also set the layout Notification for Chat App.
+        notificationLayout: NotificationLayout.Inbox,
+      ),
+      //! Here is the action button that we show in notification so user can reply message or perfrom some action.
+      actionButtons: [
+        NotificationActionButton(key: "1", label: "reply", requireInputText: true),
+        NotificationActionButton(key: "2", label: "Mark as read"),
+        NotificationActionButton(key: "3", label: "close"),
+      ],
+    );
+  }
+
+  static Future<void> instantNotification() async {
+    _notifications.createNotification(
+      content: NotificationContent(
+        id: 1,
+        channelKey: "basic_channel",
+        title: 'Notification',
+        body: "Hii, my name is kamesh singh",
         color: const Color.fromARGB(255, 0, 191, 108),
         //! Here we also set the layout Notification for Chat App.
         notificationLayout: NotificationLayout.Inbox,

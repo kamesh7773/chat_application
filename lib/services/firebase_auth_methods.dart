@@ -1,4 +1,5 @@
 import 'package:chat_application/services/firebase_firestore_methods.dart';
+import 'package:colored_print/colored_print.dart';
 
 import 'message_encrption_service.dart';
 
@@ -669,6 +670,9 @@ class FirebaseAuthMethods {
             // (Info like: Google account user name, user IMG, user email is verified, etc.)
             UserCredential userCredential = await _auth.signInWithCredential(credential);
 
+            // ColoredPrint.warning(userCredential.credential!.accessToken.toString().substring(0, 13));
+            ColoredPrint.warning(userCredential.additionalUserInfo);
+
             try {
               //* Fifth here we check the weather users document is already created or not (means if user document that we created with firebase user id is created or not)
               //* if it already not created that means user is signUp for first time if docuemnt named usersId is created or firebase then userID is already signUP and now he is siging up.
@@ -855,6 +859,8 @@ class FirebaseAuthMethods {
         //* Second, when the user gets login after entering their login password then this code retrieves the FacebookTokenData.
         final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken!.tokenString);
 
+        ColoredPrint.warning(facebookAuthCredential.accessToken.toString().substring(0, 14));
+
         // If accessToken or idToken is null then return nothing.
         if (loginResult.accessToken == null) {
           return;
@@ -863,6 +869,8 @@ class FirebaseAuthMethods {
         else {
           //* Third, this method signs in the user with credentials
           final UserCredential userCredentail = await _auth.signInWithCredential(facebookAuthCredential);
+
+          ColoredPrint.warning(userCredentail.additionalUserInfo);
 
           try {
             //* Fourth here we check the weather users document is already created or not (means if user document that we created with firebase user id is created or not)

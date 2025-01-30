@@ -1,9 +1,9 @@
 import 'dart:ui';
 
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:chat_application/services/message_encrption_service.dart';
 import 'package:colored_print/colored_print.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -57,18 +57,18 @@ class AwesomeNotificationsAPI {
     );
 
     //! Listen for when a user taps on a notification and the app is opened as a result.
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      ColoredPrint.warning("getting called");
+    FirebaseMessaging.onMessage.listen((RemoteMessage remoteMessage) {
       // Handle the message and show notification using Awesome Notifications
-      _instantNotification(id: 1, data: message.data);
+      _instantNotification(id: 1, remoteMessage: remoteMessage);
     });
 
     //! Listen for when a notification is received while the app is in the background.
     //! When notification is received from firebase then this method get called and it fires the
     //! method that is responsible for showing awesome notification.
-    FirebaseMessaging.onBackgroundMessage((RemoteMessage message) {
-      _instantNotification(id: 1, data: message.data);
-      return _instantNotification(id: 1, data: message.data);
+    FirebaseMessaging.onBackgroundMessage((RemoteMessage remoteMessage) async {
+      ColoredPrint.warning("background message");
+      await _instantNotification(id: 1, remoteMessage: remoteMessage);
+      return Future.value();
     });
   }
 
@@ -109,15 +109,14 @@ class AwesomeNotificationsAPI {
   //! ------------------------------------
   static Future<void> _instantNotification({
     required int id,
-    required Map<String, dynamic> data,
+    required RemoteMessage remoteMessage,
   }) async {
-    ColoredPrint.warning(data);
     _notifications.createNotification(
       content: NotificationContent(
         id: id,
         channelKey: "basic_channel",
-        title: "dfasdfasd",
-        body: "djfdasjfjkdsjfklsda",
+        title: remoteMessage.notification?.title,
+        body: remoteMessage.notification?.body,
         color: const Color.fromARGB(255, 0, 191, 108),
         //! Here we also set the layout Notification for Chat App.
         notificationLayout: NotificationLayout.Inbox,
@@ -132,23 +131,25 @@ class AwesomeNotificationsAPI {
   }
 
   //! Method for sending notification to sepcific user by the FCM Token.
-  static Future<void> sendNotification(String recipientToken, String title, String message) async {
-    const String backendUrl = 'https://mature-sissy-montu-113ea327.koyeb.app/send-notification'; // Replace with your backend URL
+  static Future<void> sendNotification({required String recipientToken, required String title, required String message}) async {
+    const String backendUrl = 'https://mature-sissy-montu-113ea327.koyeb.app/send-notification'; // backend URL
 
     final response = await http.post(
       Uri.parse(backendUrl),
       headers: <String, String>{
         'Content-Type': 'application/json',
       },
-      body: jsonEncode(<String, String>{
-        'recipientToken': "eQ89LAuYQZqYO1Mvcki7a6:APA91bFz2FkbvZzV7jrI9z2TkTIgJQAAjnDRW-Cf5wGkDBtSOkluvo_unEgBS7_2IyvBIDH1BTCO0ZaBDacLV129kH7hSZN_9ST-YMi20O-fyUVwmTchUZM",
-        'title': title,
-        'message': message,
-      }),
+      body: jsonEncode(
+        <String, dynamic>{
+          'token': recipientToken,
+          'title': title,
+          'body': message,
+        },
+      ),
     );
 
     if (response.statusCode == 200) {
-      throw 'Notification sent successfully ✅';
+      debugPrint('Notification sent successfully ✅');
     } else {
       throw 'Failed to send notification: ${response.body}';
     }

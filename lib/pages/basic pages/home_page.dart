@@ -1,5 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chat_application/services/notification_service.dart';
 import '../../providers/last_message_provider.dart';
 import '../../utils/date_time_calculator_for_users.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -74,9 +73,7 @@ class _HomePageState extends State<HomePage> {
                   child: Row(
                     children: [
                       ActionChip(
-                        onPressed: () {
-                          AwesomeNotificationsAPI.sendNotification("recipientToken", "kaesh", "jdfajdasadfadlskfj");
-                        },
+                        onPressed: () {},
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
                         shadowColor: Colors.black,
                         elevation: 3,

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chat_application/services/notification_service.dart';
 import 'package:colored_print/colored_print.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -36,7 +37,6 @@ class ChatScreen extends StatefulWidget {
     required this.imageUrl,
     required this.rsaPublicKey,
     required this.fcmToken,
-
   });
 
   @override
@@ -75,6 +75,13 @@ class _ChatScreenState extends State<ChatScreen> {
   // Method to send the message.
   void sendMessage() async {
     await firebaseFireStoreMethods.sendMessage(receiverID: widget.userID, message: _messageController.text, recipientPublicKey: widget.rsaPublicKey);
+
+    // sending the notification to the other user
+    AwesomeNotificationsAPI.sendNotification(
+      recipientToken: widget.fcmToken,
+      title: widget.name,
+      message: _messageController.text.trim(),
+    );
 
     // After sending the message, clear the controller
     _messageController.clear();

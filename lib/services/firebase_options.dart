@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyAcnPvVgyct24YJHRx_kBCJ1Ed__TJC48c',
-    appId: '1:1001143278741:web:63357d679e8a5b16a58f9c',
+    appId: '1:1001143278741:web:5d38da0e9d0117e5a58f9c',
     messagingSenderId: '1001143278741',
     projectId: 'chat-app-38a98',
     authDomain: 'chat-app-38a98.firebaseapp.com',
@@ -61,7 +61,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDjGYQkrj-D8RzsmYAWfbJ3A94rWGW-XOc',
-    appId: '1:1001143278741:android:31a82d3dafe954b3a58f9c',
+    appId: '1:1001143278741:android:f5be7c663f023af4a58f9c',
     messagingSenderId: '1001143278741',
     projectId: 'chat-app-38a98',
     databaseURL: 'https://chat-app-38a98-default-rtdb.asia-southeast1.firebasedatabase.app',

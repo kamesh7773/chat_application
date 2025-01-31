@@ -10,7 +10,7 @@ class AwesomeNotificationsAPI {
   static final AwesomeNotifications _notifications = AwesomeNotifications();
 
   //* This Method initialized the AwesomeNotifications.
-  static void initlization() async {
+  void initlization() async {
     await _notifications.initialize(
       // This used for notification icon we set it to null so it will show default notification icon.
       'resource://drawable/logo',
@@ -55,19 +55,11 @@ class AwesomeNotificationsAPI {
     );
 
     //! Listen for when a user taps on a notification and the app is opened as a result.
-    FirebaseMessaging.onMessage.listen((RemoteMessage remoteMessage) {
-      // Handle the message and show notification using Awesome Notifications
-      _instantNotification(id: 1, remoteMessage: remoteMessage);
-    });
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) => instantNotification(message));
 
     //! Listen for when a notification is received while the app is in the background.
     //! When notification is received from firebase then this method get called and it fires the
     //! method that is responsible for showing awesome notification.
-    FirebaseMessaging.onBackgroundMessage((RemoteMessage remoteMessage) async {
-      ColoredPrint.warning("background message");
-      await _instantNotification(id: 1, remoteMessage: remoteMessage);
-      return Future.value();
-    });
   }
 
   //? Use this method to detect when a new notification or a schedule is created
@@ -105,36 +97,14 @@ class AwesomeNotificationsAPI {
   //! ------------------------------------
   //! Method for Notification for Chat App
   //! ------------------------------------
-  static Future<void> _instantNotification({
-    required int id,
-    required RemoteMessage remoteMessage,
-  }) async {
+  Future<void> instantNotification(RemoteMessage remoteMessage) async {
+    ColoredPrint.warning(remoteMessage.data);
     _notifications.createNotification(
       content: NotificationContent(
-        id: id,
+        id: UniqueKey().hashCode,
         channelKey: "basic_channel",
-        title: remoteMessage.notification?.title,
-        body: remoteMessage.notification?.body,
-        color: const Color.fromARGB(255, 0, 191, 108),
-        //! Here we also set the layout Notification for Chat App.
-        notificationLayout: NotificationLayout.Inbox,
-      ),
-      //! Here is the action button that we show in notification so user can reply message or perfrom some action.
-      actionButtons: [
-        NotificationActionButton(key: "1", label: "reply", requireInputText: true),
-        NotificationActionButton(key: "2", label: "Mark as read"),
-        NotificationActionButton(key: "3", label: "close"),
-      ],
-    );
-  }
-
-  static Future<void> instantNotification() async {
-    _notifications.createNotification(
-      content: NotificationContent(
-        id: 1,
-        channelKey: "basic_channel",
-        title: 'Notification',
-        body: "Hii, my name is kamesh singh",
+        title: remoteMessage.data['title'],
+        body: remoteMessage.data['body'],
         color: const Color.fromARGB(255, 0, 191, 108),
         //! Here we also set the layout Notification for Chat App.
         notificationLayout: NotificationLayout.Inbox,

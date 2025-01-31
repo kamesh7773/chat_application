@@ -1,4 +1,5 @@
 import 'package:chat_application/services/notification_service.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'providers/last_message_provider.dart';
 import 'providers/theme_provider.dart';
@@ -28,7 +29,11 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   // Here we intilize the flutter Awesome Notifications.
-  AwesomeNotificationsAPI.initlization();
+  AwesomeNotificationsAPI().initlization();
+  
+  FirebaseMessaging.onBackgroundMessage((RemoteMessage message) async {
+    await AwesomeNotificationsAPI().instantNotification(message);
+  });
 
   // Check if the user is already logged in.
   bool isUserAuthenticated = await FirebaseAuthMethods.isUserLogin();

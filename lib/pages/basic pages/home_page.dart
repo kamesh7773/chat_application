@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chat_application/services/message_encrption_service.dart';
 import 'package:chat_application/services/notification_service.dart';
 import '../../providers/last_message_provider.dart';
 import '../../utils/date_time_calculator_for_users.dart';
@@ -75,7 +76,8 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       ActionChip(
                         onPressed: () {
-                          AwesomeNotificationsAPI.instantNotification();
+                          MessageEncrptionService().encryptPrivateKey();
+                          MessageEncrptionService().decryptPrivateKey();
                         },
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
                         shadowColor: Colors.black,

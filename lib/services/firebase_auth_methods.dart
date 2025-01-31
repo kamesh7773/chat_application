@@ -515,6 +515,7 @@ class FirebaseAuthMethods {
 
         //* Third, this code pops the Google signIn/signUp interface/UI like showing Google ID that is logged in user's browser
         final UserCredential userCredential = await _auth.signInWithPopup(googleProvider);
+        ColoredPrint.warning(userCredential.additionalUserInfo);
 
         if (context.mounted) {
           ProgressIndicators.showProgressIndicator(context);

@@ -4,12 +4,13 @@ import 'dart:typed_data';
 import 'package:colored_print/colored_print.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:pointycastle/asymmetric/api.dart';
+
+import 'package:pointycastle/export.dart';
 import 'package:rsa_encrypt/rsa_encrypt.dart';
 import 'package:pointycastle/api.dart' as crypto;
 
 class MessageEncrptionService {
-  // Creating an instance of FlutterSecureStorage
+  // Creating an instance of FlutterSecureStorage to securely store keys
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   //! Method to generate an RSA key pair (public/private)
@@ -19,22 +20,25 @@ class MessageEncrptionService {
     // To store the KeyPair once we get data from our future
     crypto.AsymmetricKeyPair keyPair;
 
+    // Helper class for RSA key operations
     var helper = RsaKeyHelper();
 
+    // Function to generate RSA key pair
     Future<crypto.AsymmetricKeyPair<crypto.PublicKey, crypto.PrivateKey>> getKeyPair() {
       return helper.computeRSAKeyPair(helper.getSecureRandom());
     }
 
+    // Generate the key pair
     futureKeyPair = getKeyPair();
     keyPair = await futureKeyPair;
 
-    // Storing RSA public and private keys in variables
+    // Encode the RSA keys to PEM format
     final publicRSAKey = helper.encodePublicKeyToPemPKCS1(keyPair.publicKey as RSAPublicKey);
     final privateRSAKey = helper.encodePrivateKeyToPemPKCS1(keyPair.privateKey as RSAPrivateKey);
 
-    // Creating AES key and IV for message encryption
-    final aesKey = Key.fromSecureRandom(32);
-    final iv = IV.fromSecureRandom(16); // AES IV (128-bit)
+    // Generate AES key and IV for message encryption
+    final aesKey = Key.fromSecureRandom(32); // 256-bit AES key
+    final iv = IV.fromSecureRandom(16); // 128-bit AES IV
 
     // Writing the RSA public & private keys to Flutter Secure Storage
     await _storage.write(key: 'private_Key', value: privateRSAKey);
@@ -55,19 +59,60 @@ class MessageEncrptionService {
     final String? aesKey = await _storage.read(key: 'AES_key');
     final String? iv = await _storage.read(key: 'IV');
 
+    // Return the keys and IV
     return (rsaPublicKey: rsaPublicKey, rsaPrivateKey: rsaPrivateKey, aesKey: aesKey, iv: iv);
   }
 
   //! Method to encrypt AES key and IV using the RSA public key of the recipient user (USER B)
   String rsaEncrypt({required Uint8List data, required RSAPublicKey publicKey}) {
+    // Create an RSA encrypter with the recipient's public key
     final encryptor = Encrypter(RSA(publicKey: publicKey));
+    // Encrypt the data and return it as a base64 string
     final encryptedData = encryptor.encryptBytes(data);
     return encryptedData.base64;
   }
 
+  //! Encrypt a private key using a custom string (sub-property)
+  Future encryptPrivateKey() async {
+    // Reading the private key from Flutter Secure Storage
+    const String privateKey = "hello";
+    const String customString = "105155588538589755904";
+
+    List<int> textBytes = privateKey.codeUnits;
+    List<int> keyBytes = customString.codeUnits;
+    List<int> result = [];
+
+    for (int i = 0; i < textBytes.length; i++) {
+      result.add(textBytes[i] ^ keyBytes[i % keyBytes.length]);
+    }
+    // wrting the encrypted private key to Flutter Secure Storage
+    await _storage.write(key: 'encrypted_private_key', value: base64.encode(result));
+
+    ColoredPrint.warning(base64.encode(result));
+  }
+
+//! Decrypt the private key using the same custom string (sub-property)
+  Future<void> decryptPrivateKey() async {
+    // Reading the encrypted private key from Flutter Secure Storage
+    final String? encryptedPrivateKey = await _storage.read(key: 'encrypted_private_key');
+    const String customString = "105155588538589755904";
+
+    List<int> textBytes = encryptedPrivateKey!.codeUnits;
+    List<int> keyBytes = customString.codeUnits;
+    List<int> result = [];
+
+    for (int i = 0; i < textBytes.length; i++) {
+      result.add(textBytes[i] ^ keyBytes[i % keyBytes.length]);
+    }
+
+    ColoredPrint.warning(base64.encode(result));
+  }
+
   //! Method to decrypt AES key and IV using our own RSA private key
   Uint8List rsaDecrypt({required String data, required RSAPrivateKey privateKey}) {
+    // Create an RSA decrypter with our private key
     final decryptor = Encrypter(RSA(privateKey: privateKey));
+    // Decrypt the data and return it as a Uint8List
     final List<int> decryptedBytes = decryptor.decryptBytes(Encrypted.fromBase64(data));
     return Uint8List.fromList(decryptedBytes); // Convert List<int> to Uint8List
   }
@@ -83,60 +128,13 @@ class MessageEncrptionService {
       final Key aesKey = Key(base64Decode(stringAESKey!));
       final IV iv = IV(base64Decode(stringIV!));
 
-      // Creating an Encrypter instance for encryption
+      // Create an AES encrypter with the key and IV
       final encrypter = Encrypter(AES(aesKey, mode: AESMode.cbc));
 
-      // Encrypting the message
+      // Encrypt the message
       final encryptedMsg = encrypter.encrypt(message, iv: iv);
 
-      // Returning the encrypted message and AES key and IV used for encrypting the message
-      return (encryptedMessage: encryptedMsg.base64, aesKey: aesKey, iv: iv);
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-
-  Future<({String encryptedMessage, Key aesKey, IV iv})> encryptionDecryption({required String message, required String recipientPublicKey, required String recipientPrivateKey}) async {
-    try {
-      // Reading AES key & IV from Flutter Secure Storage. If keys are already generated, we do not generate them again.
-      final String? stringAESKey = await _storage.read(key: 'AES_key');
-      final String? stringIV = await _storage.read(key: 'IV');
-
-      // Converting AES key & IV from String data type to their original state because Flutter Secure Storage stores the data in the String data type.
-      final Key aesKey = Key(base64Decode(stringAESKey!));
-      final IV iv = IV(base64Decode(stringIV!));
-
-      // Creating an Encrypter instance for encryption
-      final encrypter = Encrypter(AES(aesKey, mode: AESMode.cbc));
-
-      // Encrypting the message
-      final encryptedMsg = encrypter.encrypt(message, iv: iv);
-
-      // Converting PEM RSA private and public key to original state so they can be used for encryption
-      RsaKeyHelper helper = RsaKeyHelper();
-      final RSAPublicKey publicKey = helper.parsePublicKeyFromPem(recipientPublicKey);
-      final RSAPrivateKey privateKey = helper.parsePrivateKeyFromPem(recipientPrivateKey);
-
-      final encryptedAESKey = rsaEncrypt(data: aesKey.bytes, publicKey: publicKey);
-      final encryptedIV = rsaEncrypt(data: iv.bytes, publicKey: publicKey);
-
-      //* ----------------- Decryption Part -----------------  */
-
-      // Decrypting the AES key and IV using the other user's RSA private key
-      final Uint8List decryptedAESKeyBytes = rsaDecrypt(data: encryptedAESKey, privateKey: privateKey);
-      final Uint8List decryptedIVBytes = rsaDecrypt(data: encryptedIV, privateKey: privateKey);
-
-      // Wrap the decrypted bytes into Key and IV objects
-      final Key decryptedAESKey = Key(decryptedAESKeyBytes);
-      final IV decryptedIV = IV(decryptedIVBytes);
-
-      // Decrypting the message
-      final encrypterd = Encrypter(AES(decryptedAESKey, mode: AESMode.cbc));
-      final decryptedMsg = encrypterd.decrypt(encryptedMsg, iv: decryptedIV);
-
-      ColoredPrint.warning(decryptedMsg);
-
-      // Returning the encrypted message and AES key and IV used for encrypting the message
+      // Return the encrypted message, AES key, and IV
       return (encryptedMessage: encryptedMsg.base64, aesKey: aesKey, iv: iv);
     } catch (e) {
       throw e.toString();
@@ -168,11 +166,11 @@ class MessageEncrptionService {
     // Else if senderID is not equal to current userID, it means that the message is sent by User A to User B. Now User B uses their RSA private key to decrypt the
     // AES key and IV of User A that is encrypted by the User B public key. Now User B can decrypt the AES key and IV easily.
     else {
-      // Parse the RSA private key directly from PEM format
+      // Parse the RSA private key from PEM format
       RsaKeyHelper helper = RsaKeyHelper();
       final privateKey = helper.parsePrivateKeyFromPem(pemPrivateKey);
 
-      // Decrypting the AES key and IV using the other user's RSA private key
+      // Decrypt the AES key and IV using the recipient's private key
       final Uint8List decryptedAESKeyBytes = rsaDecrypt(data: encryptedAESKey, privateKey: privateKey);
       final Uint8List decryptedIVBytes = rsaDecrypt(data: encryptedIV, privateKey: privateKey);
 
@@ -180,10 +178,61 @@ class MessageEncrptionService {
       final Key recipientUserDecryptedAESKey = Key(decryptedAESKeyBytes);
       final IV recipientUserDecryptedIV = IV(decryptedIVBytes);
 
+      // Decrypt the message
       final encrypterd = Encrypter(AES(recipientUserDecryptedAESKey, mode: AESMode.cbc));
       final decryptedMsg = encrypterd.decrypt(encryptedData, iv: recipientUserDecryptedIV);
 
       return decryptedMsg;
+    }
+  }
+
+  //! Method for understaning the encryption and decryption process
+  Future<({String encryptedMessage, Key aesKey, IV iv})> encryptionDecryption({required String message, required String recipientPublicKey, required String recipientPrivateKey}) async {
+    try {
+      // Reading AES key & IV from Flutter Secure Storage. If keys are already generated, we do not generate them again.
+      final String? stringAESKey = await _storage.read(key: 'AES_key');
+      final String? stringIV = await _storage.read(key: 'IV');
+
+      // Converting AES key & IV from String data type to their original state because Flutter Secure Storage stores the data in the String data type.
+      final Key aesKey = Key(base64Decode(stringAESKey!));
+      final IV iv = IV(base64Decode(stringIV!));
+
+      // Create an AES encrypter with the key and IV
+      final encrypter = Encrypter(AES(aesKey, mode: AESMode.cbc));
+
+      // Encrypt the message
+      final encryptedMsg = encrypter.encrypt(message, iv: iv);
+
+      // Converting PEM RSA private and public key to original state so they can be used for encryption
+      RsaKeyHelper helper = RsaKeyHelper();
+      final RSAPublicKey publicKey = helper.parsePublicKeyFromPem(recipientPublicKey);
+      final RSAPrivateKey privateKey = helper.parsePrivateKeyFromPem(recipientPrivateKey);
+
+      // Encrypt the AES key and IV with the recipient's public key
+      final encryptedAESKey = rsaEncrypt(data: aesKey.bytes, publicKey: publicKey);
+      final encryptedIV = rsaEncrypt(data: iv.bytes, publicKey: publicKey);
+
+      //* ----------------- Decryption Part -----------------  */
+
+      // Decrypt the AES key and IV using the recipient's private key
+      final Uint8List decryptedAESKeyBytes = rsaDecrypt(data: encryptedAESKey, privateKey: privateKey);
+      final Uint8List decryptedIVBytes = rsaDecrypt(data: encryptedIV, privateKey: privateKey);
+
+      // Wrap the decrypted bytes into Key and IV objects
+      final Key decryptedAESKey = Key(decryptedAESKeyBytes);
+      final IV decryptedIV = IV(decryptedIVBytes);
+
+      // Decrypt the message
+      final encrypterd = Encrypter(AES(decryptedAESKey, mode: AESMode.cbc));
+      final decryptedMsg = encrypterd.decrypt(encryptedMsg, iv: decryptedIV);
+
+      // Print the decrypted message for debugging
+      ColoredPrint.warning(decryptedMsg);
+
+      // Return the encrypted message, AES key, and IV
+      return (encryptedMessage: encryptedMsg.base64, aesKey: aesKey, iv: iv);
+    } catch (e) {
+      throw e.toString();
     }
   }
 }

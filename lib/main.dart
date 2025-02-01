@@ -1,5 +1,4 @@
 import 'package:chat_application/services/notification_service.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'providers/last_message_provider.dart';
 import 'providers/theme_provider.dart';

@@ -5,5 +5,4 @@
    <string name="facebook_app_id">1518795865449666</string>
    <string name="fb_login_protocol_scheme">fb1518795865449666</string>
    <string name="facebook_client_token">66943766e0ad5f81151c32e93b2bebc5</string>
-   <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
 </resources>

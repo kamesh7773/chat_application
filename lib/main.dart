@@ -30,10 +30,6 @@ void main() async {
 
   // Here we intilize the flutter Awesome Notifications.
   AwesomeNotificationsAPI().initlization();
-  
-  FirebaseMessaging.onBackgroundMessage((RemoteMessage message) async {
-    await AwesomeNotificationsAPI().instantNotification(message);
-  });
 
   // Check if the user is already logged in.
   bool isUserAuthenticated = await FirebaseAuthMethods.isUserLogin();

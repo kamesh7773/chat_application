@@ -60,6 +60,7 @@ class AwesomeNotificationsAPI {
     //! Listen for when a notification is received while the app is in the background.
     //! When notification is received from firebase then this method get called and it fires the
     //! method that is responsible for showing awesome notification.
+    FirebaseMessaging.onBackgroundMessage((RemoteMessage message) => instantNotification(message));
   }
 
   //? Use this method to detect when a new notification or a schedule is created
@@ -98,22 +99,21 @@ class AwesomeNotificationsAPI {
   //! Method for Notification for Chat App
   //! ------------------------------------
   Future<void> instantNotification(RemoteMessage remoteMessage) async {
-    ColoredPrint.warning(remoteMessage.data);
     _notifications.createNotification(
       content: NotificationContent(
         id: UniqueKey().hashCode,
         channelKey: "basic_channel",
-        title: remoteMessage.data['title'],
-        body: remoteMessage.data['body'],
+        title: remoteMessage.notification?.title,
+        body: remoteMessage.notification?.body,
         color: const Color.fromARGB(255, 0, 191, 108),
         //! Here we also set the layout Notification for Chat App.
         notificationLayout: NotificationLayout.Inbox,
       ),
       //! Here is the action button that we show in notification so user can reply message or perfrom some action.
       actionButtons: [
-        NotificationActionButton(key: "1", label: "reply", requireInputText: true),
-        NotificationActionButton(key: "2", label: "Mark as read"),
-        NotificationActionButton(key: "3", label: "close"),
+        NotificationActionButton(key: "reply", label: "reply", requireInputText: true),
+        NotificationActionButton(key: "Mark_as_read", label: "Mark as read"),
+        NotificationActionButton(key: "close", label: "close"),
       ],
     );
   }

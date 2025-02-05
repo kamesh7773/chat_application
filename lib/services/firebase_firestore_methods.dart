@@ -89,7 +89,7 @@ class FirebaseFireStoreMethods {
 
   //! Method for fetching the user details based on 2
   Future<UserModel> fetchingCurrentUserDetail({required String userID}) async {
-    final DocumentReference currentUserDoc = _db.collection("users").doc(_auth.currentUser!.uid);
+    final DocumentReference currentUserDoc = _db.collection("users").doc(userID);
     final DocumentSnapshot docSnapshot = await currentUserDoc.get();
     final UserModel user = UserModel.fromJson(docSnapshot.data() as Map<String, dynamic>);
 

@@ -105,8 +105,6 @@ class AwesomeNotificationsAPI {
   //? Use this method to detect when the user taps on a notification or action button
   @pragma("vm:entry-point")
   static Future<void> onActionReceivedMethod(ReceivedAction receivedAction) async {
-    ColoredPrint.warning(receivedAction.payload);
-
     // Fetching current User Details of currentUser and OtherUser.
     final UserModel otherUser = await FirebaseFireStoreMethods().fetchingCurrentUserDetail(userID: receivedAction.payload!["senderID"]!);
     final UserModel currentUser = await FirebaseFireStoreMethods().fetchingCurrentUserDetail(userID: _auth.currentUser!.uid);
@@ -114,17 +112,16 @@ class AwesomeNotificationsAPI {
     // Check if the action is a reply
     if (receivedAction.buttonKeyPressed == 'reply') {
       final String replyText = receivedAction.buttonKeyInput; // Get the reply text
-      final String senderId = receivedAction.payload?['senderId'] ?? ''; // Get sender ID from payload
+      final String senderId = receivedAction.payload?['senderID'] ?? ''; // Get sender ID from payload
+      final String rsaPublicKey = receivedAction.payload?['rsaPublicKey'] ?? ''; // Get sender ID from payload
 
       if (replyText.isNotEmpty) {
-        // Send the reply to your backend or handle it as needed
-        ColoredPrint.success('Reply: $replyText to Sender: $senderId');
-
-        // Example: Send reply to backend
+        ColoredPrint.warning(replyText);
+        // Sending the reply to node.js FCM backend.
         await FirebaseFireStoreMethods().sendMessage(
           message: replyText,
-          receiverID: receivedAction.payload!["senderID"]!,
-          recipientPublicKey: receivedAction.payload!["rsaPublicKey"]!,
+          receiverID: senderId,
+          recipientPublicKey: rsaPublicKey,
         );
 
         // sending the notification to other user if we directly reply form the notification.
@@ -139,7 +136,7 @@ class AwesomeNotificationsAPI {
         // Dismiss the notification after reply
         AwesomeNotifications().dismiss(receivedAction.id!);
       } else {
-        ColoredPrint.error('Reply text or sender ID is empty');
+        return;
       }
     } else if (receivedAction.buttonKeyPressed == 'Mark_as_read') {
       // Mark as Seen Message when user click on the mark as read button on notification.
@@ -154,6 +151,9 @@ class AwesomeNotificationsAPI {
       FirebaseFireStoreMethods().deleteUnseenMessages(
         userID: receivedAction.payload!["senderID"]!,
       );
+
+      // Dismiss the notification after reply
+      AwesomeNotifications().dismiss(receivedAction.id!);
     } else if (receivedAction.buttonKeyPressed == 'close') {
       // Dismiss the notification after reply
       AwesomeNotifications().dismiss(receivedAction.id!);
@@ -225,8 +225,6 @@ class AwesomeNotificationsAPI {
     final DocumentReference currentUserDoc = _db.collection("users").doc(_auth.currentUser!.uid);
     final DocumentSnapshot docSnapshot = await currentUserDoc.get();
     final UserModel user = UserModel.fromJson(docSnapshot.data() as Map<String, dynamic>);
-
-    ColoredPrint.warning(user.userID);
 
     final response = await http.post(
       Uri.parse(backendUrl),

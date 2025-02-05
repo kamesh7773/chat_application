@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../models/user_model.dart';
 import '../../routes/rotues_names.dart';
 import '../../services/firebase_firestore_methods.dart';
-import 'package:colored_print/colored_print.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
@@ -122,7 +121,6 @@ class _SearchPageState extends State<SearchPage> {
 
                 // If the snapshot has an error, show an error message.
                 if (snapshot.hasError) {
-                  ColoredPrint.warning(snapshot.error.toString());
                   return Center(
                     child: Text(snapshot.error.toString()),
                   );

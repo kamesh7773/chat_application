@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_application/models/user_model.dart';
 import 'package:chat_application/services/notification_service.dart';
+import 'package:chat_application/widgets/call_widget.dart';
 import 'package:colored_print/colored_print.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -84,14 +85,9 @@ class _ChatScreenState extends State<ChatScreen> {
     );
 
     final UserModel otheruser = await FirebaseFireStoreMethods().fetchingCurrentUserDetail(userID: widget.userID);
-    final UserModel currentUser = await FirebaseFireStoreMethods().fetchingCurrentUserDetail(userID: _auth.currentUser!.uid);
-
-    ColoredPrint.warning(otheruser.isInsideChatRoom);
 
     // sending the notification to the other user
-    if (!currentUser.isInsideChatRoom) {
-      return; 
-    } else {
+    if (!otheruser.isInsideChatRoom) {
       await AwesomeNotificationsAPI.sendNotification(
         recipientToken: widget.fcmToken,
         title: widget.currentUserName,
@@ -327,11 +323,11 @@ class _ChatScreenState extends State<ChatScreen> {
                                 // Check if the current user is the sender.
                                 var isCurrentUser = message.senderID == _auth.currentUser!.uid;
 
-                                return Chatbubble(
-                                  isCurrentUser: isCurrentUser,
-                                  message: message.message,
-                                  isMessageSeen: message.isSeen,
-                                  timestamp: message.timestamp,
+                                return const CallWidget(
+                                  isCurrentUser: false,
+                                  isVideoCall: false,
+                                  isIncoming: true,
+                                  callDuration: "24 sec",
                                 );
                               },
                             ),

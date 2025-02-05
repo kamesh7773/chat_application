@@ -1,5 +1,11 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:chat_application/main.dart';
+import 'package:chat_application/models/user_model.dart';
+import 'package:chat_application/routes/rotues_names.dart';
+import 'package:chat_application/services/firebase_firestore_methods.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:colored_print/colored_print.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,15 +14,19 @@ import 'dart:convert';
 
 //! This is the method that is called when a notification is received while the app is in the background.
 //! It is used to initialize the app and show the notification.
-//! This method i working for showing custum notification when app is in background please don't remove it.
+//! This method i working for showing custum notification when app is in background don't remove it.
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   WidgetsFlutterBinding.ensureInitialized(); // Add this line
   await Firebase.initializeApp();
-  await AwesomeNotificationsAPI().instantNotification(message);
+  await AwesomeNotificationsAPI().instantNotification(remoteMessage: message);
 }
 
 class AwesomeNotificationsAPI {
+  // Variables related to Firebase instances
+  static final FirebaseAuth _auth = FirebaseAuth.instance;
+  static final FirebaseFirestore _db = FirebaseFirestore.instance;
+
   // creating instance of AwesomeNotifications
   static final AwesomeNotifications _notifications = AwesomeNotifications();
 
@@ -66,7 +76,7 @@ class AwesomeNotificationsAPI {
     );
 
     //! Listen for when a user taps on a notification and the app is opened as a result.
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) => instantNotification(message));
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) => instantNotification(remoteMessage: message));
 
     //! Listen for when a notification is received while the app is in the background.
     //! When notification is received from firebase then this method get called and it fires the
@@ -95,9 +105,12 @@ class AwesomeNotificationsAPI {
   //? Use this method to detect when the user taps on a notification or action button
   @pragma("vm:entry-point")
   static Future<void> onActionReceivedMethod(ReceivedAction receivedAction) async {
-    ColoredPrint.warning(receivedAction.buttonKeyPressed);
+    ColoredPrint.warning(receivedAction.payload);
 
-    
+    // Fetching current User Details of currentUser and OtherUser.
+    final UserModel otherUser = await FirebaseFireStoreMethods().fetchingCurrentUserDetail(userID: receivedAction.payload!["senderID"]!);
+    final UserModel currentUser = await FirebaseFireStoreMethods().fetchingCurrentUserDetail(userID: _auth.currentUser!.uid);
+
     // Check if the action is a reply
     if (receivedAction.buttonKeyPressed == 'reply') {
       final String replyText = receivedAction.buttonKeyInput; // Get the reply text
@@ -108,34 +121,67 @@ class AwesomeNotificationsAPI {
         ColoredPrint.success('Reply: $replyText to Sender: $senderId');
 
         // Example: Send reply to backend
-        // await sendReplyToBackend(senderId, replyText);
+        await FirebaseFireStoreMethods().sendMessage(
+          message: replyText,
+          receiverID: receivedAction.payload!["senderID"]!,
+          recipientPublicKey: receivedAction.payload!["rsaPublicKey"]!,
+        );
+
+        // sending the notification to other user if we directly reply form the notification.
+        if (!otherUser.isInsideChatRoom) {
+          await sendNotification(
+            recipientToken: otherUser.fcmToken,
+            title: currentUser.name,
+            message: replyText,
+          );
+        }
 
         // Dismiss the notification after reply
-        AwesomeNotifications().dismissAllNotifications();
+        AwesomeNotifications().dismiss(receivedAction.id!);
       } else {
         ColoredPrint.error('Reply text or sender ID is empty');
       }
     } else if (receivedAction.buttonKeyPressed == 'Mark_as_read') {
-      // Handle mark as read action
-      ColoredPrint.success('Mark as read pressed');
+      // Mark as Seen Message when user click on the mark as read button on notification.
+      FirebaseFireStoreMethods().getAllUnseenMessagesAndUpdateToSeen(
+        userID: _auth.currentUser!.uid,
+        otherUserID: receivedAction.payload!["senderID"]!,
+        isOnline: true,
+        isOtherUserInsideChatRoom: true,
+      );
+
+      // remove the message form unse. messages.
+      FirebaseFireStoreMethods().deleteUnseenMessages(
+        userID: receivedAction.payload!["senderID"]!,
+      );
     } else if (receivedAction.buttonKeyPressed == 'close') {
-      // Handle close action
-      ColoredPrint.success('Close pressed');
+      // Dismiss the notification after reply
+      AwesomeNotifications().dismiss(receivedAction.id!);
     }
 
     //! Navigate the user to specific  the Chat Screen Page.
-
-    //  MyApp.navigatorKey.currentState?.push(
-    //    MaterialPageRoute(
-    //      builder: (context) => NotificationPage(receivedAction: receivedAction),
-    //    ),
-    //  );
+    navigatorKey.currentState?.pushNamed(
+      RoutesNames.chatScreenPage,
+      arguments: {
+        "userID": receivedAction.payload!["senderID"],
+        "name": receivedAction.payload!["name"],
+        "currentUsername": currentUser.name,
+        "email": receivedAction.payload!["email"],
+        "imageUrl": receivedAction.payload!["imageUrl"],
+        "isOnline": otherUser.isOnline,
+        "lastSeen": otherUser.lastSeen,
+        "rsaPublicKey": receivedAction.payload!["rsaPublicKey"],
+        "fcmToken": otherUser.fcmToken,
+      },
+    );
   }
 
   //! ------------------------------------
   //! Method for Notification for Chat App
   //! ------------------------------------
-  Future<void> instantNotification(RemoteMessage remoteMessage) async {
+  Future<void> instantNotification({
+    required RemoteMessage remoteMessage,
+  }) async {
     try {
       _notifications.createNotification(
         content: NotificationContent(
@@ -144,15 +190,25 @@ class AwesomeNotificationsAPI {
           title: remoteMessage.data['title'],
           body: remoteMessage.data['body'],
           color: const Color.fromARGB(255, 0, 191, 108),
+          largeIcon: remoteMessage.data['imageUrl'],
           //! Here we also set the layout Notification for Chat App.
           notificationLayout: NotificationLayout.Inbox,
           category: NotificationCategory.Message,
+          payload: {
+            "senderID": remoteMessage.data["senderID"],
+            "name": remoteMessage.data["name"],
+            "email": remoteMessage.data["email"],
+            "imageUrl": remoteMessage.data["imageUrl"],
+            "rsaPublicKey": remoteMessage.data["recipientPublicKey"],
+            "fcmToken": remoteMessage.data["fcmToken"],
+          },
         ),
+
         //! Here is the action button that we show in notification so user can reply message or perfrom some action.
         actionButtons: [
-          NotificationActionButton(key: "1", label: "reply", requireInputText: true),
-          NotificationActionButton(key: "2", label: "Mark as read"),
-          NotificationActionButton(key: "3", label: "close"),
+          NotificationActionButton(key: "reply", label: "reply", requireInputText: true),
+          NotificationActionButton(key: "Mark_as_read", label: "Mark as read"),
+          NotificationActionButton(key: "close", label: "close"),
         ],
       );
     } catch (e) {
@@ -162,7 +218,15 @@ class AwesomeNotificationsAPI {
 
   //! Method for sending notification to sepcific user by the FCM Token.
   static Future<void> sendNotification({required String recipientToken, required String title, required String message}) async {
-    const String backendUrl = 'https://mature-sissy-montu-113ea327.koyeb.app/send-notification'; // backend URL
+    // Node JS backend API URL
+    const String backendUrl = 'https://mature-sissy-montu-113ea327.koyeb.app/send-notification';
+
+    // Fetching current User Details.
+    final DocumentReference currentUserDoc = _db.collection("users").doc(_auth.currentUser!.uid);
+    final DocumentSnapshot docSnapshot = await currentUserDoc.get();
+    final UserModel user = UserModel.fromJson(docSnapshot.data() as Map<String, dynamic>);
+
+    ColoredPrint.warning(user.userID);
 
     final response = await http.post(
       Uri.parse(backendUrl),
@@ -174,6 +238,11 @@ class AwesomeNotificationsAPI {
           'token': recipientToken,
           'title': title,
           'body': message,
+          'senderID': user.userID,
+          'name': user.name,
+          'email': user.email,
+          'imageUrl': user.imageUrl,
+          'recipientPublicKey': user.rsaPublicKey,
         },
       ),
     );

@@ -79,6 +79,7 @@ class Routes {
           builder: (context) => ChatScreen(
             userID: args["userID"],
             name: args["name"],
+            currentUserName: args["currentUsername"],
             email: args["email"],
             imageUrl: args["imageUrl"],
             rsaPublicKey: args["rsaPublicKey"],

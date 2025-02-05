@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chat_application/services/message_encrption_service.dart';
+import 'package:chat_application/services/notification_service.dart';
 import '../../providers/last_message_provider.dart';
 import '../../utils/date_time_calculator_for_users.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,10 +20,17 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final FirebaseFireStoreMethods _firebaseFireStoreMethods = FirebaseFireStoreMethods();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  late final String  currentUsername;
+
+  void fetchingcurrentUsername() async{
+    final UserModel currentUser = await FirebaseFireStoreMethods().fetchingCurrentUserDetail(userID: _auth.currentUser!.uid);
+    currentUsername = currentUser.name;
+  }
 
   @override
   void initState() {
     super.initState();
+    fetchingcurrentUsername();
     setState(() {});
   }
 
@@ -75,8 +82,7 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       ActionChip(
                         onPressed: () {
-                          MessageEncrptionService().encryptPrivateKey();
-                          MessageEncrptionService().decryptPrivateKey();
+                          AwesomeNotificationsAPI.sendNotification(recipientToken: "recipientToken", title: "title", message: "message");
                         },
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
                         shadowColor: Colors.black,
@@ -170,6 +176,7 @@ class _HomePageState extends State<HomePage> {
                             arguments: {
                               "userID": user.userID,
                               "name": user.name,
+                              "currentUsername": currentUsername,
                               "email": user.email,
                               "imageUrl": user.imageUrl,
                               "isOnline": user.isOnline,

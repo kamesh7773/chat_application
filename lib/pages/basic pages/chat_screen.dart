@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chat_application/models/user_model.dart';
 import 'package:chat_application/services/notification_service.dart';
 import 'package:colored_print/colored_print.dart';
 
@@ -24,6 +25,7 @@ import 'package:provider/provider.dart';
 class ChatScreen extends StatefulWidget {
   final String userID;
   final String name;
+  final String currentUserName;
   final String email;
   final String imageUrl;
   final String rsaPublicKey;
@@ -33,6 +35,7 @@ class ChatScreen extends StatefulWidget {
     super.key,
     required this.userID,
     required this.name,
+    required this.currentUserName,
     required this.email,
     required this.imageUrl,
     required this.rsaPublicKey,
@@ -74,14 +77,27 @@ class _ChatScreenState extends State<ChatScreen> {
 
   // Method to send the message.
   void sendMessage() async {
-    await firebaseFireStoreMethods.sendMessage(receiverID: widget.userID, message: _messageController.text, recipientPublicKey: widget.rsaPublicKey);
+    await firebaseFireStoreMethods.sendMessage(
+      receiverID: widget.userID,
+      message: _messageController.text,
+      recipientPublicKey: widget.rsaPublicKey,
+    );
+
+    final UserModel otheruser = await FirebaseFireStoreMethods().fetchingCurrentUserDetail(userID: widget.userID);
+    final UserModel currentUser = await FirebaseFireStoreMethods().fetchingCurrentUserDetail(userID: _auth.currentUser!.uid);
+
+    ColoredPrint.warning(otheruser.isInsideChatRoom);
 
     // sending the notification to the other user
-    AwesomeNotificationsAPI.sendNotification(
-      recipientToken: widget.fcmToken,
-      title: widget.name,
-      message: _messageController.text.trim(),
-    );
+    if (!currentUser.isInsideChatRoom) {
+      return; 
+    } else {
+      await AwesomeNotificationsAPI.sendNotification(
+        recipientToken: widget.fcmToken,
+        title: widget.currentUserName,
+        message: _messageController.text.trim(),
+      );
+    }
 
     // After sending the message, clear the controller
     _messageController.clear();

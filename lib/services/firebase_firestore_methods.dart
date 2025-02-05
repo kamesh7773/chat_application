@@ -1,7 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'message_encrption_service.dart';
-import 'package:colored_print/colored_print.dart';
 import 'package:pointycastle/asymmetric/api.dart';
 import 'package:rsa_encrypt/rsa_encrypt.dart';
 
@@ -86,6 +85,15 @@ class FirebaseFireStoreMethods {
     } catch (error) {
       throw Exception(error.toString());
     }
+  }
+
+  //! Method for fetching the user details based on 2
+  Future<UserModel> fetchingCurrentUserDetail({required String userID}) async {
+    final DocumentReference currentUserDoc = _db.collection("users").doc(_auth.currentUser!.uid);
+    final DocumentSnapshot docSnapshot = await currentUserDoc.get();
+    final UserModel user = UserModel.fromJson(docSnapshot.data() as Map<String, dynamic>);
+
+    return user;
   }
 
   //! Method for searching users based on their name.
@@ -183,7 +191,6 @@ class FirebaseFireStoreMethods {
         await updateUnseenMessage(userID: currentUserID, otherUserID: receiverID);
       }
     } catch (error) {
-      ColoredPrint.warning(error);
       throw Exception(error.toString());
     }
   }
@@ -268,7 +275,6 @@ class FirebaseFireStoreMethods {
         return messageList;
       });
     } catch (error) {
-      ColoredPrint.warning(error);
       throw Exception(error.toString());
     }
   }

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:colored_print/colored_print.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -88,7 +87,6 @@ class MessageEncrptionService {
     // wrting the encrypted private key to Flutter Secure Storage
     await _storage.write(key: 'encrypted_private_key', value: base64.encode(result));
 
-    ColoredPrint.warning(base64.encode(result));
   }
 
 //! Decrypt the private key using the same custom string (sub-property)
@@ -105,7 +103,6 @@ class MessageEncrptionService {
       result.add(textBytes[i] ^ keyBytes[i % keyBytes.length]);
     }
 
-    ColoredPrint.warning(base64.encode(result));
   }
 
   //! Method to decrypt AES key and IV using our own RSA private key
@@ -227,7 +224,6 @@ class MessageEncrptionService {
       final decryptedMsg = encrypterd.decrypt(encryptedMsg, iv: decryptedIV);
 
       // Print the decrypted message for debugging
-      ColoredPrint.warning(decryptedMsg);
 
       // Return the encrypted message, AES key, and IV
       return (encryptedMessage: encryptedMsg.base64, aesKey: aesKey, iv: iv);

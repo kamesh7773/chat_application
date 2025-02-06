@@ -20,9 +20,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final FirebaseFireStoreMethods _firebaseFireStoreMethods = FirebaseFireStoreMethods();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  late final String  currentUsername;
+  late final String currentUsername;
 
-  void fetchingcurrentUsername() async{
+  void fetchingcurrentUsername() async {
     final UserModel currentUser = await FirebaseFireStoreMethods().fetchingCurrentUserDetail(userID: _auth.currentUser!.uid);
     currentUsername = currentUser.name;
   }
@@ -65,7 +65,7 @@ class _HomePageState extends State<HomePage> {
                         //! Navigate the user to the Search Page
                         Navigator.of(context).pushNamed(
                           RoutesNames.searchPage,
-                          arguments: "Chats",
+                          arguments: "Search",
                         );
                       },
                       icon: const Icon(

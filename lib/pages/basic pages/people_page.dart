@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../models/user_model.dart';
 import '../../services/firebase_firestore_methods.dart';
@@ -14,6 +15,20 @@ class PeoplePage extends StatefulWidget {
 
 class _PeoplePageState extends State<PeoplePage> {
   final FirebaseFireStoreMethods _firebaseFireStoreMethods = FirebaseFireStoreMethods();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  late final String currentUsername;
+
+  void fetchingcurrentUsername() async {
+    final UserModel currentUser = await FirebaseFireStoreMethods().fetchingCurrentUserDetail(userID: _auth.currentUser!.uid);
+    currentUsername = currentUser.name;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchingcurrentUsername();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,6 +106,23 @@ class _PeoplePageState extends State<PeoplePage> {
                       return Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8),
                         child: ListTile(
+                          onTap: () {
+                            //! Navigate the user to the Chat Screen Page.
+                            Navigator.of(context).pushNamed(
+                              RoutesNames.chatScreenPage,
+                              arguments: {
+                                "userID": user.userID,
+                                "name": user.name,
+                                "currentUsername": currentUsername,
+                                "email": user.email,
+                                "imageUrl": user.imageUrl,
+                                "isOnline": user.isOnline,
+                                "lastSeen": user.lastSeen,
+                                "rsaPublicKey": user.rsaPublicKey,
+                                "fcmToken": user.fcmToken,
+                              },
+                            );
+                          },
                           leading: Stack(
                             children: [
                               ClipRRect(

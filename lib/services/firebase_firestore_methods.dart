@@ -351,7 +351,7 @@ class FirebaseFireStoreMethods {
         final String encryptedIV = lastMessageData['encryptedIV'];
         final bool? isVideoCall = lastMessageData['isVideoCall'];
 
-        if (isVideoCall != null) {
+        if (isVideoCall == null) {
           // Decrypt the message asynchronously
           decryptedMessage = await MessageEncrptionService().mesageDecrypation(
             currentUserID: _auth.currentUser!.uid,
@@ -365,10 +365,9 @@ class FirebaseFireStoreMethods {
         } else if (isVideoCall == false) {
           decryptedMessage = "Audio Call";
         }
-
         return decryptedMessage;
       } else {
-        return "";
+        return decryptedMessage;
       }
     } catch (error) {
       throw Exception(error.toString());
@@ -427,6 +426,7 @@ class FirebaseFireStoreMethods {
 
   //! Method to update the call logs in the user's collection.
   Future<void> updateCallLogs({
+    required String userID,
     required String userName,
     required String imageUrl,
     required bool isVideoCall,
@@ -438,6 +438,7 @@ class FirebaseFireStoreMethods {
 
       // Construct the new call log map
       Map<String, dynamic> callInfo = {
+        "userID": userID,
         "userName": userName,
         "imageUrl": imageUrl,
         "isInComing": isInComing,

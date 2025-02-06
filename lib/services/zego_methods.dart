@@ -32,8 +32,8 @@ class ZegoMethods {
 
     /// Initialize ZegoUIKitPrebuiltCallInvitationService when the account is logged in or re-logged in
     ZegoUIKitPrebuiltCallInvitationService().init(
-      appID: 160183049,
-      appSign: "497baabd20893bd87376fc8263b93f8e05e9fe60012de0d391efe7b45a9e836d",
+      appID: 239722986,
+      appSign: "c326e362536ff903846997e72f8aa030adc8454ea580bbb1c6a3890eefc9aa08",
       userID: userID!,
       userName: name!,
       plugins: [ZegoUIKitSignalingPlugin()],
@@ -75,6 +75,7 @@ class ZegoMethods {
 
             // Update call logs in the user's Firebase database
             firebaseFireStoreMethods.updateCallLogs(
+              userID: otherUser.userID,
               userName: caller.name,
               imageUrl: otherUser.imageUrl,
               isVideoCall: callType == ZegoCallInvitationType.videoCall ? true : false,
@@ -95,6 +96,7 @@ class ZegoMethods {
 
             // Update call logs in the user's Firebase database
             firebaseFireStoreMethods.updateCallLogs(
+              userID: otherUser.userID,
               userName: callees.first.name,
               imageUrl: otherUser.imageUrl,
               isVideoCall: callType == ZegoCallInvitationType.videoCall ? true : false,

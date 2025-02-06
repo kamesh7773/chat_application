@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../models/user_model.dart';
 import '../../routes/rotues_names.dart';
 import '../../services/firebase_firestore_methods.dart';
@@ -17,6 +18,19 @@ class _SearchPageState extends State<SearchPage> {
   // Variable declaration
   String searchName = "";
   final FirebaseFireStoreMethods _firebaseFireStoreMethods = FirebaseFireStoreMethods();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  late final String currentUsername;
+
+  void fetchingcurrentUsername() async {
+    final UserModel currentUser = await FirebaseFireStoreMethods().fetchingCurrentUserDetail(userID: _auth.currentUser!.uid);
+    currentUsername = currentUser.name;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchingcurrentUsername();
+  }
 
   // Border style
   final OutlineInputBorder borderStyle = OutlineInputBorder(
@@ -144,10 +158,13 @@ class _SearchPageState extends State<SearchPage> {
                             arguments: {
                               "userID": user.userID,
                               "name": user.name,
+                              "currentUsername": currentUsername,
                               "email": user.email,
                               "imageUrl": user.imageUrl,
                               "isOnline": user.isOnline,
                               "lastSeen": user.lastSeen,
+                              "rsaPublicKey": user.rsaPublicKey,
+                              "fcmToken": user.fcmToken,
                             },
                           );
                         },

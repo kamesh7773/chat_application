@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chat_application/widgets/send_call_button.dart';
 import '../../models/user_model.dart';
 import '../../services/firebase_firestore_methods.dart';
 import '../../utils/date_time_calculator_for_unseenmsg.dart';
@@ -120,17 +121,30 @@ class _CallsPageState extends State<CallsPage> {
                             ],
                           ),
                           trailing: IconButton(
+                            padding: EdgeInsets.zero,
                             onPressed: () {},
                             icon: user.isVideoCall
-                                ? const Icon(
-                                    Icons.videocam_sharp,
-                                    color: Color.fromARGB(255, 0, 191, 108),
-                                    size: 26,
+                                ? sendCallButton(
+                                    isVideoCall: true,
+                                    userId: user.userID,
+                                    userName: user.userName,
+                                    imageUrl: user.imageUrl,
+                                    icon: const Icon(
+                                      Icons.videocam_sharp,
+                                      color: Color.fromARGB(255, 0, 191, 108),
+                                      size: 28,
+                                    ),
                                   )
-                                : const Icon(
-                                    Icons.call,
-                                    color: Color.fromARGB(255, 0, 191, 108),
-                                    size: 26,
+                                : sendCallButton(
+                                    isVideoCall: false,
+                                    userId: user.userID,
+                                    userName: user.userName,
+                                    imageUrl: user.imageUrl,
+                                    icon: const Icon(
+                                      Icons.call,
+                                      color: Color.fromARGB(255, 0, 191, 108),
+                                      size: 26,
+                                    ),
                                   ),
                           ),
                         );

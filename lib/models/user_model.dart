@@ -71,6 +71,7 @@ class UserModel {
 }
 
 class CallLog {
+  String userID;
   String userName;
   String imageUrl;
   Timestamp timeStamp;
@@ -78,6 +79,7 @@ class CallLog {
   bool isInComing;
 
   CallLog({
+    required this.userID,
     required this.userName,
     required this.imageUrl,
     required this.timeStamp,
@@ -86,6 +88,7 @@ class CallLog {
   });
 
   factory CallLog.fromJson(Map<String, dynamic> json) => CallLog(
+        userID: json["userID"],
         userName: json["userName"],
         imageUrl: json["imageUrl"],
         timeStamp: json["timeStamp"],
@@ -94,6 +97,7 @@ class CallLog {
       );
 
   Map<String, dynamic> toJson() => {
+        "uuserIDserName": userID,
         "userName": userName,
         "imageUrl": imageUrl,
         "timeStamp": timeStamp,

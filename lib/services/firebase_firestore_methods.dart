@@ -1,3 +1,4 @@
+import 'package:colored_print/colored_print.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'message_encrption_service.dart';
@@ -327,6 +328,7 @@ class FirebaseFireStoreMethods {
   //! Method for getting the last message by the user or from another user.
   Future<String> updateLastMessage({required String otherUserID}) async {
     try {
+      String decryptedMessage = "";
       // Construct chatRoom ID for two users (sorted to ensure uniqueness)
       List<String> ids = [_auth.currentUser!.uid, otherUserID];
       ids.sort();
@@ -347,15 +349,22 @@ class FirebaseFireStoreMethods {
         final String encryptedMessage = lastMessageData['message'];
         final String encryptedAESKey = lastMessageData['encryptedAESKey'];
         final String encryptedIV = lastMessageData['encryptedIV'];
+        final bool? isVideoCall = lastMessageData['isVideoCall'];
 
-        // Decrypt the message asynchronously
-        final String decryptedMessage = await MessageEncrptionService().mesageDecrypation(
-          currentUserID: _auth.currentUser!.uid,
-          senderID: senderID,
-          encryptedMessage: encryptedMessage,
-          encryptedAESKey: encryptedAESKey,
-          encryptedIV: encryptedIV,
-        );
+        if (isVideoCall != null) {
+          // Decrypt the message asynchronously
+          decryptedMessage = await MessageEncrptionService().mesageDecrypation(
+            currentUserID: _auth.currentUser!.uid,
+            senderID: senderID,
+            encryptedMessage: encryptedMessage,
+            encryptedAESKey: encryptedAESKey,
+            encryptedIV: encryptedIV,
+          );
+        } else if (isVideoCall == true) {
+          decryptedMessage = "Video Call";
+        } else if (isVideoCall == false) {
+          decryptedMessage = "Audio Call";
+        }
 
         return decryptedMessage;
       } else {

@@ -157,21 +157,23 @@ class AwesomeNotificationsAPI {
       AwesomeNotifications().dismiss(receivedAction.id!);
     }
 
-    //! Navigate the user to specific  the Chat Screen Page.
-    navigatorKey.currentState?.pushNamed(
-      RoutesNames.chatScreenPage,
-      arguments: {
-        "userID": receivedAction.payload!["senderID"],
-        "name": receivedAction.payload!["name"],
-        "currentUsername": currentUser.name,
-        "email": receivedAction.payload!["email"],
-        "imageUrl": receivedAction.payload!["imageUrl"],
-        "isOnline": otherUser.isOnline,
-        "lastSeen": otherUser.lastSeen,
-        "rsaPublicKey": receivedAction.payload!["rsaPublicKey"],
-        "fcmToken": otherUser.fcmToken,
-      },
-    );
+    //! Navigate the user to specific the Chat Screen Page.
+    if (receivedAction.buttonKeyPressed == "") {
+      navigatorKey.currentState?.pushNamed(
+        RoutesNames.chatScreenPage,
+        arguments: {
+          "userID": receivedAction.payload!["senderID"],
+          "name": receivedAction.payload!["name"],
+          "currentUsername": currentUser.name,
+          "email": receivedAction.payload!["email"],
+          "imageUrl": receivedAction.payload!["imageUrl"],
+          "isOnline": otherUser.isOnline,
+          "lastSeen": otherUser.lastSeen,
+          "rsaPublicKey": receivedAction.payload!["rsaPublicKey"],
+          "fcmToken": otherUser.fcmToken,
+        },
+      );
+    }
   }
 
   //! ------------------------------------
@@ -190,8 +192,7 @@ class AwesomeNotificationsAPI {
           color: const Color.fromARGB(255, 0, 191, 108),
           largeIcon: remoteMessage.data['imageUrl'],
           //! Here we also set the layout Notification for Chat App.
-          notificationLayout: NotificationLayout.Inbox,
-          category: NotificationCategory.Message,
+          notificationLayout: NotificationLayout.Default,
           payload: {
             "senderID": remoteMessage.data["senderID"],
             "name": remoteMessage.data["name"],

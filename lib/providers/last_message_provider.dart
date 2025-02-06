@@ -17,7 +17,7 @@ class LastMessageProvider extends ChangeNotifier {
       // Fetch the last message of the other user based on the provided user ID and store it in a variable named lastMessage.
       final lastMessage = await _firebaseFireStoreMethods.updateLastMessage(otherUserID: otherUserID);
       // Store the last message in the map with the key as the other user's ID, so the last message of the other user is saved in the map with their ID as the key.
-      lastMessages[otherUserID] = lastMessage; // Store the last message for this user
+      lastMessages[otherUserID] = lastMessage!; // Store the last message for this user
       notifyListeners();
     } catch (error) {
       throw "Error fetching last message for user $otherUserID: $error";

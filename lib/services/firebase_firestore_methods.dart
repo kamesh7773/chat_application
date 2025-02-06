@@ -150,6 +150,7 @@ class FirebaseFireStoreMethods {
         MessageModel newMessage = MessageModel(
           senderID: currentUserID,
           reciverID: receiverID,
+          isVideoCall: null,
           message: result.encryptedMessage,
           encryptedAESKey: encryptedAESKey,
           encryptedIV: encryptedIV,
@@ -172,6 +173,7 @@ class FirebaseFireStoreMethods {
         MessageModel newMessage = MessageModel(
           senderID: currentUserID,
           reciverID: receiverID,
+          isVideoCall: null,
           message: result.encryptedMessage,
           encryptedAESKey: encryptedAESKey,
           encryptedIV: encryptedIV,

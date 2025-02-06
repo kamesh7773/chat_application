@@ -116,7 +116,6 @@ class AwesomeNotificationsAPI {
       final String rsaPublicKey = receivedAction.payload?['rsaPublicKey'] ?? ''; // Get sender ID from payload
 
       if (replyText.isNotEmpty) {
-        ColoredPrint.warning(replyText);
         // Sending the reply to node.js FCM backend.
         await FirebaseFireStoreMethods().sendMessage(
           message: replyText,

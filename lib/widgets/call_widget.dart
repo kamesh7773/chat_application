@@ -1,17 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class CallWidget extends StatelessWidget {
   final bool isCurrentUser;
   final bool isVideoCall;
   final bool isIncoming;
-  final String callDuration;
+  final Timestamp timestamp;
 
   const CallWidget({
     super.key,
     required this.isCurrentUser,
     required this.isVideoCall,
     required this.isIncoming,
-    required this.callDuration,
+    required this.timestamp,
   });
 
   @override
@@ -45,7 +47,7 @@ class CallWidget extends StatelessWidget {
                 padding: const EdgeInsets.all(5),
                 child: Icon(
                   color: isCurrentUser ? Colors.white : Colors.white,
-                  Icons.phone_callback_outlined,
+                  isVideoCall ? Icons.videocam_outlined : Icons.phone_callback_outlined,
                 ),
               ),
               const SizedBox(width: 6),
@@ -53,9 +55,9 @@ class CallWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   isVideoCall ? const Text("Video Call") : const Text("Voice Call"),
-                  const Text(
-                    "24 sec",
-                    style: TextStyle(fontSize: 12),
+                  Text(
+                    DateFormat('hh:mm a').format(timestamp.toDate()),
+                    style: const TextStyle(fontSize: 12),
                   ),
                 ],
               )

@@ -323,12 +323,19 @@ class _ChatScreenState extends State<ChatScreen> {
                                 // Check if the current user is the sender.
                                 var isCurrentUser = message.senderID == _auth.currentUser!.uid;
 
-                                return const CallWidget(
+                                return CallWidget(
                                   isCurrentUser: false,
-                                  isVideoCall: false,
+                                  isVideoCall: true,
                                   isIncoming: true,
-                                  callDuration: "24 sec",
+                                  timestamp: Timestamp.now(),
                                 );
+
+                                // return Chatbubble(
+                                //   message: message.message,
+                                //   isCurrentUser: isCurrentUser,
+                                //   timestamp: message.timestamp,
+                                //   isMessageSeen: message.isSeen,
+                                // );
                               },
                             ),
                           ),

@@ -4,7 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_application/models/user_model.dart';
 import 'package:chat_application/services/notification_service.dart';
 import 'package:chat_application/widgets/call_widget.dart';
-import 'package:colored_print/colored_print.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../providers/zego_avatar_provider.dart';
@@ -323,19 +322,25 @@ class _ChatScreenState extends State<ChatScreen> {
                                 // Check if the current user is the sender.
                                 var isCurrentUser = message.senderID == _auth.currentUser!.uid;
 
-                                return CallWidget(
-                                  isCurrentUser: false,
-                                  isVideoCall: true,
-                                  isIncoming: true,
-                                  timestamp: Timestamp.now(),
-                                );
+                                // Check if the message is a call
+                                if (message.isVideoCall != null) {
+                                  return CallWidget(
+                                    isCurrentUser: isCurrentUser,
+                                    isVideoCall: message.isVideoCall!,
+                                    timestamp: message.timestamp,
+                                    callerId: message.callerID!,
+                                    recipientId: message.reciverID,
+                                    currentUserId: _auth.currentUser!.uid,
+                                  );
+                                }
 
-                                // return Chatbubble(
-                                //   message: message.message,
-                                //   isCurrentUser: isCurrentUser,
-                                //   timestamp: message.timestamp,
-                                //   isMessageSeen: message.isSeen,
-                                // );
+                                // Render regular chat bubbles for non-call messages
+                                return Chatbubble(
+                                  message: message.message,
+                                  isCurrentUser: isCurrentUser,
+                                  timestamp: message.timestamp,
+                                  isMessageSeen: message.isSeen,
+                                );
                               },
                             ),
                           ),
@@ -356,7 +361,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
                     // If the snapshot has an error.
                     if (snapshot.hasError) {
-                      ColoredPrint.warning(snapshot.error);
                       return const Center(
                         child: Text("Something went wrong ⚠️"),
                       );

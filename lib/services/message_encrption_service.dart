@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:colored_print/colored_print.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -224,6 +225,7 @@ class MessageEncrptionService {
       final decryptedMsg = encrypterd.decrypt(encryptedMsg, iv: decryptedIV);
 
       // Print the decrypted message for debugging
+      ColoredPrint.warning(decryptedMsg);
 
       // Return the encrypted message, AES key, and IV
       return (encryptedMessage: encryptedMsg.base64, aesKey: aesKey, iv: iv);

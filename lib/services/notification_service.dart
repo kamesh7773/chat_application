@@ -4,7 +4,6 @@ import 'package:chat_application/models/user_model.dart';
 import 'package:chat_application/routes/rotues_names.dart';
 import 'package:chat_application/services/firebase_firestore_methods.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:colored_print/colored_print.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';

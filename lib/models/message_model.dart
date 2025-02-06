@@ -5,6 +5,7 @@ class MessageModel {
   final String reciverID;
   final String message;
   final bool? isVideoCall;
+  final String? callerID;
   final String encryptedAESKey;
   final String encryptedIV;
   final bool isSeen;
@@ -15,6 +16,7 @@ class MessageModel {
     required this.reciverID,
     required this.message,
     this.isVideoCall,
+    this.callerID,
     required this.encryptedAESKey,
     required this.encryptedIV,
     required this.isSeen,
@@ -28,6 +30,7 @@ class MessageModel {
       "reciverID": reciverID,
       "message": message,
       "isVideoCall": isVideoCall,
+      "callerID": callerID,
       "encryptedAESKey": encryptedAESKey,
       "encryptedIV": encryptedIV,
       "isSeen": isSeen,
@@ -40,6 +43,7 @@ class MessageModel {
         reciverID: json["reciverID"],
         message: json["message"],
         isVideoCall: json["isVideoCall"],
+        callerID: json["callerID"],
         encryptedAESKey: json["encryptedAESKey"],
         encryptedIV: json["encryptedIV"],
         isSeen: json["isSeen"],
@@ -51,6 +55,7 @@ class MessageModel {
         "reciverID": reciverID,
         "message": message,
         "isVideoCall": isVideoCall,
+        "callerID": callerID,
         "encryptedAESKey": encryptedAESKey,
         "encryptedIV": encryptedIV,
         "isSeen": isSeen,

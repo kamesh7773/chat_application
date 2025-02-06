@@ -5,11 +5,13 @@ import 'package:chat_application/models/message_model.dart';
 import 'package:chat_application/models/user_model.dart';
 import 'package:chat_application/providers/zego_avatar_provider.dart';
 import 'package:chat_application/services/firebase_firestore_methods.dart';
+import 'package:chat_application/services/message_encrption_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:colored_print/colored_print.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:pointycastle/asymmetric/api.dart';
 import 'package:provider/provider.dart';
+import 'package:rsa_encrypt/rsa_encrypt.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
@@ -99,15 +101,27 @@ class ZegoMethods {
               isInComing: false,
             );
 
+            // Parse the RSA public key of the recipient from PEM format.
+            RsaKeyHelper helper = RsaKeyHelper();
+            final RSAPublicKey publicKey = helper.parsePublicKeyFromPem(otherUser.rsaPublicKey);
+
+            // Encrypt the message using AES
+            final result = await MessageEncrptionService().encryptMessage(message: "message");
+
+            // Encrypt AES Key & IV using the recipient's public RSA key
+            String encryptedAESKey = MessageEncrptionService().rsaEncrypt(data: result.aesKey.bytes, publicKey: publicKey);
+            String encryptedIV = MessageEncrptionService().rsaEncrypt(data: result.iv.bytes, publicKey: publicKey);
+
             // Adding the new message on chatRoom collection about the call (Voice/Video Call)
             // Create a new message
             MessageModel newMessage = MessageModel(
               senderID: auth.currentUser!.uid,
               reciverID: receiverID,
               isVideoCall: callType == ZegoCallInvitationType.videoCall ? true : false,
-              message: "null",
-              encryptedAESKey: "null",
-              encryptedIV: "null",
+              callerID: auth.currentUser!.uid,
+              message: result.encryptedMessage,
+              encryptedAESKey: encryptedAESKey,
+              encryptedIV: encryptedIV,
               isSeen: true,
               timestamp: Timestamp.now(),
             );

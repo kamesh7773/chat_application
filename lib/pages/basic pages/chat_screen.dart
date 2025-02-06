@@ -166,308 +166,297 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (didPop) {
-        if (!didPop) {
-          Navigator.of(context).pushNamedAndRemoveUntil(
-            RoutesNames.bottomNavigationBar,
-            (Route<dynamic> route) => false,
-          );
-        }
-      },
-      child: Scaffold(
-        body: Column(
-          children: [
-            //! App Bar section.
-            Container(
-              padding: const EdgeInsets.only(top: 50, bottom: 10, left: 10, right: 10),
-              color: const Color.fromARGB(255, 0, 191, 108),
-              width: double.infinity,
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: () {
-                      //! Navigate the user to the previous screen.
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        RoutesNames.bottomNavigationBar,
-                        (Route<dynamic> route) => false,
-                      );
-                    },
-                    icon: const Icon(
-                      Icons.arrow_back_ios,
-                      color: Colors.white,
-                    ),
+    return Scaffold(
+      body: Column(
+        children: [
+          //! App Bar section.
+          Container(
+            padding: const EdgeInsets.only(top: 50, bottom: 10, left: 10, right: 10),
+            color: const Color.fromARGB(255, 0, 191, 108),
+            width: double.infinity,
+            child: Row(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    //! Navigate the user to the previous screen.
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      RoutesNames.bottomNavigationBar,
+                      (Route<dynamic> route) => false,
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.arrow_back_ios,
+                    color: Colors.white,
                   ),
-                  Selector<OnlineOfflineStatusProvider, bool>(
-                    selector: (context, data) => data.isOnline,
-                    builder: (context, value, child) {
-                      return Stack(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(50),
-                            child: CachedNetworkImage(
-                              width: 46,
-                              height: 46,
-                              imageUrl: widget.imageUrl,
-                              errorWidget: (context, url, error) => const Icon(Icons.error),
-                            ),
+                ),
+                Selector<OnlineOfflineStatusProvider, bool>(
+                  selector: (context, data) => data.isOnline,
+                  builder: (context, value, child) {
+                    return Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: CachedNetworkImage(
+                            width: 46,
+                            height: 46,
+                            imageUrl: widget.imageUrl,
+                            errorWidget: (context, url, error) => const Icon(Icons.error),
                           ),
-                          //! If the user is online, show a green dot.
-                          value
-                              ? Positioned(
-                                  bottom: 2,
-                                  right: 0.5,
-                                  child: Container(
-                                    width: 10,
-                                    height: 10,
-                                    decoration: BoxDecoration(
-                                      color: const Color.fromARGB(255, 0, 191, 108),
-                                      shape: BoxShape.circle,
-                                      border: Border.all(color: Colors.white, width: 2),
-                                    ),
+                        ),
+                        //! If the user is online, show a green dot.
+                        value
+                            ? Positioned(
+                                bottom: 2,
+                                right: 0.5,
+                                child: Container(
+                                  width: 10,
+                                  height: 10,
+                                  decoration: BoxDecoration(
+                                    color: const Color.fromARGB(255, 0, 191, 108),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(color: Colors.white, width: 2),
                                   ),
-                                )
-                              // Otherwise, show a SizedBox().
-                              : const SizedBox(),
-                        ],
-                      );
-                    },
-                  ),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        widget.name,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
+                                ),
+                              )
+                            // Otherwise, show a SizedBox().
+                            : const SizedBox(),
+                      ],
+                    );
+                  },
+                ),
+                const SizedBox(width: 10),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      widget.name,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Consumer<OnlineOfflineStatusProvider>(builder: (context, value, child) {
+                      return Text(
+                        DateTimeCalculatorForUsers.getLastActiveTime(isOnline: value.isOnline, lastSeen: value.userLastSeen.toDate()),
+                        style: TextStyle(
+                          color: MediaQuery.of(context).platformBrightness == Brightness.light ? const Color.fromARGB(255, 226, 221, 221) : Colors.white,
+                          fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
-                      ),
-                      Consumer<OnlineOfflineStatusProvider>(builder: (context, value, child) {
-                        return Text(
-                          DateTimeCalculatorForUsers.getLastActiveTime(isOnline: value.isOnline, lastSeen: value.userLastSeen.toDate()),
-                          style: TextStyle(
-                            color: MediaQuery.of(context).platformBrightness == Brightness.light ? const Color.fromARGB(255, 226, 221, 221) : Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
+                      );
+                    }),
+                  ],
+                ),
+                const Spacer(flex: 1),
+                sendCallButton(
+                  isVideoCall: false,
+                  userId: widget.userID,
+                  userName: widget.name,
+                  imageUrl: widget.imageUrl,
+                  icon: const Icon(
+                    Icons.call,
+                    color: Colors.white,
+                    size: 26,
+                  ),
+                ),
+                sendCallButton(
+                  isVideoCall: true,
+                  userId: widget.userID,
+                  userName: widget.name,
+                  imageUrl: widget.imageUrl,
+                  icon: const Icon(
+                    Icons.videocam_sharp,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          //! Chat section.
+          Expanded(
+            child: Center(
+              child: StreamBuilder(
+                stream: firebaseFireStoreMethods.getMessages(otherUserID: widget.userID),
+                builder: (context, snapshot) {
+                  // If data is loading...
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const SizedBox();
+                  }
+
+                  // If snapshot has data.
+                  if (snapshot.hasData) {
+                    // Convert the snapshot data into a List<MessageModel>
+                    final List<MessageModel> data = snapshot.data as List<MessageModel>;
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: ListView.builder(
+                            key: _listKey,
+                            // Set reverse to true so the ListView starts from the bottom, automatically scrolling to the last message when the user enters the chat page.
+                            reverse: true,
+                            padding: EdgeInsets.zero,
+                            itemCount: data.length,
+                            itemBuilder: (context, index) {
+                              // When reverse: true is used, adjust the data indexing to match the reversed scroll order, ensuring the most recent messages are displayed correctly.
+                              final reverseIndex = data.length - 1 - index;
+
+                              // Get messages by index.
+                              final message = data[reverseIndex];
+
+                              // Check if the current user is the sender.
+                              var isCurrentUser = message.senderID == _auth.currentUser!.uid;
+
+                              // Check if the message is a call
+                              if (message.isVideoCall != null) {
+                                return CallWidget(
+                                  isCurrentUser: isCurrentUser,
+                                  isVideoCall: message.isVideoCall!,
+                                  timestamp: message.timestamp,
+                                  callerId: message.callerID!,
+                                  recipientId: message.reciverID,
+                                  currentUserId: _auth.currentUser!.uid,
+                                );
+                              }
+
+                              // Render regular chat bubbles for non-call messages
+                              return Chatbubble(
+                                message: message.message,
+                                isCurrentUser: isCurrentUser,
+                                timestamp: message.timestamp,
+                                isMessageSeen: message.isSeen,
+                              );
+                            },
                           ),
-                        );
-                      }),
-                    ],
-                  ),
-                  const Spacer(flex: 1),
-                  sendCallButton(
-                    isVideoCall: false,
-                    userId: widget.userID,
-                    userName: widget.name,
-                    imageUrl: widget.imageUrl,
-                    icon: const Icon(
-                      Icons.call,
-                      color: Colors.white,
-                      size: 26,
-                    ),
-                  ),
-                  sendCallButton(
-                    isVideoCall: true,
-                    userId: widget.userID,
-                    userName: widget.name,
-                    imageUrl: widget.imageUrl,
-                    icon: const Icon(
-                      Icons.videocam_sharp,
-                      color: Colors.white,
+                        ),
+                        Selector<TypingStatusProvider, bool>(
+                          selector: (context, status) => status.isTypingStatus,
+                          builder: (context, specificValue, child) {
+                            return specificValue
+                                ? const Padding(
+                                    padding: EdgeInsets.only(left: 11.0, top: 2, bottom: 2),
+                                    child: TypingIndicator(),
+                                  )
+                                : const SizedBox();
+                          },
+                        ),
+                      ],
+                    );
+                  }
+
+                  // If the snapshot has an error.
+                  if (snapshot.hasError) {
+                    return const Center(
+                      child: Text("Something went wrong ⚠️"),
+                    );
+                  }
+
+                  // Else condition.
+                  else {
+                    return const Center(
+                      child: Text("Else condition"),
+                    );
+                  }
+                },
+              ),
+            ),
+          ),
+
+          //! Text field section.
+          Padding(
+            padding: const EdgeInsets.only(top: 4.0, right: 10),
+            child: Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: InkWell(
+                    onTap: () {},
+                    child: const Icon(
+                      Icons.mic,
+                      color: Color.fromARGB(255, 0, 191, 108),
                       size: 28,
                     ),
                   ),
-                ],
-              ),
-            ),
-
-            //! Chat section.
-            Expanded(
-              child: Center(
-                child: StreamBuilder(
-                  stream: firebaseFireStoreMethods.getMessages(otherUserID: widget.userID),
-                  builder: (context, snapshot) {
-                    // If data is loading...
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const SizedBox();
-                    }
-
-                    // If snapshot has data.
-                    if (snapshot.hasData) {
-                      // Convert the snapshot data into a List<MessageModel>
-                      final List<MessageModel> data = snapshot.data as List<MessageModel>;
-
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                ),
+                Expanded(
+                  child: TextFormField(
+                    onChanged: (value) {
+                      onTypingStarted();
+                    },
+                    controller: _messageController,
+                    decoration: InputDecoration(
+                      hintText: "Type message",
+                      prefix: const SizedBox(width: 10),
+                      suffixIcon: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Expanded(
-                            child: ListView.builder(
-                              key: _listKey,
-                              // Set reverse to true so the ListView starts from the bottom, automatically scrolling to the last message when the user enters the chat page.
-                              reverse: true,
-                              padding: EdgeInsets.zero,
-                              itemCount: data.length,
-                              itemBuilder: (context, index) {
-                                // When reverse: true is used, adjust the data indexing to match the reversed scroll order, ensuring the most recent messages are displayed correctly.
-                                final reverseIndex = data.length - 1 - index;
-
-                                // Get messages by index.
-                                final message = data[reverseIndex];
-
-                                // Check if the current user is the sender.
-                                var isCurrentUser = message.senderID == _auth.currentUser!.uid;
-
-                                // Check if the message is a call
-                                if (message.isVideoCall != null) {
-                                  return CallWidget(
-                                    isCurrentUser: isCurrentUser,
-                                    isVideoCall: message.isVideoCall!,
-                                    timestamp: message.timestamp,
-                                    callerId: message.callerID!,
-                                    recipientId: message.reciverID,
-                                    currentUserId: _auth.currentUser!.uid,
-                                  );
-                                }
-
-                                // Render regular chat bubbles for non-call messages
-                                return Chatbubble(
-                                  message: message.message,
-                                  isCurrentUser: isCurrentUser,
-                                  timestamp: message.timestamp,
-                                  isMessageSeen: message.isSeen,
-                                );
-                              },
+                          InkWell(
+                            onTap: () {},
+                            child: const Icon(
+                              Icons.attach_file,
+                              color: Color.fromARGB(255, 0, 191, 108),
+                              size: 26,
                             ),
                           ),
-                          Selector<TypingStatusProvider, bool>(
-                            selector: (context, status) => status.isTypingStatus,
-                            builder: (context, specificValue, child) {
-                              return specificValue
-                                  ? const Padding(
-                                      padding: EdgeInsets.only(left: 11.0, top: 2, bottom: 2),
-                                      child: TypingIndicator(),
-                                    )
-                                  : const SizedBox();
-                            },
+                          const SizedBox(width: 10),
+                          InkWell(
+                            onTap: () {},
+                            child: const Icon(
+                              Icons.camera_alt_outlined,
+                              color: Color.fromARGB(255, 0, 191, 108),
+                              size: 26,
+                            ),
                           ),
+                          const SizedBox(width: 14),
                         ],
-                      );
-                    }
+                      ),
+                      hintStyle: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      enabledBorder: borderStyle,
+                      focusedBorder: borderStyle,
+                    ),
+                  ),
+                ),
+                StatefulBuilder(
+                  builder: (context, mySetState) {
+                    // Add a listener to the TextEditingController to track changes in the text field
+                    _messageController.addListener(() {
+                      // Use `mySetState` to rebuild the widget inside the `StatefulBuilder`
+                      mySetState(() {});
+                    });
 
-                    // If the snapshot has an error.
-                    if (snapshot.hasError) {
-                      return const Center(
-                        child: Text("Something went wrong ⚠️"),
-                      );
+                    // Check if the text is empty, then show a SizedBox widget.
+                    if (_messageController.text.isEmpty) {
+                      return const SizedBox(); // Hide the icon when text is empty
                     }
-
-                    // Else condition.
+                    // Else, if the text is not empty, show the Send Text Icon widget.
                     else {
-                      return const Center(
-                        child: Text("Else condition"),
+                      return Padding(
+                        padding: const EdgeInsets.only(left: 6),
+                        child: InkWell(
+                          onTap: sendMessage,
+                          child: const Icon(
+                            Icons.send,
+                            color: Color.fromARGB(255, 0, 191, 108),
+                            size: 32,
+                          ),
+                        ),
                       );
                     }
                   },
                 ),
-              ),
+              ],
             ),
-
-            //! Text field section.
-            Padding(
-              padding: const EdgeInsets.only(top: 4.0, right: 10),
-              child: Row(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: InkWell(
-                      onTap: () {},
-                      child: const Icon(
-                        Icons.mic,
-                        color: Color.fromARGB(255, 0, 191, 108),
-                        size: 28,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: TextFormField(
-                      onChanged: (value) {
-                        onTypingStarted();
-                      },
-                      controller: _messageController,
-                      decoration: InputDecoration(
-                        hintText: "Type message",
-                        prefix: const SizedBox(width: 10),
-                        suffixIcon: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            InkWell(
-                              onTap: () {},
-                              child: const Icon(
-                                Icons.attach_file,
-                                color: Color.fromARGB(255, 0, 191, 108),
-                                size: 26,
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            InkWell(
-                              onTap: () {},
-                              child: const Icon(
-                                Icons.camera_alt_outlined,
-                                color: Color.fromARGB(255, 0, 191, 108),
-                                size: 26,
-                              ),
-                            ),
-                            const SizedBox(width: 14),
-                          ],
-                        ),
-                        hintStyle: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        enabledBorder: borderStyle,
-                        focusedBorder: borderStyle,
-                      ),
-                    ),
-                  ),
-                  StatefulBuilder(
-                    builder: (context, mySetState) {
-                      // Add a listener to the TextEditingController to track changes in the text field
-                      _messageController.addListener(() {
-                        // Use `mySetState` to rebuild the widget inside the `StatefulBuilder`
-                        mySetState(() {});
-                      });
-
-                      // Check if the text is empty, then show a SizedBox widget.
-                      if (_messageController.text.isEmpty) {
-                        return const SizedBox(); // Hide the icon when text is empty
-                      }
-                      // Else, if the text is not empty, show the Send Text Icon widget.
-                      else {
-                        return Padding(
-                          padding: const EdgeInsets.only(left: 6),
-                          child: InkWell(
-                            onTap: sendMessage,
-                            child: const Icon(
-                              Icons.send,
-                              color: Color.fromARGB(255, 0, 191, 108),
-                              size: 32,
-                            ),
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
+          ),
+          const SizedBox(height: 8),
+        ],
       ),
     );
   }

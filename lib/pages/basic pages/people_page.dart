@@ -31,155 +31,166 @@ class _PeoplePageState extends State<PeoplePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          //! AppBar
-          Container(
-            width: double.infinity,
-            color: const Color.fromARGB(255, 0, 191, 108),
-            child: Column(
-              children: [
-                const SizedBox(height: 40),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        "People",
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w100,
-                          color: Colors.white,
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            RoutesNames.bottomNavigationBar,
+            (Route<dynamic> route) => false,
+          );
+        }
+      },
+      child: Scaffold(
+        body: Column(
+          children: [
+            //! AppBar
+            Container(
+              width: double.infinity,
+              color: const Color.fromARGB(255, 0, 191, 108),
+              child: Column(
+                children: [
+                  const SizedBox(height: 40),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          "People",
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w100,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                    ),
-                    IconButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: () {
-                        //! Navigate the user to the Search Page.
-                        Navigator.of(context).pushNamed(
-                          RoutesNames.searchPage,
-                          arguments: "People",
-                        );
-                      },
-                      icon: const Icon(
-                        Icons.search,
-                        color: Colors.white,
-                        size: 26,
+                      IconButton(
+                        padding: EdgeInsets.zero,
+                        onPressed: () {
+                          //! Navigate the user to the Search Page.
+                          Navigator.of(context).pushNamed(
+                            RoutesNames.searchPage,
+                            arguments: "People",
+                          );
+                        },
+                        icon: const Icon(
+                          Icons.search,
+                          color: Colors.white,
+                          size: 26,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-              ],
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                ],
+              ),
             ),
-          ),
-          //! User List
-          Expanded(
-            child: StreamBuilder<List<UserModel>>(
-              stream: _firebaseFireStoreMethods.fetchingUsers(),
-              builder: (context, snapshot) {
-                // If the snapshot is still loading, show a CircularProgressIndicator.
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
+            //! User List
+            Expanded(
+              child: StreamBuilder<List<UserModel>>(
+                stream: _firebaseFireStoreMethods.fetchingUsers(),
+                builder: (context, snapshot) {
+                  // If the snapshot is still loading, show a CircularProgressIndicator.
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
 
-                // If the snapshot has an error, show an error message.
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text(snapshot.error.toString()),
-                  );
-                }
+                  // If the snapshot has an error, show an error message.
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(snapshot.error.toString()),
+                    );
+                  }
 
-                if (snapshot.hasData) {
-                  // Convert the snapshot data into a List<UserModel>.
-                  final List<UserModel> listOfUser = snapshot.data!;
-                  return ListView.builder(
-                    padding: EdgeInsets.zero,
-                    itemCount: listOfUser.length,
-                    itemBuilder: (context, index) {
-                      final user = listOfUser[index];
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: ListTile(
-                          onTap: () {
-                            //! Navigate the user to the Chat Screen Page.
-                            Navigator.of(context).pushNamed(
-                              RoutesNames.chatScreenPage,
-                              arguments: {
-                                "userID": user.userID,
-                                "name": user.name,
-                                "currentUsername": currentUsername,
-                                "email": user.email,
-                                "imageUrl": user.imageUrl,
-                                "isOnline": user.isOnline,
-                                "lastSeen": user.lastSeen,
-                                "rsaPublicKey": user.rsaPublicKey,
-                                "fcmToken": user.fcmToken,
-                              },
-                            );
-                          },
-                          leading: Stack(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(50),
-                                child: CachedNetworkImage(
-                                  fit: BoxFit.fitHeight,
-                                  width: 55,
-                                  height: 55,
-                                  imageUrl: user.imageUrl,
-                                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                  if (snapshot.hasData) {
+                    // Convert the snapshot data into a List<UserModel>.
+                    final List<UserModel> listOfUser = snapshot.data!;
+                    return ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: listOfUser.length,
+                      itemBuilder: (context, index) {
+                        final user = listOfUser[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: ListTile(
+                            onTap: () {
+                              //! Navigate the user to the Chat Screen Page.
+                              Navigator.of(context).pushNamed(
+                                RoutesNames.chatScreenPage,
+                                arguments: {
+                                  "userID": user.userID,
+                                  "name": user.name,
+                                  "currentUsername": currentUsername,
+                                  "email": user.email,
+                                  "imageUrl": user.imageUrl,
+                                  "isOnline": user.isOnline,
+                                  "lastSeen": user.lastSeen,
+                                  "rsaPublicKey": user.rsaPublicKey,
+                                  "fcmToken": user.fcmToken,
+                                },
+                              );
+                            },
+                            leading: Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(50),
+                                  child: CachedNetworkImage(
+                                    fit: BoxFit.fitHeight,
+                                    width: 55,
+                                    height: 55,
+                                    imageUrl: user.imageUrl,
+                                    errorWidget: (context, url, error) => const Icon(Icons.error),
+                                  ),
                                 ),
-                              ),
-                              //! If the user is online, show a green dot.
-                              user.isOnline
-                                  ? Positioned(
-                                      bottom: 0,
-                                      right: 0,
-                                      child: Container(
-                                        width: 13,
-                                        height: 13,
-                                        decoration: BoxDecoration(
-                                          color: const Color.fromARGB(255, 0, 191, 108),
-                                          shape: BoxShape.circle,
-                                          border: Border.all(color: Colors.white, width: 2),
+                                //! If the user is online, show a green dot.
+                                user.isOnline
+                                    ? Positioned(
+                                        bottom: 0,
+                                        right: 0,
+                                        child: Container(
+                                          width: 13,
+                                          height: 13,
+                                          decoration: BoxDecoration(
+                                            color: const Color.fromARGB(255, 0, 191, 108),
+                                            shape: BoxShape.circle,
+                                            border: Border.all(color: Colors.white, width: 2),
+                                          ),
                                         ),
-                                      ),
-                                    )
-                                  // Otherwise, show an empty SizedBox.
-                                  : const SizedBox(),
-                            ],
-                          ),
-                          title: Text(user.name),
-                          subtitle: Text(
-                            user.email,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: MediaQuery.of(context).platformBrightness == Brightness.light ? const Color.fromARGB(255, 104, 101, 101) : const Color.fromARGB(255, 160, 153, 153),
+                                      )
+                                    // Otherwise, show an empty SizedBox.
+                                    : const SizedBox(),
+                              ],
+                            ),
+                            title: Text(user.name),
+                            subtitle: Text(
+                              user.email,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: MediaQuery.of(context).platformBrightness == Brightness.light ? const Color.fromARGB(255, 104, 101, 101) : const Color.fromARGB(255, 160, 153, 153),
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  );
-                }
+                        );
+                      },
+                    );
+                  }
 
-                // Else condition
-                else {
-                  return const Center(
-                    child: Text("Else Condition"),
-                  );
-                }
-              },
+                  // Else condition
+                  else {
+                    return const Center(
+                      child: Text("Else Condition"),
+                    );
+                  }
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

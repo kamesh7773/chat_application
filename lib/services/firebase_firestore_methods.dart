@@ -1,4 +1,3 @@
-import 'package:colored_print/colored_print.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'message_encrption_service.dart';

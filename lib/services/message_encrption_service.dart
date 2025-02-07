@@ -87,7 +87,6 @@ class MessageEncrptionService {
     }
     // wrting the encrypted private key to Flutter Secure Storage
     await _storage.write(key: 'encrypted_private_key', value: base64.encode(result));
-
   }
 
 //! Decrypt the private key using the same custom string (sub-property)
@@ -103,7 +102,6 @@ class MessageEncrptionService {
     for (int i = 0; i < textBytes.length; i++) {
       result.add(textBytes[i] ^ keyBytes[i % keyBytes.length]);
     }
-
   }
 
   //! Method to decrypt AES key and IV using our own RSA private key

@@ -19,14 +19,17 @@ import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 class ZegoMethods {
   /// Called when the user logs in
   static Future<void> onUserLogin() async {
-    // Variables related to Firebase instances
+    // Initialize Firebase instances
     final FirebaseAuth auth = FirebaseAuth.instance;
     final FirebaseFirestore db = FirebaseFirestore.instance;
-    // Fetching current user details from Shared Preferences
+
+    // Fetch current user details from Shared Preferences
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+
     // Instance of FirestoreMethod class
     final FirebaseFireStoreMethods firebaseFireStoreMethods = FirebaseFireStoreMethods();
 
+    // Retrieve user ID and name from Shared Preferences
     final String? userID = prefs.getString('userID');
     final String? name = prefs.getString('name');
 
@@ -63,14 +66,14 @@ class ZegoMethods {
       invitationEvents: ZegoUIKitPrebuiltCallInvitationEvents(
         //! Triggered when the user receives any kind of call (audio/video)
         onIncomingCallReceived: (callID, caller, callType, callees, customData) async {
-          // Retriving the UserID of person that we are calling to.
+          // Retrieve the UserID of the caller
           final String receiverID = caller.id;
 
           try {
-            // retiving the details of callerUser
+            // Retrieve the details of the caller
             final UserModel otherUser = await FirebaseFireStoreMethods().fetchingCurrentUserDetail(userID: receiverID);
 
-            // Update image using Provider method on Zego Method Avatar Image URL
+            // Update avatar image URL using Provider method
             navigatorKey.currentContext!.read<ZegoAvatarProvider>().updateAvatarImageUrl(imageURL: otherUser.imageUrl);
 
             // Update call logs in the user's Firebase database
@@ -78,20 +81,20 @@ class ZegoMethods {
               userID: otherUser.userID,
               userName: caller.name,
               imageUrl: otherUser.imageUrl,
-              isVideoCall: callType == ZegoCallInvitationType.videoCall ? true : false,
+              isVideoCall: callType == ZegoCallInvitationType.videoCall,
               isInComing: true,
             );
           } catch (error) {
             throw error.toString();
           }
         },
-        //! Triggered when the user dials any kind of call to another user (audio/video)
+        //! Triggered when the user initiates any kind of call to another user (audio/video)
         onOutgoingCallSent: (callID, caller, callType, callees, customData) async {
-          // Retriving the UserID of person that we are calling to.
+          // Retrieve the UserID of the callee
           final String receiverID = callees.first.id;
 
           try {
-            // retiving the details of callerUser
+            // Retrieve the details of the callee
             final UserModel otherUser = await FirebaseFireStoreMethods().fetchingCurrentUserDetail(userID: receiverID);
 
             // Update call logs in the user's Firebase database
@@ -99,11 +102,11 @@ class ZegoMethods {
               userID: otherUser.userID,
               userName: callees.first.name,
               imageUrl: otherUser.imageUrl,
-              isVideoCall: callType == ZegoCallInvitationType.videoCall ? true : false,
+              isVideoCall: callType == ZegoCallInvitationType.videoCall,
               isInComing: false,
             );
 
-            // Parse the RSA public key of the recipient from PEM format.
+            // Parse the RSA public key of the recipient from PEM format
             RsaKeyHelper helper = RsaKeyHelper();
             final RSAPublicKey publicKey = helper.parsePublicKeyFromPem(otherUser.rsaPublicKey);
 
@@ -114,12 +117,11 @@ class ZegoMethods {
             String encryptedAESKey = MessageEncrptionService().rsaEncrypt(data: result.aesKey.bytes, publicKey: publicKey);
             String encryptedIV = MessageEncrptionService().rsaEncrypt(data: result.iv.bytes, publicKey: publicKey);
 
-            // Adding the new message on chatRoom collection about the call (Voice/Video Call)
-            // Create a new message
+            // Create a new message for the call (Voice/Video Call)
             MessageModel newMessage = MessageModel(
               senderID: auth.currentUser!.uid,
               reciverID: receiverID,
-              isVideoCall: callType == ZegoCallInvitationType.videoCall ? true : false,
+              isVideoCall: callType == ZegoCallInvitationType.videoCall,
               callerID: auth.currentUser!.uid,
               message: result.encryptedMessage,
               encryptedAESKey: encryptedAESKey,
@@ -131,10 +133,9 @@ class ZegoMethods {
             // Construct chatRoom ID for two users (sorted to ensure uniqueness)
             List<String> ids = [auth.currentUser!.uid, receiverID];
             ids.sort();
-            // Create the chatRoomID by combining currentUserID and receiverUserID. ("ZEL264FDSXEFD_KJLADSFJLSAJD")
             String chatRoomID = ids.join("_");
 
-            // Add new message to the database.
+            // Add new message to the database
             await db.collection("chatRooms").doc(chatRoomID).collection("messages").add(newMessage.toMap());
           } catch (error) {
             throw error.toString();
@@ -142,6 +143,7 @@ class ZegoMethods {
         },
       ),
       requireConfig: (ZegoCallInvitationData data) {
+        // Determine the call configuration based on the number of invitees and call type
         final config = (data.invitees.length > 1)
             ? ZegoCallInvitationType.videoCall == data.type
                 ? ZegoUIKitPrebuiltCallConfig.groupVideoCall()
@@ -150,7 +152,7 @@ class ZegoMethods {
                 ? ZegoUIKitPrebuiltCallConfig.oneOnOneVideoCall()
                 : ZegoUIKitPrebuiltCallConfig.oneOnOneVoiceCall();
 
-        /// Custom avatar
+        /// Custom avatar builder
         config.avatarBuilder = (context, size, user, extraInfo) {
           return Selector<ZegoAvatarProvider, String?>(
               selector: (context, data) => data.imageUrl,

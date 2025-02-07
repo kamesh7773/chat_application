@@ -11,30 +11,30 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-//! This is the method that is called when a notification is received while the app is in the background.
-//! It is used to initialize the app and show the notification.
-//! This method i working for showing custum notification when app is in background don't remove it.
+// This method is called when a notification is received while the app is in the background.
+// It initializes the app and displays the notification.
+// This method is crucial for showing custom notifications when the app is in the background. Do not remove it.
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  WidgetsFlutterBinding.ensureInitialized(); // Add this line
-  await Firebase.initializeApp();
-  await AwesomeNotificationsAPI().instantNotification(remoteMessage: message);
+  WidgetsFlutterBinding.ensureInitialized(); // Ensure the Flutter framework is initialized
+  await Firebase.initializeApp(); // Initialize Firebase
+  await AwesomeNotificationsAPI().instantNotification(remoteMessage: message); // Show the notification
 }
 
 class AwesomeNotificationsAPI {
-  // Variables related to Firebase instances
+  // Firebase instances
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-  // creating instance of AwesomeNotifications
+  // Instance of AwesomeNotifications
   static final AwesomeNotifications _notifications = AwesomeNotifications();
 
-  //* This Method initialized the AwesomeNotifications.
+  // Initialize AwesomeNotifications
   void initlization() async {
     await _notifications.initialize(
-      // This used for notification icon we set it to null so it will show default notification icon.
+      // Set the notification icon to default by using null
       'resource://drawable/logo',
-      // Here we define our Notification Channel's
+      // Define Notification Channels
       [
         NotificationChannel(
           channelGroupKey: "basic_channel_group",
@@ -46,27 +46,25 @@ class AwesomeNotificationsAPI {
           channelShowBadge: true,
         )
       ],
-      // Here we define our Notification channel group.
+      // Define Notification Channel Groups
       channelGroups: [
         NotificationChannelGroup(
           channelGroupKey: "basic_channel_group",
           channelGroupName: "Basic Group",
         )
       ],
-      // When set the debug propertie to true then it show every activity of notification like when it created , shows on devices status bar
-      // when it taped by user and when it's dismissed by user.
+      // Enable debug mode to show notification activities like creation, display, tap, and dismissal
       // debug: true,
     );
 
-    //* Here we ask Notification Permisson from device.
-    bool isAllowedToSentNotification = await _notifications.isNotificationAllowed();
+    // Request notification permission from the device
+    bool isAllowedToSendNotification = await _notifications.isNotificationAllowed();
 
-    if (!isAllowedToSentNotification) {
+    if (!isAllowedToSendNotification) {
       _notifications.requestPermissionToSendNotifications();
     }
 
-    //* Here we are firing the function that we have defined below in this class and these methods run
-    //* when any notification get scheduled, displayed, when user dismissed notification, when user taps on a notification etc.
+    // Set listeners for notification events
     _notifications.setListeners(
       onActionReceivedMethod: AwesomeNotificationsAPI.onActionReceivedMethod,
       onNotificationCreatedMethod: AwesomeNotificationsAPI.onNotificationCreatedMethod,
@@ -74,37 +72,35 @@ class AwesomeNotificationsAPI {
       onDismissActionReceivedMethod: AwesomeNotificationsAPI.onDismissActionReceivedMethod,
     );
 
-    //! Listen for when a user taps on a notification and the app is opened as a result.
+    // Listen for when a user taps on a notification and the app is opened
     FirebaseMessaging.onMessage.listen((RemoteMessage message) => instantNotification(remoteMessage: message));
 
-    //! Listen for when a notification is received while the app is in the background.
-    //! When notification is received from firebase then this method get called and it fires the
-    //! method that is responsible for showing awesome notification.
+    // Listen for notifications received while the app is in the background
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   }
 
-  //? Use this method to detect when a new notification or a schedule is created
+  // Called when a new notification or schedule is created
   @pragma("vm:entry-point")
   static Future<void> onNotificationCreatedMethod(ReceivedNotification receivedNotification) async {
     // Your code goes here
   }
 
-  //? Use this method to detect every time that a new notification is displayed
+  // Called every time a new notification is displayed
   @pragma("vm:entry-point")
   static Future<void> onNotificationDisplayedMethod(ReceivedNotification receivedNotification) async {
     // Your code goes here
   }
 
-  //? Use this method to detect if the user dismissed a notification
+  // Called if the user dismisses a notification
   @pragma("vm:entry-point")
   static Future<void> onDismissActionReceivedMethod(ReceivedAction receivedAction) async {
     // Your code goes here
   }
 
-  //? Use this method to detect when the user taps on a notification or action button
+  // Called when the user taps on a notification or action button
   @pragma("vm:entry-point")
   static Future<void> onActionReceivedMethod(ReceivedAction receivedAction) async {
-    // Fetching current User Details of currentUser and OtherUser.
+    // Fetch current user details and other user details
     final UserModel otherUser = await FirebaseFireStoreMethods().fetchingCurrentUserDetail(userID: receivedAction.payload!["senderID"]!);
     final UserModel currentUser = await FirebaseFireStoreMethods().fetchingCurrentUserDetail(userID: _auth.currentUser!.uid);
 
@@ -112,17 +108,17 @@ class AwesomeNotificationsAPI {
     if (receivedAction.buttonKeyPressed == 'reply') {
       final String replyText = receivedAction.buttonKeyInput; // Get the reply text
       final String senderId = receivedAction.payload?['senderID'] ?? ''; // Get sender ID from payload
-      final String rsaPublicKey = receivedAction.payload?['rsaPublicKey'] ?? ''; // Get sender ID from payload
+      final String rsaPublicKey = receivedAction.payload?['rsaPublicKey'] ?? ''; // Get RSA public key from payload
 
       if (replyText.isNotEmpty) {
-        // Sending the reply to node.js FCM backend.
+        // Send the reply to the Node.js FCM backend
         await FirebaseFireStoreMethods().sendMessage(
           message: replyText,
           receiverID: senderId,
           recipientPublicKey: rsaPublicKey,
         );
 
-        // sending the notification to other user if we directly reply form the notification.
+        // Send a notification to the other user if replying directly from the notification
         if (!otherUser.isInsideChatRoom) {
           await sendNotification(
             recipientToken: otherUser.fcmToken,
@@ -131,13 +127,13 @@ class AwesomeNotificationsAPI {
           );
         }
 
-        // Dismiss the notification after reply
+        // Dismiss the notification after replying
         AwesomeNotifications().dismiss(receivedAction.id!);
       } else {
         return;
       }
     } else if (receivedAction.buttonKeyPressed == 'Mark_as_read') {
-      // Mark as Seen Message when user click on the mark as read button on notification.
+      // Mark messages as seen when the user clicks the "Mark as read" button on the notification
       FirebaseFireStoreMethods().getAllUnseenMessagesAndUpdateToSeen(
         userID: _auth.currentUser!.uid,
         otherUserID: receivedAction.payload!["senderID"]!,
@@ -145,19 +141,19 @@ class AwesomeNotificationsAPI {
         isOtherUserInsideChatRoom: true,
       );
 
-      // remove the message form unse. messages.
+      // Remove the message from unseen messages
       FirebaseFireStoreMethods().deleteUnseenMessages(
         userID: receivedAction.payload!["senderID"]!,
       );
 
-      // Dismiss the notification after reply
+      // Dismiss the notification
       AwesomeNotifications().dismiss(receivedAction.id!);
     } else if (receivedAction.buttonKeyPressed == 'close') {
-      // Dismiss the notification after reply
+      // Dismiss the notification
       AwesomeNotifications().dismiss(receivedAction.id!);
     }
 
-    //! Navigate the user to specific the Chat Screen Page.
+    // Navigate the user to the specific Chat Screen Page
     if (receivedAction.buttonKeyPressed == "") {
       navigatorKey.currentState?.pushNamed(
         RoutesNames.chatScreenPage,
@@ -176,9 +172,7 @@ class AwesomeNotificationsAPI {
     }
   }
 
-  //! ------------------------------------
-  //! Method for Notification for Chat App
-  //! ------------------------------------
+  // Method for displaying an instant notification
   Future<void> instantNotification({
     required RemoteMessage remoteMessage,
   }) async {
@@ -191,7 +185,7 @@ class AwesomeNotificationsAPI {
           body: remoteMessage.data['body'],
           color: const Color.fromARGB(255, 0, 191, 108),
           largeIcon: remoteMessage.data['imageUrl'],
-          //! Here we also set the layout Notification for Chat App.
+          // Set the layout for the notification
           notificationLayout: NotificationLayout.Default,
           payload: {
             "senderID": remoteMessage.data["senderID"],
@@ -202,8 +196,7 @@ class AwesomeNotificationsAPI {
             "fcmToken": remoteMessage.data["fcmToken"],
           },
         ),
-
-        //! Here is the action button that we show in notification so user can reply message or perfrom some action.
+        // Action buttons for the notification
         actionButtons: [
           NotificationActionButton(key: "reply", label: "reply", requireInputText: true),
           NotificationActionButton(key: "Mark_as_read", label: "Mark as read"),
@@ -215,12 +208,12 @@ class AwesomeNotificationsAPI {
     }
   }
 
-  //! Method for sending notification to sepcific user by the FCM Token.
+  // Method for sending a notification to a specific user using their FCM Token
   static Future<void> sendNotification({required String recipientToken, required String title, required String message}) async {
-    // Node JS backend API URL
+    // Node.js backend API URL
     const String backendUrl = 'https://mature-sissy-montu-113ea327.koyeb.app/send-notification';
 
-    // Fetching current User Details.
+    // Fetch current user details
     final DocumentReference currentUserDoc = _db.collection("users").doc(_auth.currentUser!.uid);
     final DocumentSnapshot docSnapshot = await currentUserDoc.get();
     final UserModel user = UserModel.fromJson(docSnapshot.data() as Map<String, dynamic>);

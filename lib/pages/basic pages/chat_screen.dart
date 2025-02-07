@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chat_application/models/user_model.dart';
-import 'package:chat_application/services/notification_service.dart';
-import 'package:chat_application/widgets/call_widget.dart';
+import '../../models/user_model.dart';
+import '../../services/notification_service.dart';
+import '../../widgets/call_widget.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../providers/zego_avatar_provider.dart';

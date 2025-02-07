@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chat_application/routes/rotues_names.dart';
+import '../../routes/rotues_names.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../models/user_model.dart';
 import '../../services/firebase_firestore_methods.dart';
@@ -20,6 +20,18 @@ class _ActiveUsersState extends State<ActiveUsers> {
   void fetchingcurrentUsername() async {
     final UserModel currentUser = await FirebaseFireStoreMethods().fetchingCurrentUserDetail(userID: _auth.currentUser!.uid);
     currentUsername = currentUser.name;
+  }
+
+  String maskEmail(String email) {
+    final parts = email.split('@');
+    if (parts.length != 2) return email;
+
+    final name = parts[0];
+    final domain = parts[1];
+
+    final maskedName = name[0] + '*' * (name.length - 2) + name[name.length - 1];
+
+    return '$maskedName@$domain';
   }
 
   @override
@@ -151,12 +163,12 @@ class _ActiveUsersState extends State<ActiveUsers> {
                               ),
                             ],
                           ),
-                          title: const Text("Kamesh Singh"),
-                          subtitle: const Text(
-                            "(239) 555-0108",
+                          title: Text(user.name),
+                          subtitle: Text(
+                            maskEmail(user.email),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 14,
                               color: Color.fromARGB(255, 116, 114, 114),
                             ),

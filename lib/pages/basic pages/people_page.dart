@@ -23,6 +23,18 @@ class _PeoplePageState extends State<PeoplePage> {
     currentUsername = currentUser.name;
   }
 
+  String maskEmail(String email) {
+    final parts = email.split('@');
+    if (parts.length != 2) return email;
+
+    final name = parts[0];
+    final domain = parts[1];
+
+    final maskedName = name[0] + '*' * (name.length - 2) + name[name.length - 1];
+
+    return '$maskedName@$domain';
+  }
+
   @override
   void initState() {
     super.initState();
@@ -166,7 +178,7 @@ class _PeoplePageState extends State<PeoplePage> {
                             ),
                             title: Text(user.name),
                             subtitle: Text(
-                              user.email,
+                              maskEmail(user.email),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(

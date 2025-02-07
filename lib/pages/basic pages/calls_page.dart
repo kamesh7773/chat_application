@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chat_application/routes/rotues_names.dart';
-import 'package:chat_application/widgets/send_call_button.dart';
+import '../../routes/rotues_names.dart';
+import '../../widgets/send_call_button.dart';
 import '../../models/user_model.dart';
 import '../../services/firebase_firestore_methods.dart';
 import '../../utils/date_time_calculator_for_unseenmsg.dart';

@@ -1,4 +1,4 @@
-import 'package:chat_application/services/notification_service.dart';
+import 'services/notification_service.dart';
 
 import 'providers/last_message_provider.dart';
 import 'providers/theme_provider.dart';
@@ -21,7 +21,6 @@ import 'package:flutter/material.dart';
 
 /// 1/5: Define a navigator key
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

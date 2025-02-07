@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chat_application/routes/rotues_names.dart';
+import '../../routes/rotues_names.dart';
 import '../../models/user_model.dart';
 import '../../services/firebase_auth_methods.dart';
 import '../../services/firebase_firestore_methods.dart';

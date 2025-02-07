@@ -1,8 +1,8 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:chat_application/main.dart';
-import 'package:chat_application/models/user_model.dart';
-import 'package:chat_application/routes/rotues_names.dart';
-import 'package:chat_application/services/firebase_firestore_methods.dart';
+import '../main.dart';
+import '../models/user_model.dart';
+import '../routes/rotues_names.dart';
+import 'firebase_firestore_methods.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';

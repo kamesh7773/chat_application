@@ -1,4 +1,4 @@
-import 'package:chat_application/services/firebase_firestore_methods.dart';
+import 'firebase_firestore_methods.dart';
 
 import 'message_encrption_service.dart';
 

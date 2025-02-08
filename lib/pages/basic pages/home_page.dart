@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_application/services/encryption_decryption.dart';
+import 'package:chat_application/services/firebase_auth_methods.dart';
 import 'package:chat_application/services/message_encrption_service.dart';
 import 'package:colored_print/colored_print.dart';
 import 'package:pointycastle/asymmetric/api.dart';
@@ -96,6 +97,8 @@ class _HomePageState extends State<HomePage> {
                           // );
 
                           EncryptionDecryption().encryptandDecryptPrivateKey(customString: "customString", message: "hello");
+
+                          FirebaseAuthMethods.singOut(context: context);
                         },
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
                         shadowColor: Colors.black,

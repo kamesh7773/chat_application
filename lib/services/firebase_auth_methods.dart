@@ -37,8 +37,10 @@ class FirebaseAuthMethods {
     await prefs.setString("provider", userData["provider"]);
     await prefs.setString("userID", userData["userID"]);
     await prefs.setBool('isLogin', true);
-    // writing encryptedRsaPrivateKey to flutter secure storage.
+    // writing encryptedRsaPrivateKey , encrypted AES Key and encrypted IV to flutter secure storage.
     await _storage.write(key: 'encryptedRsaPrivateKey', value: userData["encryptedRsaPrivateKey"]);
+    await _storage.write(key: 'encryptedAESKey', value: userData["encryptedAESKey"]);
+    await _storage.write(key: 'encryptedIV', value: userData["encryptedIV"]);
   }
 
   // --------------------
@@ -194,8 +196,8 @@ class FirebaseAuthMethods {
           // Retrieving the RSA Key
           final key = await MessageEncrptionService().returnKeys();
 
-          // Encrypting the RSA Private Key.
-          final encryptedRSAPrivateKey = await MessageEncrptionService().encryptRSAPrivateKey(customString: creationTime);
+          // Encrypting the RSA Private Key, AES Key and IV using the creationTime (custom String).
+          final result = await MessageEncrptionService().encryption(customString: creationTime);
 
           // Store user data in Firestore
           await _firestoreDB.collection("users").doc(_auth.currentUser!.uid).set({
@@ -209,7 +211,9 @@ class FirebaseAuthMethods {
             "unSeenMessages": [],
             "provider": "Email & Password",
             "rsaPublicKey": key.rsaPublicKey,
-            "encryptedRsaPrivateKey": encryptedRSAPrivateKey,
+            "encryptedRsaPrivateKey": result.encryptedPrivateKEY,
+            "encryptedAESKey": result.encryptedAESKEY,
+            "encryptedIV": result.encryptedIVData,
             "userID": _auth.currentUser!.uid,
             "callLogs": [],
           });
@@ -384,6 +388,8 @@ class FirebaseAuthMethods {
       // Stroing the encryptedRsaPrivateKey & Sub_or_id to the flutter secure storage
       await _storage.write(key: 'sub_or_ID', value: creationTime);
       await _storage.write(key: 'encryptedRsaPrivateKey', value: userData["encryptedRsaPrivateKey"]);
+      await _storage.write(key: 'encryptedAESKey', value: userData["encryptedAESKey"]);
+      await _storage.write(key: 'encryptedRsaPrivateKey', value: userData["encryptedIV"]);
 
       // Set isLogin to "true"
       await prefs.setBool('isLogin', true);
@@ -1061,6 +1067,9 @@ class FirebaseAuthMethods {
       prefs.remove('provider');
       prefs.remove('userID');
       storage.delete(key: "sub_or_ID");
+      storage.delete(key: "encryptedRsaPrivateKey");
+      storage.delete(key: "encryptedAESKey");
+      storage.delete(key: "encryptedIV");
 
       // Set isLogin to false
       await prefs.setBool('isLogin', false);

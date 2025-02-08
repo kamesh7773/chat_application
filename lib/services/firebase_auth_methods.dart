@@ -1,3 +1,6 @@
+import 'package:colored_print/colored_print.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 import 'firebase_firestore_methods.dart';
 
 import 'message_encrption_service.dart';
@@ -22,6 +25,8 @@ class FirebaseAuthMethods {
   // Variables related to Firebase instances
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static final FirebaseFirestore _firestoreDB = FirebaseFirestore.instance;
+  // Creating an instance of FlutterSecureStorage to securely store keys
+  static const FlutterSecureStorage _storage = FlutterSecureStorage();
 
   // Helper method to update shared preferences with user data
   static Future<void> _updateSharedPreferences(Map<String, dynamic> userData) async {
@@ -32,6 +37,8 @@ class FirebaseAuthMethods {
     await prefs.setString("provider", userData["provider"]);
     await prefs.setString("userID", userData["userID"]);
     await prefs.setBool('isLogin', true);
+    // writing encryptedRsaPrivateKey to flutter secure storage.
+    await _storage.write(key: 'encryptedRsaPrivateKey', value: userData["encryptedRsaPrivateKey"]);
   }
 
   // --------------------
@@ -178,8 +185,17 @@ class FirebaseAuthMethods {
           // Method for creating RSA Public and Private keys for Message Encryption.
           await MessageEncrptionService().generateKeys();
 
+          // retriving the creationTime from the Email Password Provider.
+          final String creationTime = _auth.currentUser!.metadata.creationTime.toString();
+
+          // writing creationTime to flutter secure storage.
+          await _storage.write(key: 'sub_or_ID', value: creationTime);
+
           // Retrieving the RSA Key
           final key = await MessageEncrptionService().returnKeys();
+
+          // Encrypting the RSA Private Key.
+          final encryptedRSAPrivateKey = await MessageEncrptionService().encryptRSAPrivateKey(customString: creationTime);
 
           // Store user data in Firestore
           await _firestoreDB.collection("users").doc(_auth.currentUser!.uid).set({
@@ -193,6 +209,7 @@ class FirebaseAuthMethods {
             "unSeenMessages": [],
             "provider": "Email & Password",
             "rsaPublicKey": key.rsaPublicKey,
+            "encryptedRsaPrivateKey": encryptedRSAPrivateKey,
             "userID": _auth.currentUser!.uid,
             "callLogs": [],
           });
@@ -335,6 +352,9 @@ class FirebaseAuthMethods {
         password: password,
       );
 
+      // retriving the creationTime from the Email Password Provider.
+      final String creationTime = _auth.currentUser!.metadata.creationTime.toString();
+
       // Fetch current userId info from the "users" collection
       final currentUserInfo = await _firestoreDB.collection("users").doc(_auth.currentUser!.uid).get();
 
@@ -361,6 +381,9 @@ class FirebaseAuthMethods {
       await prefs.setString("lastSeen", userData["lastSeen"].toString());
       await prefs.setString("provider", userData["provider"]);
       await prefs.setString("userID", userData["userID"]);
+      // Stroing the encryptedRsaPrivateKey & Sub_or_id to the flutter secure storage
+      await _storage.write(key: 'sub_or_ID', value: creationTime);
+      await _storage.write(key: 'encryptedRsaPrivateKey', value: userData["encryptedRsaPrivateKey"]);
 
       // Set isLogin to "true"
       await prefs.setBool('isLogin', true);
@@ -855,7 +878,6 @@ class FirebaseAuthMethods {
         //* Second, when the user gets login after entering their login password then this code retrieves the FacebookTokenData.
         final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken!.tokenString);
 
-
         // If accessToken or idToken is null then return nothing.
         if (loginResult.accessToken == null) {
           return;
@@ -864,7 +886,6 @@ class FirebaseAuthMethods {
         else {
           //* Third, this method signs in the user with credentials
           final UserCredential userCredentail = await _auth.signInWithCredential(facebookAuthCredential);
-
 
           try {
             //* Fourth here we check the weather users document is already created or not (means if user document that we created with firebase user id is created or not)
@@ -1030,13 +1051,16 @@ class FirebaseAuthMethods {
   //! Method for SignOut Firebase Provider auth account
   static Future<void> singOut({required BuildContext context}) async {
     try {
-      // Remove the entries of Shared Preferences data
+      // Remove the entries of Shared Preferences data and from the flutter secure storage.
       final SharedPreferences prefs = await SharedPreferences.getInstance();
+      const FlutterSecureStorage storage = FlutterSecureStorage();
+
       prefs.remove('name');
       prefs.remove('email');
       prefs.remove('imageUrl');
       prefs.remove('provider');
       prefs.remove('userID');
+      storage.delete(key: "sub_or_ID");
 
       // Set isLogin to false
       await prefs.setBool('isLogin', false);

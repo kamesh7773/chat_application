@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:colored_print/colored_print.dart';
+import 'package:crypto/crypto.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
+import 'package:pointycastle/api.dart' as crypto;
 import 'package:pointycastle/export.dart';
 import 'package:rsa_encrypt/rsa_encrypt.dart';
-import 'package:pointycastle/api.dart' as crypto;
 
 class MessageEncrptionService {
   // Creating an instance of FlutterSecureStorage to securely store keys
@@ -72,38 +72,6 @@ class MessageEncrptionService {
     return encryptedData.base64;
   }
 
-  //! Encrypt a private key using a custom string (sub-property)
-  Future encryptPrivateKey() async {
-    // Reading the private key from Flutter Secure Storage
-    const String privateKey = "hello";
-    const String customString = "105155588538589755904";
-
-    List<int> textBytes = privateKey.codeUnits;
-    List<int> keyBytes = customString.codeUnits;
-    List<int> result = [];
-
-    for (int i = 0; i < textBytes.length; i++) {
-      result.add(textBytes[i] ^ keyBytes[i % keyBytes.length]);
-    }
-    // wrting the encrypted private key to Flutter Secure Storage
-    await _storage.write(key: 'encrypted_private_key', value: base64.encode(result));
-  }
-
-//! Decrypt the private key using the same custom string (sub-property)
-  Future<void> decryptPrivateKey() async {
-    // Reading the encrypted private key from Flutter Secure Storage
-    final String? encryptedPrivateKey = await _storage.read(key: 'encrypted_private_key');
-    const String customString = "105155588538589755904";
-
-    List<int> textBytes = encryptedPrivateKey!.codeUnits;
-    List<int> keyBytes = customString.codeUnits;
-    List<int> result = [];
-
-    for (int i = 0; i < textBytes.length; i++) {
-      result.add(textBytes[i] ^ keyBytes[i % keyBytes.length]);
-    }
-  }
-
   //! Method to decrypt AES key and IV using our own RSA private key
   Uint8List rsaDecrypt({required String data, required RSAPrivateKey privateKey}) {
     // Create an RSA decrypter with our private key
@@ -111,6 +79,41 @@ class MessageEncrptionService {
     // Decrypt the data and return it as a Uint8List
     final List<int> decryptedBytes = decryptor.decryptBytes(Encrypted.fromBase64(data));
     return Uint8List.fromList(decryptedBytes); // Convert List<int> to Uint8List
+  }
+
+  //! Method for encrypting the RSA Private Key of current User so we can upload this to the current User DB securaly.
+  Future<String> encryptRSAPrivateKey({required String customString}) async {
+    // Reading the RSA private key from Flutter Secure Storage
+    final pemPrivateKey = await _storage.read(key: 'private_Key');
+
+    // Derive encryption key directly from the custom string
+    final keyBytes1 = sha256.convert(utf8.encode(customString)).bytes;
+    final key1 = Key(Uint8List.fromList(keyBytes1));
+
+    // Create an encrypter (No IV involved)
+    final encrypter1 = Encrypter(AES(key1, mode: AESMode.ecb));
+
+    // Encrypt the private key
+    final encrypted = encrypter1.encrypt(pemPrivateKey!);
+    final encryptedPrivateKey = encrypted.base64; // Return encrypted private key as a base64 string
+
+    return encryptedPrivateKey;
+  }
+
+  //! Method for decrypting the RSA Private Key of current User
+  Future<String> decryptRSAPrivateKey({required String encryptedPrivateKey, required String customString}) async {
+    // Derive decryption key directly from the custom string
+    final keyBytes2 = sha256.convert(utf8.encode(customString)).bytes;
+    final key2 = Key(Uint8List.fromList(keyBytes2));
+
+    // Create an encrypter (No IV involved)
+    final encrypter2 = Encrypter(AES(key2, mode: AESMode.ecb));
+
+    // Decrypt the private key
+    final encrypted2 = Encrypted.fromBase64(encryptedPrivateKey);
+    final decryptedPrivateKey = encrypter2.decrypt(encrypted2);
+
+    return decryptedPrivateKey;
   }
 
   //! Method to encrypt the user message, write AES key, IV to Flutter Secure Storage, and return the AES key, IV & encrypted message
@@ -139,8 +142,16 @@ class MessageEncrptionService {
 
   //! Method to decrypt the message
   Future<String> mesageDecrypation({required String currentUserID, required String senderID, required String encryptedAESKey, required String encryptedIV, required String encryptedMessage}) async {
+    // Reading the encryptedRsaPrivateKey from Flutter Secure Storage
+    final encryptedRsaPrivateKey = await _storage.read(key: 'encryptedRsaPrivateKey');
+    // Reading the sub_or_ID from  Flutter Secure Storage
+    final customString = await _storage.read(key: 'sub_or_ID');
+
+    // Now we need to decrypt the Private Key
+    final pemPrivateKey = await MessageEncrptionService().decryptRSAPrivateKey(encryptedPrivateKey: encryptedRsaPrivateKey!, customString: customString!);
+
     // Reading the RSA private key from Flutter Secure Storage
-    final pemPrivateKey = await _storage.read(key: 'private_Key');
+    // final pemPrivateKey = await _storage.read(key: 'private_Key');
     final currentUserAESKey = await _storage.read(key: 'AES_key');
     final currentUserIV = await _storage.read(key: 'IV');
 

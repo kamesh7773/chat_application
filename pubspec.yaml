@@ -49,6 +49,7 @@ dependencies:
   encrypt: ^5.0.3
   rsa_encrypt: ^2.0.0
   pointycastle: ^3.9.1
+  crypto: ^3.0.6
   flutter_secure_storage: ^9.2.4
   # notification
   awesome_notifications: ^0.9.3+1

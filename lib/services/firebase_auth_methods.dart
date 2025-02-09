@@ -37,10 +37,6 @@ class FirebaseAuthMethods {
     await prefs.setString("provider", userData["provider"]);
     await prefs.setString("userID", userData["userID"]);
     await prefs.setBool('isLogin', true);
-    // writing encryptedRsaPrivateKey , encrypted AES Key and encrypted IV to flutter secure storage.
-    await _storage.write(key: 'encryptedRsaPrivateKey', value: userData["encryptedRsaPrivateKey"]);
-    await _storage.write(key: 'encryptedAESKey', value: userData["encryptedAESKey"]);
-    await _storage.write(key: 'encryptedIV', value: userData["encryptedIV"]);
   }
 
   // --------------------
@@ -187,17 +183,14 @@ class FirebaseAuthMethods {
           // Method for creating RSA Public and Private keys for Message Encryption.
           await MessageEncrptionService().generateKeys();
 
-          // retriving the creationTime from the Email Password Provider.
+          // retriving the creationTime from the Email Password Provider (this will be used as a Custom String)
           final String creationTime = _auth.currentUser!.metadata.creationTime.toString();
 
-          // writing creationTime to flutter secure storage.
-          await _storage.write(key: 'sub_or_ID', value: creationTime);
-
-          // Retrieving the RSA Key
-          final key = await MessageEncrptionService().returnKeys();
+          // Retrieving the Key's
+          final keys = await MessageEncrptionService().returnKeys();
 
           // Encrypting the RSA Private Key, AES Key and IV using the creationTime (custom String).
-          final result = await MessageEncrptionService().encryption(customString: creationTime);
+          final encryptedData = await MessageEncrptionService().encryptionWithCustomString(customString: creationTime);
 
           // Store user data in Firestore
           await _firestoreDB.collection("users").doc(_auth.currentUser!.uid).set({
@@ -210,10 +203,10 @@ class FirebaseAuthMethods {
             "lastSeen": DateTime.now(),
             "unSeenMessages": [],
             "provider": "Email & Password",
-            "rsaPublicKey": key.rsaPublicKey,
-            "encryptedRsaPrivateKey": result.encryptedPrivateKEY,
-            "encryptedAESKey": result.encryptedAESKEY,
-            "encryptedIV": result.encryptedIVData,
+            "rsaPublicKey": keys.rsaPublicKey,
+            "encryptedRsaPrivateKey": encryptedData.encryptedRSAPrivateKEY,
+            "encryptedAESKey": encryptedData.encryptedAESData,
+            "encryptedIV": encryptedData.encrptedIV,
             "userID": _auth.currentUser!.uid,
             "callLogs": [],
           });
@@ -223,8 +216,21 @@ class FirebaseAuthMethods {
 
           final userData = currentUserInfo.data();
 
+          // decrypting the RSA Private Key, AES Key and IV of current User.
+          final decryptedData = await MessageEncrptionService().decryptionWithCustomString(
+            encryptedPrivateKey: userData!["encryptedRsaPrivateKey"],
+            encryptedAesKey: userData["encryptedAESKey"],
+            encryptediv: userData["encryptedIV"],
+            customString: creationTime,
+          );
+
+          // Wrting the decrypted RSA Private Key, AES Key and IV to the flutter secure storage.
+          await _storage.write(key: 'private_Key', value: decryptedData.decryptedRSAPrivateKey);
+          await _storage.write(key: 'AES_key', value: decryptedData.decryptedAESKEY);
+          await _storage.write(key: 'IV', value: decryptedData.decrypedIV);
+
           // Store user data in SharedPreferences
-          await _updateSharedPreferences(userData!);
+          await _updateSharedPreferences(userData);
 
           // Method for initializing Zego package services.
           await ZegoMethods.onUserLogin();
@@ -356,9 +362,6 @@ class FirebaseAuthMethods {
         password: password,
       );
 
-      // retriving the creationTime from the Email Password Provider.
-      final String creationTime = _auth.currentUser!.metadata.creationTime.toString();
-
       // Fetch current userId info from the "users" collection
       final currentUserInfo = await _firestoreDB.collection("users").doc(_auth.currentUser!.uid).get();
 
@@ -374,22 +377,32 @@ class FirebaseAuthMethods {
 
       final userData = currentUserInfo.data();
 
+      // retriving the creationTime from the Email Password Provider.
+      final String creationTime = _auth.currentUser!.metadata.creationTime.toString();
+
+      // decrypting the RSA Private Key, AES Key and IV of current User.
+      final decryptedData = await MessageEncrptionService().decryptionWithCustomString(
+        encryptedPrivateKey: userData!["encryptedRsaPrivateKey"],
+        encryptedAesKey: userData["encryptedAESKey"],
+        encryptediv: userData["encryptedIV"],
+        customString: creationTime,
+      );
+
       // Create an instance of Shared Preferences
       final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-      // Write current user info data to SharedPreferences
-      await prefs.setString("name", userData!["name"]);
+      // Writing current user info data to SharedPreferences
+      await prefs.setString("name", userData["name"]);
       await prefs.setString("email", userData["email"]);
       await prefs.setString("imageUrl", userData["imageUrl"]);
       await prefs.setBool("isOnline", userData["isOnline"]);
       await prefs.setString("lastSeen", userData["lastSeen"].toString());
       await prefs.setString("provider", userData["provider"]);
       await prefs.setString("userID", userData["userID"]);
-      // Stroing the encryptedRsaPrivateKey & Sub_or_id to the flutter secure storage
-      await _storage.write(key: 'sub_or_ID', value: creationTime);
-      await _storage.write(key: 'encryptedRsaPrivateKey', value: userData["encryptedRsaPrivateKey"]);
-      await _storage.write(key: 'encryptedAESKey', value: userData["encryptedAESKey"]);
-      await _storage.write(key: 'encryptedRsaPrivateKey', value: userData["encryptedIV"]);
+      // Wrting the decrypted RSA Private Key, AES Key and IV to the flutter secure storage.
+      await _storage.write(key: 'private_Key', value: decryptedData.decryptedRSAPrivateKey);
+      await _storage.write(key: 'AES_key', value: decryptedData.decryptedAESKEY);
+      await _storage.write(key: 'IV', value: decryptedData.decrypedIV);
 
       // Set isLogin to "true"
       await prefs.setBool('isLogin', true);
@@ -549,6 +562,9 @@ class FirebaseAuthMethods {
         }
 
         try {
+          //! Retriving the sub from userCredential additionalUserInfo
+          ColoredPrint.warning(userCredential.additionalUserInfo!.profile!["id"]);
+
           //* Fourth here we check the weather users document is already created or not (means if user document that we created with firebase user id is created or not)
           //* if it already not created that means user is signUp for first time if docuemnt named usersId is created or firebase then userID is already signUP and now he is siging up.
           DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance.collection("users").doc(_auth.currentUser!.uid).get();
@@ -704,6 +720,9 @@ class FirebaseAuthMethods {
               DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance.collection("users").doc(_auth.currentUser!.uid).get();
 
               if (documentSnapshot.exists) {
+                // Retriving the sub from userCredential additionalUserInfo from the Google Oauth Provider (this will be used as a Custom String)
+                final String sub = userCredential.additionalUserInfo!.profile!["sub"];
+
                 // It mean user is already sign up now we updated some feild value on already created user docuemnts.
                 // Reference to the current user's document in the main collection
                 final DocumentReference user = _firestoreDB.collection("users").doc(_auth.currentUser!.uid);
@@ -720,11 +739,24 @@ class FirebaseAuthMethods {
 
                 final userData = currentUserInfo.data();
 
+                // decrypting the RSA Private Key, AES Key and IV of current User.
+                final decryptedData = await MessageEncrptionService().decryptionWithCustomString(
+                  encryptedPrivateKey: userData!["encryptedRsaPrivateKey"],
+                  encryptedAesKey: userData["encryptedAESKey"],
+                  encryptediv: userData["encryptedIV"],
+                  customString: sub,
+                );
+
+                // Wrting the decrypted RSA Private Key, AES Key and IV to the flutter secure storage.
+                await _storage.write(key: 'private_Key', value: decryptedData.decryptedRSAPrivateKey);
+                await _storage.write(key: 'AES_key', value: decryptedData.decryptedAESKEY);
+                await _storage.write(key: 'IV', value: decryptedData.decrypedIV);
+
                 // Create an instance of Shared Preferences
                 final SharedPreferences prefs = await SharedPreferences.getInstance();
 
                 //* Sixth, write current User info data to SharedPreferences
-                await prefs.setString("name", userData!["name"]);
+                await prefs.setString("name", userData["name"]);
                 await prefs.setString("email", userData["email"]);
                 await prefs.setString("imageUrl", userData["imageUrl"]);
                 await prefs.setString("provider", userData["provider"]);
@@ -753,8 +785,14 @@ class FirebaseAuthMethods {
                 // Method for creating RSA Public and Private keys for Message Encryption.
                 await MessageEncrptionService().generateKeys();
 
+                // Retriving the sub from userCredential additionalUserInfo from the Google Oauth Provider (this will be used as a Custom String)
+                final String sub = userCredential.additionalUserInfo!.profile!["sub"];
+
                 // Retrieving the RSA Key
-                final key = await MessageEncrptionService().returnKeys();
+                final keys = await MessageEncrptionService().returnKeys();
+
+                // Encrypting the RSA Private Key, AES Key and IV using the creationTime (custom String).
+                final encryptedData = await MessageEncrptionService().encryptionWithCustomString(customString: sub);
 
                 // Create "users" collection so we can store user-specific user datastore or user info inside the Firestore "users" collection.
                 await _firestoreDB.collection("users").doc(_auth.currentUser!.uid).set({
@@ -767,7 +805,10 @@ class FirebaseAuthMethods {
                   "lastSeen": DateTime.now(),
                   "unSeenMessages": [],
                   "provider": "Google",
-                  "rsaPublicKey": key.rsaPublicKey,
+                  "rsaPublicKey": keys.rsaPublicKey,
+                  "encryptedRsaPrivateKey": encryptedData.encryptedRSAPrivateKEY,
+                  "encryptedAESKey": encryptedData.encryptedAESData,
+                  "encryptedIV": encryptedData.encrptedIV,
                   "userID": _auth.currentUser!.uid,
                   "callLogs": [],
                 });
@@ -777,11 +818,24 @@ class FirebaseAuthMethods {
 
                 final userData = currentUserInfo.data();
 
+                // decrypting the RSA Private Key, AES Key and IV of current User.
+                final decryptedData = await MessageEncrptionService().decryptionWithCustomString(
+                  encryptedPrivateKey: userData!["encryptedRsaPrivateKey"],
+                  encryptedAesKey: userData["encryptedAESKey"],
+                  encryptediv: userData["encryptedIV"],
+                  customString: sub,
+                );
+
+                // Wrting the decrypted RSA Private Key, AES Key and IV to the flutter secure storage.
+                await _storage.write(key: 'private_Key', value: decryptedData.decryptedRSAPrivateKey);
+                await _storage.write(key: 'AES_key', value: decryptedData.decryptedAESKEY);
+                await _storage.write(key: 'IV', value: decryptedData.decrypedIV);
+
                 // Create an instance of Shared Preferences
                 final SharedPreferences prefs = await SharedPreferences.getInstance();
 
                 //* Sixth, write current User info data to SharedPreferences
-                await prefs.setString("name", userData!["name"]);
+                await prefs.setString("name", userData["name"]);
                 await prefs.setString("email", userData["email"]);
                 await prefs.setString("imageUrl", userData["imageUrl"]);
                 await prefs.setString("provider", userData["provider"]);
@@ -899,6 +953,9 @@ class FirebaseAuthMethods {
             DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance.collection("users").doc(_auth.currentUser!.uid).get();
 
             if (documentSnapshot.exists) {
+              // Retriving the id from userCredential additionalUserInfo from the Facebook Provider (this will be used as a Custom String)
+              final String id = userCredentail.additionalUserInfo!.profile!["id"];
+
               // It mean user is already sign up now we updated some feild value on already created user docuemnts.
               // Reference to the current user's document in the main collection
               final DocumentReference user = _firestoreDB.collection("users").doc(_auth.currentUser!.uid);
@@ -915,11 +972,24 @@ class FirebaseAuthMethods {
 
               final userData = currentUserInfo.data();
 
+              // decrypting the RSA Private Key, AES Key and IV of current User.
+              final decryptedData = await MessageEncrptionService().decryptionWithCustomString(
+                encryptedPrivateKey: userData!["encryptedRsaPrivateKey"],
+                encryptedAesKey: userData["encryptedAESKey"],
+                encryptediv: userData["encryptedIV"],
+                customString: id,
+              );
+
+              // Wrting the decrypted RSA Private Key, AES Key and IV to the flutter secure storage.
+              await _storage.write(key: 'private_Key', value: decryptedData.decryptedRSAPrivateKey);
+              await _storage.write(key: 'AES_key', value: decryptedData.decryptedAESKEY);
+              await _storage.write(key: 'IV', value: decryptedData.decrypedIV);
+
               // Create an instance of Shared Preferences
               final SharedPreferences prefs = await SharedPreferences.getInstance();
 
               //* Fifth, write current User info data to SharedPreferences
-              await prefs.setString("name", userData!["name"]);
+              await prefs.setString("name", userData["name"]);
               await prefs.setString("email", userData["email"]);
               await prefs.setString("imageUrl", userData["imageUrl"]);
               await prefs.setString("provider", userData["provider"]);
@@ -948,8 +1018,14 @@ class FirebaseAuthMethods {
               // Method for creating RSA Public and Private keys for Message Encryption.
               await MessageEncrptionService().generateKeys();
 
+              // Retriving the id from userCredential additionalUserInfo from the Facebook Provider (this will be used as a Custom String)
+              final String id = userCredentail.additionalUserInfo!.profile!["id"];
+
               // Retrieving the RSA Key
               final key = await MessageEncrptionService().returnKeys();
+
+              // Encrypting the RSA Private Key, AES Key and IV using the creationTime (custom String).
+              final encryptedData = await MessageEncrptionService().encryptionWithCustomString(customString: id);
 
               // Create "users" collection so we can store user-specific user data
               await _firestoreDB.collection("users").doc(_auth.currentUser!.uid).set({
@@ -963,6 +1039,9 @@ class FirebaseAuthMethods {
                 "unSeenMessages": [],
                 "provider": "Facebook",
                 "rsaPublicKey": key.rsaPublicKey,
+                "encryptedRsaPrivateKey": encryptedData.encryptedRSAPrivateKEY,
+                "encryptedAESKey": encryptedData.encryptedAESData,
+                "encryptedIV": encryptedData.encrptedIV,
                 "userID": _auth.currentUser!.uid,
                 "callLogs": [],
               });
@@ -972,11 +1051,24 @@ class FirebaseAuthMethods {
 
               final userData = currentUserInfo.data();
 
+              // decrypting the RSA Private Key, AES Key and IV of current User.
+              final decryptedData = await MessageEncrptionService().decryptionWithCustomString(
+                encryptedPrivateKey: userData!["encryptedRsaPrivateKey"],
+                encryptedAesKey: userData["encryptedAESKey"],
+                encryptediv: userData["encryptedIV"],
+                customString: id,
+              );
+
+              // Wrting the decrypted RSA Private Key, AES Key and IV to the flutter secure storage.
+              await _storage.write(key: 'private_Key', value: decryptedData.decryptedRSAPrivateKey);
+              await _storage.write(key: 'AES_key', value: decryptedData.decryptedAESKEY);
+              await _storage.write(key: 'IV', value: decryptedData.decrypedIV);
+
               // Create an instance of Shared Preferences
               final SharedPreferences prefs = await SharedPreferences.getInstance();
 
               //* Fifth, write current User info data to SharedPreferences
-              await prefs.setString("name", userData!["name"]);
+              await prefs.setString("name", userData["name"]);
               await prefs.setString("email", userData["email"]);
               await prefs.setString("imageUrl", userData["imageUrl"]);
               await prefs.setString("provider", userData["provider"]);
@@ -1066,10 +1158,11 @@ class FirebaseAuthMethods {
       prefs.remove('imageUrl');
       prefs.remove('provider');
       prefs.remove('userID');
-      storage.delete(key: "sub_or_ID");
-      storage.delete(key: "encryptedRsaPrivateKey");
-      storage.delete(key: "encryptedAESKey");
-      storage.delete(key: "encryptedIV");
+
+      // deleting the key form the flutter secure storage (avoiding the re-write)
+      storage.delete(key: "private_Key");
+      storage.delete(key: "AES_key");
+      storage.delete(key: "IV");
 
       // Set isLogin to false
       await prefs.setBool('isLogin', false);

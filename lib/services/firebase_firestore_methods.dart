@@ -117,7 +117,7 @@ class FirebaseFireStoreMethods {
       final RSAPublicKey publicKey = helper.parsePublicKeyFromPem(recipientPublicKey);
 
       // Encrypt the message using AES
-      final result = await MessageEncrptionService().encryptMessage(message: message);
+      final result = await MessageEncrptionService().messageEncryption(message: message);
 
       // Encrypt AES Key & IV using the recipient's public RSA key
       String encryptedAESKey = MessageEncrptionService().rsaEncrypt(data: result.aesKey.bytes, publicKey: publicKey);
@@ -216,7 +216,7 @@ class FirebaseFireStoreMethods {
           final String encryptedAESKey = data['encryptedAESKey'];
           final String encryptedIV = data['encryptedIV'];
 
-          final String decryptedMessage = await MessageEncrptionService().mesageDecrypation(
+          final String decryptedMessage = await MessageEncrptionService().messageDecryption(
             currentUserID: _auth.currentUser!.uid,
             senderID: senderID,
             encryptedMessage: encryptedMessage,
@@ -298,7 +298,7 @@ class FirebaseFireStoreMethods {
         final bool? isVideoCall = lastMessageData['isVideoCall'];
 
         if (isVideoCall == null) {
-          decryptedMessage = await MessageEncrptionService().mesageDecrypation(
+          decryptedMessage = await MessageEncrptionService().messageDecryption(
             currentUserID: _auth.currentUser!.uid,
             senderID: senderID,
             encryptedMessage: encryptedMessage,

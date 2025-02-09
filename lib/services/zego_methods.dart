@@ -111,7 +111,7 @@ class ZegoMethods {
             final RSAPublicKey publicKey = helper.parsePublicKeyFromPem(otherUser.rsaPublicKey);
 
             // Encrypt the message using AES
-            final result = await MessageEncrptionService().encryptMessage(message: "message");
+            final result = await MessageEncrptionService().messageEncryption(message: "message");
 
             // Encrypt AES Key & IV using the recipient's public RSA key
             String encryptedAESKey = MessageEncrptionService().rsaEncrypt(data: result.aesKey.bytes, publicKey: publicKey);

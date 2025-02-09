@@ -1,12 +1,6 @@
-import 'dart:convert';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_application/services/encryption_decryption.dart';
-import 'package:chat_application/services/firebase_auth_methods.dart';
-import 'package:chat_application/services/message_encrption_service.dart';
-import 'package:colored_print/colored_print.dart';
-import 'package:pointycastle/asymmetric/api.dart';
-import 'package:rsa_encrypt/rsa_encrypt.dart';
+
 import '../../providers/last_message_provider.dart';
 import '../../utils/date_time_calculator_for_users.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -89,6 +83,8 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       ActionChip(
                         onPressed: () {
+                          // FirebaseAuthMethods.singOut(context: context);
+
                           // MessageEncrptionService().encryptionDecryption(
                           //   message: "Hello 😎",
                           //   recipientPublicKey: "-----BEGIN RSA PUBLIC KEY-----MIIBCgKCAQEApngHVpwEeN5/m8fBK4VLz//u2Z/meZP4cYK6aZE58TvKRw4t7yrVpkTLYZbdKjIPPPDzkjVIniqiTv5iJXyPYgTLvIPiRMVwzJOwzquXZ95mBpQ6mETbW5mzrQ7GQ7eTenT90p+MTaKgQjTA/nM2aI7Q+051tZ2xWTQ+IW5L09dUtFE1Huda5qlRbPsPkGP8FxH/it84176m7rBu/U/Pe6PdSpRDzUAYvHJt1IyL5ebksiralz7j5MgXHnuNSBUUFZTUAZg8KzbuK6uKepvwTnQWr/gwn4Ul8w5eU8Iugecqf/ITq6ygbCKUK2xWsq6AHgt7GwVyjNoZmxY71bcvewIDAQAB-----END RSA PUBLIC KEY-----",
@@ -96,9 +92,9 @@ class _HomePageState extends State<HomePage> {
                           //       "-----BEGIN RSA PRIVATE KEY-----MIIFogIBAAKCAQEApngHVpwEeN5/m8fBK4VLz//u2Z/meZP4cYK6aZE58TvKRw4t7yrVpkTLYZbdKjIPPPDzkjVIniqiTv5iJXyPYgTLvIPiRMVwzJOwzquXZ95mBpQ6mETbW5mzrQ7GQ7eTenT90p+MTaKgQjTA/nM2aI7Q+051tZ2xWTQ+IW5L09dUtFE1Huda5qlRbPsPkGP8FxH/it84176m7rBu/U/Pe6PdSpRDzUAYvHJt1IyL5ebksiralz7j5MgXHnuNSBUUFZTUAZg8KzbuK6uKepvwTnQWr/gwn4Ul8w5eU8Iugecqf/ITq6ygbCKUK2xWsq6AHgt7GwVyjNoZmxY71bcvewKCAQBNx5U+LWWVh/g9tCaYjA5xIBbcje6k7bNObhNlUdqt0Q7hBkoGDpCGwGv6q/+oQH2ILtjPfp/wbuEpYYhAFaP022LKMSDemxXqMDOTTO9QM8Sd3FJIZRvM/9LI0Ddo2nRI6jLSX4OxnoOci4OFIBXS4q/YS7+J3SVJFbTV7+/0CUw2rIcv+3tZUTWgukYO1iEdR+IT2fzbcn+QrjdKC28bgXracs8+jlph7uHveG2qoR+me1SIk7hZjW/DAL9QCyxOezz9lFBueDoB+nRB51gjp1b656lypBo32SXWrFon8L6gW4NYWmRETV0v6ARfQYgoOMu0W0OyCPPQbMAfRNEhAoIBAE3HlT4tZZWH+D20JpiMDnEgFtyN7qTts05uE2VR2q3RDuEGSgYOkIbAa/qr/6hAfYgu2M9+n/Bu4SlhiEAVo/TbYsoxIN6bFeowM5NM71AzxJ3cUkhlG8z/0sjQN2jadEjqMtJfg7Geg5yLg4UgFdLir9hLv4ndJUkVtNXv7/QJTDashy/7e1lRNaC6Rg7WIR1H4hPZ/Ntyf5CuN0oLbxuBetpyzz6OWmHu4e94baqhH6Z7VIiTuFmNb8MAv1ALLE57PP2UUG54OgH6dEHnWCOnVvrnqXKkGjfZJdasWifwvqBbg1haZERNXS/oBF9BiCg4y7RbQ7II89BswB9E0SECgYEA8KVvtOYn0NdBvl3ZaxDHnlrqE9dkhZ9v2XpyB3dgSyeOgU8TTbjlMosxbwjJLuej+JC5+VV9m0ZqMpxIKh9z2wu9uEKtHyV7jIjLuCAYIcuAdxin5rrgSRBG425xX4K9x6o8fWcimzJCHJpw8iagWnkIYKPubF9bwd7H/PN6PksCgYEAsRcGo2wqqkQAtcekvemtEgVZpQaJwEIi8+sP1F0KGe+jX094BLCyEoIA6jXCkWDSjLFp1QKECXIzgwHkLfBekl7xfU2owf05W7+2oO7YoTLoB+AGo9jgYX0U7ql4oUfBOH05Fpc5dscku6RNB016uhMxTYluwaViAK1HCvmBVZECgYAk68z6vUEomo4crft4oMdvtVUqnCZxFegsPswV9yvP/A6yKja0+wQ3QAHinj93sdSHg3T1Gze9Rg1vHGk6BT9aQS/ngFtdZvvQsQBIjKwHK1jXbPH9xXg53YRyynQcikuhwa2sM9GsbAaWqt9fV6vMlbtCUIR5HhxO32Zhmd2MhwKBgBsq0yPjBjCUuh8o/4b7AEgRdg0xEZTjEIWm/AiyNUiBUOjgQiNGECtysj07/htbZTGcTgYVmrfwQyLH+X9qrrd5xUZZ0ZfhBxmiMZxCyA0CyEHdBmfAb7vE+p8adJ0ZavUFkOp8TJ6CMopuzDpgkoFVTGz+tnUSsBQ2gP2YBVVhAoGBAIX6hrHrPgeadLr1GMb/wgZvY7IbnloUC+tukA/cLjCO5S1mZyQ2fxVa2S2kvrrO+xPgBUzvBXQKP5gPqRrWbwhMAHCB7+NyBm10fujmXuSBZLIGzfaFzYzyLBVZxSrDF1g19WMavH6NnD6NUXa9tCXsmG+64N0Wg5O/b/HYwdJM-----END RSA PRIVATE KEY-----",
                           // );
 
-                          EncryptionDecryption().encryptandDecryptPrivateKey(customString: "customString", message: "hello");
+                          // MessageEncrptionService().generateKeys();
 
-                          FirebaseAuthMethods.singOut(context: context);
+                          EncryptionDecryption().messageEncryptionandDecryption(customString: "customString", message: "hello");
                         },
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
                         shadowColor: Colors.black,

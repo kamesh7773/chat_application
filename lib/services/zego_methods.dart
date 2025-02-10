@@ -178,8 +178,6 @@ class ZegoMethods {
         /// Support minimizing, show minimizing button
         config.bottomMenuBar.hideByClick = true;
         config.topMenuBar.isVisible = true;
-        config.topMenuBar.buttons.insert(0, ZegoCallMenuBarButtonName.chatButton);
-        config.topMenuBar.buttons.insert(1, ZegoCallMenuBarButtonName.soundEffectButton);
 
         return config;
       },

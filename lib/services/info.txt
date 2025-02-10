@@ -1,9 +1,0 @@
-Email Password Provider : creationTime: 2025-02-08 01:56:50.334Z
-
-Google O auth sub :  105155588538589755904 (login at: 12:20 PM )
-
-Facebook auth ID : 1981294488965110  (login at : 12:53 PM)
-
-
-
-

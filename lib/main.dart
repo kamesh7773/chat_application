@@ -1,23 +1,21 @@
-import 'services/notification_service.dart';
-
-import 'providers/last_message_provider.dart';
-import 'providers/theme_provider.dart';
-import 'providers/zego_avatar_provider.dart';
-import 'services/zego_methods.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit_signaling_plugin/zego_uikit_signaling_plugin.dart';
 
 import 'providers/bottom_nav_image_provider.dart';
+import 'providers/last_message_provider.dart';
 import 'providers/online_offline_status_provider.dart';
+import 'providers/theme_provider.dart';
 import 'providers/typing_status_provider.dart';
-import 'services/firebase_auth_methods.dart';
-import 'services/firebase_options.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:provider/provider.dart';
-
+import 'providers/zego_avatar_provider.dart';
 import 'routes/rotues_names.dart';
 import 'routes/routes.dart';
-import 'package:flutter/material.dart';
+import 'services/firebase_auth_methods.dart';
+import 'services/firebase_options.dart';
+import 'services/notification_service.dart';
+import 'services/zego_methods.dart';
 
 /// 1/5: Define a navigator key
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();

@@ -1,5 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:chat_application/services/encryption_decryption.dart';
+import '../../services/encryption_decryption.dart';
 
 import '../../providers/last_message_provider.dart';
 import '../../utils/date_time_calculator_for_users.dart';

@@ -73,13 +73,13 @@ A feature-rich chat application built with the **Flutter framework**, designed t
 Clone the repository:
 
 ```bash
-git clone https://github.com/your-username/your-chat-app-repo
+git clone https://github.com/kamesh7773/chat_application
 ```
 
 Navigate to the project directory:
 
 ```bash
-cd your-chat-app-repo
+cd chat-application
 ```
 
 Install dependencies:
@@ -187,6 +187,5 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 
 For queries or collaboration, feel free to reach out:
 
-- 📧 **Email**: [your-email@example.com](mailto\:your-email@example.com)
-- 🔗 **GitHub**: [your-username](https://github.com/your-username)
-
+- 📧 **Email**: [kameshsinghaaa64@gmail.com](mailto\:kameshsinghaaa64@gmail.com)
+- 🔗 **GitHub**: [kamesh7773](https://github.com/kamesh7773)

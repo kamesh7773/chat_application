@@ -155,29 +155,30 @@ class ZegoMethods {
         /// Custom avatar builder
         config.avatarBuilder = (context, size, user, extraInfo) {
           return Selector<ZegoAvatarProvider, String?>(
-              selector: (context, data) => data.imageUrl,
-              builder: (context, imageUrl, child) {
-                return CachedNetworkImage(
-                  imageUrl: imageUrl ?? data.customData,
-                  imageBuilder: (context, imageProvider) => Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        image: imageProvider,
-                        fit: BoxFit.cover,
-                      ),
+            selector: (context, data) => data.imageUrl,
+            builder: (context, imageUrl, child) {
+              return CachedNetworkImage(
+                imageUrl: imageUrl ?? data.customData,
+                imageBuilder: (context, imageProvider) => Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.cover,
                     ),
                   ),
-                  progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                );
-              });
+                ),
+                progressIndicatorBuilder: (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+              );
+            },
+          );
         };
 
         /// Support minimizing, show minimizing button
-        config.bottomMenuBar.hideByClick = false;
+        config.bottomMenuBar.hideByClick = true;
         config.topMenuBar.isVisible = true;
-        config.topMenuBar.buttons.insert(0, ZegoCallMenuBarButtonName.minimizingButton);
+        config.topMenuBar.buttons.insert(0, ZegoCallMenuBarButtonName.chatButton);
         config.topMenuBar.buttons.insert(1, ZegoCallMenuBarButtonName.soundEffectButton);
 
         return config;

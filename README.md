@@ -106,7 +106,8 @@ flutter run
 - **Flutter** – Frontend framework.
 - **Firebase** – Backend for authentication, database, and push notifications.
 - **End-to-End Encryption** – Secure messaging.
-- **Firebase Cloud Messaging (FCM)** – Push notifications.
+- **Firebase Cloud Messaging (FCM)** – Push notifications.      
+- **Node JS** – Node JS for sending the OTP on Email and for sending the FCM Push Notification to User.      
 
 ---
 

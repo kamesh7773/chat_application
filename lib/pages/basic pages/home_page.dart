@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:colored_print/colored_print.dart';
 import '../../services/encryption_decryption.dart';
 
 import '../../providers/last_message_provider.dart';
@@ -31,6 +32,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    ColoredPrint.warning("HomePage: initState");
     setState(() {});
     fetchingcurrentUsername();
   }

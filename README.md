@@ -108,6 +108,7 @@ flutter run
 - **End-to-End Encryption** – Secure messaging.
 - **Firebase Cloud Messaging (FCM)** – Push notifications.      
 - **Node JS** – Node JS for sending the OTP on Email and for sending the FCM Push Notification to User.      
+- **Zego SDK** – For AUDIO anad VIDEO Calls.      
 
 ---
 

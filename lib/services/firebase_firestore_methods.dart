@@ -27,7 +27,7 @@ class FirebaseFireStoreMethods {
       String currentUserId = _auth.currentUser!.uid;
 
       // Query to exclude the current user
-      return users.where('userID', isNotEqualTo: currentUserId).snapshots().map((snapshot) {
+      return users.where('userID', isNotEqualTo: currentUserId).orderBy('lastMessageTimestamp', descending: true).snapshots().map((snapshot) {
         return snapshot.docs.map((doc) {
           return UserModel.fromJson(doc.data() as Map<String, dynamic>);
         }).toList();
@@ -160,6 +160,11 @@ class FirebaseFireStoreMethods {
         await _db.collection(chatRoomsCollection).doc(chatRoomID).collection("messages").add(newMessage.toMap());
 
         await updateUnseenMessage(userID: currentUserID, otherUserID: receiverID);
+
+        // update the last message timestamp in the user's collection
+        await receiverDoc.update({
+          "lastMessageTimestamp": DateTime.now(),
+        });
       }
     } catch (error) {
       throw Exception(error.toString());

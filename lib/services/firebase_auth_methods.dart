@@ -1028,23 +1028,25 @@ class FirebaseAuthMethods {
               final encryptedData = await MessageEncrptionService().encryptionWithCustomString(customString: id);
 
               // Create "users" collection so we can store user-specific user data
-              await _firestoreDB.collection("users").doc(_auth.currentUser!.uid).set({
-                "name": userCredentail.additionalUserInfo!.profile!["name"],
-                "email": userCredentail.additionalUserInfo!.profile!["email"],
-                "imageUrl": userCredentail.additionalUserInfo!.profile!["picture"]["data"]["url"],
-                "isOnline": true,
-                "isTyping": false,
-                "isInsideChatRoom": false,
-                "lastSeen": DateTime.now(),
-                "unSeenMessages": [],
-                "provider": "Facebook",
-                "rsaPublicKey": key.rsaPublicKey,
-                "encryptedRsaPrivateKey": encryptedData.encryptedRSAPrivateKEY,
-                "encryptedAESKey": encryptedData.encryptedAESData,
-                "encryptedIV": encryptedData.encrptedIV,
-                "userID": _auth.currentUser!.uid,
-                "callLogs": [],
-              });
+              await _firestoreDB.collection("users").doc(_auth.currentUser!.uid).set(
+                {
+                  "name": userCredentail.additionalUserInfo!.profile!["name"],
+                  "email": userCredentail.additionalUserInfo!.profile!["email"],
+                  "imageUrl": userCredentail.additionalUserInfo!.profile!["picture"]["data"]["url"],
+                  "isOnline": true,
+                  "isTyping": false,
+                  "isInsideChatRoom": false,
+                  "lastSeen": DateTime.now(),
+                  "unSeenMessages": [],
+                  "provider": "Facebook",
+                  "rsaPublicKey": key.rsaPublicKey,
+                  "encryptedRsaPrivateKey": encryptedData.encryptedRSAPrivateKEY,
+                  "encryptedAESKey": encryptedData.encryptedAESData,
+                  "encryptedIV": encryptedData.encrptedIV,
+                  "userID": _auth.currentUser!.uid,
+                  "callLogs": [],
+                },
+              );
 
               // Fetch current userId info from "users" collection
               final currentUserInfo = await _firestoreDB.collection("users").doc(_auth.currentUser!.uid).get();

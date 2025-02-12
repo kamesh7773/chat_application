@@ -7,7 +7,6 @@ import '../../widgets/call_widget.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../providers/zego_avatar_provider.dart';
-import '../../routes/rotues_names.dart';
 import '../../widgets/send_call_button.dart';
 
 import '../../models/message_model.dart';
@@ -176,19 +175,17 @@ class _ChatScreenState extends State<ChatScreen> {
             width: double.infinity,
             child: Row(
               children: [
+                // back button
                 IconButton(
                   onPressed: () {
-                    //! Navigate the user to the previous screen.
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                      RoutesNames.bottomNavigationBar,
-                      (Route<dynamic> route) => false,
-                    );
+                    Navigator.of(context).pop();
                   },
                   icon: const Icon(
                     Icons.arrow_back_ios,
                     color: Colors.white,
                   ),
                 ),
+                // User's profile image
                 Selector<OnlineOfflineStatusProvider, bool>(
                   selector: (context, data) => data.isOnline,
                   builder: (context, value, child) {
@@ -225,29 +222,37 @@ class _ChatScreenState extends State<ChatScreen> {
                   },
                 ),
                 const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      widget.name,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    Consumer<OnlineOfflineStatusProvider>(builder: (context, value, child) {
-                      return Text(
-                        DateTimeCalculatorForUsers.getLastActiveTime(isOnline: value.isOnline, lastSeen: value.userLastSeen.toDate()),
-                        style: TextStyle(
-                          color: MediaQuery.of(context).platformBrightness == Brightness.light ? const Color.fromARGB(255, 226, 221, 221) : Colors.white,
-                          fontSize: 14,
+                // User's name and last seen time
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.name,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 17,
                           fontWeight: FontWeight.w600,
                         ),
-                      );
-                    }),
-                  ],
+                        overflow: TextOverflow.clip, // Adds ellipsis for last seen text too
+                        maxLines: 1,
+                      ),
+                      Consumer<OnlineOfflineStatusProvider>(
+                        builder: (context, value, child) {
+                          return Text(
+                            DateTimeCalculatorForUsers.getLastActiveTime(isOnline: value.isOnline, lastSeen: value.userLastSeen.toDate()),
+                            style: TextStyle(
+                              color: MediaQuery.of(context).platformBrightness == Brightness.light ? const Color.fromARGB(255, 226, 221, 221) : Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            overflow: TextOverflow.clip, // Adds ellipsis for last seen text too
+                            maxLines: 1,
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
                 const Spacer(flex: 1),
                 sendCallButton(

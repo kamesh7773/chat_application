@@ -126,7 +126,7 @@ class _PeoplePageState extends State<PeoplePage> {
                       itemBuilder: (context, index) {
                         final user = listOfUser[index];
                         return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          padding: const EdgeInsets.symmetric(vertical: 6),
                           child: ListTile(
                             onTap: () {
                               //! Navigate the user to the Chat Screen Page.

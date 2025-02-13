@@ -122,6 +122,10 @@ flutter run
 |-----------------|-----------|-----------|
 | ![Call logs Page](https://github.com/kamesh7773/chat_application/blob/main/assets/github/calls%20logs%20page.png) | ![Search Page](https://github.com/kamesh7773/chat_application/blob/main/assets/github/SearchPage-ezgif.com-video-to-gif-converter.gif) | ![Join Meeting Demo](https://github.com/kamesh7773/zoom_clone/blob/main/readme%20assets/JoinMeeting.gif?raw=true) |
 
+| Call logs Page | Search Page | Join Meeting Demo |
+|-----------------|-----------|-----------|
+| ![Call logs Page](https://github.com/kamesh7773/chat_application/blob/main/assets/github/calls%20logs%20page.png) | ![Search Page](https://github.com/kamesh7773/chat_application/blob/main/assets/github/SearchPage-ezgif.com-video-to-gif-converter.gif) | ![Join Meeting Demo](https://github.com/kamesh7773/zoom_clone/blob/main/readme%20assets/JoinMeeting.gif?raw=true) |
+
 
 
 ---

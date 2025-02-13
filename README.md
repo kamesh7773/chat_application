@@ -114,7 +114,7 @@ flutter run
 
 ## 📸 Screenshots
 
-| Sign in Page | Home page | Join Meeting Page |
+| Sign in Page | Home page | Chat Page |
 |-----------------|-----------|-----------|
 | ![Sign In Page](https://github.com/kamesh7773/chat_application/blob/main/assets/github/sign%20in%20page.png) | ![Home Page](https://github.com/kamesh7773/chat_application/blob/main/assets/github/home%20page%20page.png) | ![Chat Page](https://github.com/kamesh7773/chat_application/blob/main/assets/github/chat%20page.png) |
 

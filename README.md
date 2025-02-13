@@ -122,9 +122,9 @@ flutter run
 |-----------------|-----------|-----------|
 | ![Profile Page](https://github.com/kamesh7773/chat_application/blob/main/assets/github/profile%20page.png) | ![Call Logs Page](https://github.com/kamesh7773/chat_application/blob/main/assets/github/calls%20logs%20page.png) | ![People Page](https://github.com/kamesh7773/chat_application/blob/main/assets/github/people%20page.png) |
 
-| Search Page | Search Page | Join Meeting Demo |
+| Search Demo | Chat Demo | Join Meeting Demo |
 |-----------------|-----------|-----------|
-| ![Search Page](https://github.com/kamesh7773/chat_application/blob/main/assets/github/SearchPage-ezgif.com-video-to-gif-converter.gif) | ![Search Page](https://github.com/kamesh7773/chat_application/blob/main/assets/github/SearchPage-ezgif.com-video-to-gif-converter.gif) | ![Join Meeting Demo](https://github.com/kamesh7773/zoom_clone/blob/main/readme%20assets/JoinMeeting.gif?raw=true) |
+| ![Search Demo](https://github.com/kamesh7773/chat_application/blob/main/assets/github/SearchPage-ezgif.com-video-to-gif-converter.gif) | ![Chat Demo](https://github.com/kamesh7773/chat_application/blob/main/assets/github/SearchPage-ezgif.com-video-to-gif-converter.gif) | ![Join Meeting Demo](https://github.com/kamesh7773/zoom_clone/blob/main/readme%20assets/JoinMeeting.gif?raw=true) |
 
 
 

@@ -114,9 +114,9 @@ flutter run
 
 ## 📸 Screenshots
 
-| Welcome Page | Home page | Join Meeting Page |
+| Sign in Page | Home page | Join Meeting Page |
 |-----------------|-----------|-----------|
-| ![Welcome Page](https://github.com/kamesh7773/zoom_clone/blob/main/readme%20assets/welcome_page.png?raw=true) | ![Home Page](https://github.com/kamesh7773/zoom_clone/blob/main/readme%20assets/home_page.png?raw=true) | ![Settings Page](https://github.com/kamesh7773/zoom_clone/blob/main/readme%20assets/settings_page.png?raw=true) |
+| ![Sign in Page](https://github.com/kamesh7773/chat_application/blob/main/assets/github/sign%20in%20page.png?raw=true) | ![Home Page](https://github.com/kamesh7773/zoom_clone/blob/main/readme%20assets/home_page.png?raw=true) | ![Settings Page](https://github.com/kamesh7773/zoom_clone/blob/main/readme%20assets/settings_page.png?raw=true) |
 
 | Sign up | Create Meeting Demo | Join Meeting Demo |
 |-----------------|-----------|-----------|

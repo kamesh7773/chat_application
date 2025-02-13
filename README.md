@@ -118,9 +118,9 @@ flutter run
 |-----------------|-----------|-----------|
 | ![Sign In Page](https://github.com/kamesh7773/chat_application/blob/main/assets/github/sign%20in%20page.png) | ![Home Page](https://github.com/kamesh7773/chat_application/blob/main/assets/github/home%20page%20page.png) | ![Chat Page](https://github.com/kamesh7773/chat_application/blob/main/assets/github/chat%20page.png) |
 
-| Call logs Page | Create Meeting Demo | Join Meeting Demo |
+| Call logs Page | Search Page | Join Meeting Demo |
 |-----------------|-----------|-----------|
-| ![Call logs Page](https://github.com/kamesh7773/chat_application/blob/main/assets/github/calls%20logs%20page.png) | ![Create Meeting Demo](https://github.com/kamesh7773/zoom_clone/blob/main/readme%20assets/CreateMeeting.gif?raw=true) | ![Join Meeting Demo](https://github.com/kamesh7773/zoom_clone/blob/main/readme%20assets/JoinMeeting.gif?raw=true) |
+| ![Call logs Page](https://github.com/kamesh7773/chat_application/blob/main/assets/github/calls%20logs%20page.png) | ![Search Page](https://github.com/kamesh7773/chat_application/blob/main/assets/github/SearchPage-ezgif.com-video-to-gif-converter.gif) | ![Join Meeting Demo](https://github.com/kamesh7773/zoom_clone/blob/main/readme%20assets/JoinMeeting.gif?raw=true) |
 
 
 

@@ -122,7 +122,7 @@ flutter run
 |-----------------|-----------|-----------|
 | ![Profile Page](https://github.com/kamesh7773/chat_application/blob/main/assets/github/profile%20page.png) | ![Call Logs Page](https://github.com/kamesh7773/chat_application/blob/main/assets/github/calls%20logs%20page.png) | ![People Page](https://github.com/kamesh7773/chat_application/blob/main/assets/github/people%20page.png) |
 
-| Search Demo | Chat Demo | Join Meeting Demo |
+| Search Demo | Chat Demo | Call Demo |
 |-----------------|-----------|-----------|
 | ![Search Demo](https://github.com/kamesh7773/chat_application/blob/main/assets/github/SearchPage.gif) | ![Chat Demo](https://github.com/kamesh7773/chat_application/blob/main/assets/github/Chat%20Demo.gif) | ![Join Meeting Demo](https://github.com/kamesh7773/zoom_clone/blob/main/readme%20assets/JoinMeeting.gif?raw=true) |
 

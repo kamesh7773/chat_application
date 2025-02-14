@@ -25,10 +25,10 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // Here we intilize the flutter Awesome Notifications.
+  // initializing the flutter Awesome Notifications.
   AwesomeNotificationsAPI().initlization();
 
-  // Check if the user is already logged in.
+  // Checking if the user is already logged in.
   bool isUserAuthenticated = await FirebaseAuthMethods.isUserLogin();
 
   /// 2/5: Set the navigator key for ZegoUIKitPrebuiltCallInvitationService

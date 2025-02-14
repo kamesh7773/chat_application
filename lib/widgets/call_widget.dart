@@ -77,11 +77,11 @@ class CallWidget extends StatelessWidget {
                 children: [
                   Text(
                     callTypeText,
-                    style: const TextStyle(fontSize: 15),
+                    style: const TextStyle(fontSize: 15, color: Colors.white),
                   ),
                   Text(
                     callTime,
-                    style: const TextStyle(fontSize: 10),
+                    style: const TextStyle(fontSize: 10, color: Colors.white),
                   ),
                 ],
               ),

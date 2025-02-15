@@ -33,7 +33,7 @@ class CallWidget extends StatelessWidget {
 
     // Colors and alignment based on the user's role
     const iconColor = Colors.white;
-    final iconBackgroundColor = isCaller ? const Color.fromARGB(255, 0, 191, 108) : const Color.fromARGB(255, 64, 77, 87);
+    final iconBackgroundColor = isCaller ? const Color.fromARGB(255, 0, 191, 108) : const Color.fromARGB(255, 0, 191, 108);
 
     final containerColor = isCaller
         ? const Color.fromARGB(255, 0, 191, 108)
@@ -41,7 +41,15 @@ class CallWidget extends StatelessWidget {
             ? const Color.fromARGB(255, 225, 247, 237)
             : const Color.fromARGB(255, 45, 67, 83);
 
-    final borderColor = isCaller ? const Color.fromARGB(255, 0, 191, 108) : const Color.fromARGB(255, 30, 44, 54);
+    // Border color based on the user's role
+    final borderColor = MediaQuery.of(context).platformBrightness == Brightness.light ? const Color.fromARGB(255, 223, 233, 229) : const Color.fromARGB(255, 30, 44, 54);
+
+    // Text colors based on the user's role and theme
+    final textColor = isCurrentUser
+        ? Colors.white
+        : MediaQuery.of(context).platformBrightness == Brightness.light
+            ? const Color.fromARGB(255, 87, 87, 87)
+            : const Color.fromARGB(255, 228, 219, 219);
 
     return Column(
       crossAxisAlignment: isCaller ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -75,14 +83,8 @@ class CallWidget extends StatelessWidget {
               Column(
                 crossAxisAlignment: isCaller ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    callTypeText,
-                    style: const TextStyle(fontSize: 15, color: Colors.white),
-                  ),
-                  Text(
-                    callTime,
-                    style: const TextStyle(fontSize: 10, color: Colors.white),
-                  ),
+                  Text(callTypeText, style: TextStyle(fontSize: 15, color: textColor)),
+                  Text(callTime, style: TextStyle(fontSize: 10, color: textColor)),
                 ],
               ),
             ],

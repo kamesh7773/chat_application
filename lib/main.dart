@@ -25,7 +25,7 @@ void main() async {
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // initializing the flutter Awesome Notifications.
+  // Initializing the flutter Awesome Notifications.
   AwesomeNotificationsAPI().initlization();
 
   // Checking if the user is already logged in.
